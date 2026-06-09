@@ -1898,7 +1898,7 @@ function GuidePage() {
             <span className="guide-row-desc">{desc}</span>
           </div>
         ))}
-        <div style={{marginTop:10,fontSize:12,color:'#3d5068',fontFamily:"'DM Mono',monospace",letterSpacing:'.03em"}}>
+        <div style={{marginTop:10,fontSize:12,color:'#3d5068',fontFamily:"'DM Mono',monospace",letterSpacing:'.03em'}}>
           Mac users: use ⌘ in place of Ctrl
         </div>
       </div>
