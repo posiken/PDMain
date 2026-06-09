@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
-const STATUS_ORDER = { "none": 4, "trouble-call": 0, "manual-schedule": 1, "in-training": 2, "pto": 3, "do-not-schedule": 4,
+const STATUS_ORDER = { "none": 5, "best-fit": 0, "trouble-call": 0, "manual-schedule": 1, "in-training": 2, "pto": 3, "do-not-schedule": 4,
                         available: 0, "on-call": 2, "off-duty": 3 }; // legacy aliases
 const TECH_TYPES   = ["GHP","Lawn","Termite","Mosquito","Bed Bugs","Commercial","Exclusion","Wildlife","TAP","Sentricon","SMART","Pre Treat","Post Treat","Field Inspector","Trouble Call","Supervisor"];
 const BRANCHES     = ["Jax N","Jax E","Jax W","Jax S","St. Augustine","Melbourne","Ocala","Sarasota","Ft. Myers/Naples","Tampa","Orlando","WPB-FTL","Daytona"];
@@ -450,6 +450,7 @@ function StatusBadge({ status }) {
   if (!status || status === "none") return null;
   const cfg = {
     // Current statuses
+    "best-fit":        { label:"Best Fit",       bg:"rgba(16,185,129,.15)",  color:"#10b981", bd:"rgba(16,185,129,.3)"   },
     "trouble-call":    { label:"Trouble Call",    bg:"rgba(34,197,94,.13)",   color:"#22c55e", bd:"rgba(34,197,94,.28)"   },
     "in-training":     { label:"In Training",     bg:"rgba(45,212,191,.13)",  color:"#2dd4bf", bd:"rgba(45,212,191,.28)"  },
     "pto":             { label:"PTO",              bg:"rgba(251,191,36,.13)",  color:"#fbbf24", bd:"rgba(251,191,36,.28)"  },
@@ -627,6 +628,13 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
     setZipInput(sc.zip||''); setSelBranch(sc.branch||'');
     setSelTypes(sc.types||[]); setPestpacSearch('');
   };
+  const logAnalytic = (method, query, types, count) => {
+    try {
+      const ev = {ts:Date.now(),method,query,types:[...types],count};
+      const prev = JSON.parse(localStorage.getItem('dispatch_analytics')||'[]');
+      localStorage.setItem('dispatch_analytics', JSON.stringify([...prev,ev].slice(-500)));
+    } catch {}
+  };
   const zipReady    = zipInput.length === 5;
   const lookupReady = zipReady || !!selBranch;
 
@@ -651,6 +659,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
         )
         .sort((a,b)=>a.name.localeCompare(b.name));
       setResult({ zip:null, branch:null, pestpac:pestpacSearch.trim(), types:[], matches });
+      logAnalytic('find', pestpacSearch.trim(), [], matches.length);
       return;
     }
 
@@ -666,6 +675,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
         })
         .sort((a,b)=>(STATUS_ORDER[a.status]??3)-(STATUS_ORDER[b.status]??3));
       setResult({ zip:null, branch:selBranch, pestpac:null, types:[...selTypes], matches });
+      logAnalytic('branch', selBranch, selTypes, matches.length);
     } else {
       const zip = zipInput.trim();
       const matches = techs
@@ -675,6 +685,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
         })
         .sort((a,b)=>(STATUS_ORDER[a.status]??3)-(STATUS_ORDER[b.status]??3));
       setResult({ zip, branch:null, pestpac:null, types:[...selTypes], matches });
+      logAnalytic('zip', zip, selTypes, matches.length);
     }
   }, [selTypes, zipInput, selBranch, pestpacSearch, techs]);
 
@@ -1167,6 +1178,7 @@ function ManagerRow({ mgr, onEdit, onDelete, isConfirming }) {
 // ─── STATUS SELECT ────────────────────────────────────────────────────────────
 const STATUS_OPTS = [
   { value:'none',            label:'None',            bg:'transparent',           color:'#64748b', bd:'#2d3f52'             },
+  { value:'best-fit',       label:'Best Fit',        bg:'rgba(16,185,129,.15)',  color:'#10b981', bd:'rgba(16,185,129,.3)'  },
   { value:'manual-schedule', label:'Manual Schedule', bg:'rgba(129,140,248,.15)', color:'#818cf8', bd:'rgba(129,140,248,.4)' },
   { value:'in-training',     label:'In Training',     bg:'rgba(45,212,191,.15)',  color:'#2dd4bf', bd:'rgba(45,212,191,.4)' },
   { value:'pto',             label:'PTO',             bg:'rgba(251,191,36,.15)',  color:'#fbbf24', bd:'rgba(251,191,36,.4)' },
@@ -1309,6 +1321,149 @@ function BackupsTab({ authCode, onRestoreComplete }) {
 }
 
 // ─── ADMIN VIEW ───────────────────────────────────────────────────────────────
+// ─── REPORTS TAB ─────────────────────────────────────────────────────────────
+function ReportsTab({ techs }) {
+  const [section,    setSection]    = useState('coverage');
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const checkTypes = TECH_TYPES.filter(t => t !== 'Supervisor');
+  const coverage = BRANCHES
+    .filter(b => techs.some(t => t.branch === b))
+    .map(branch => {
+      const bTechs = techs.filter(t => t.branch === branch && t.status !== 'do-not-schedule');
+      const types  = checkTypes.map(type => ({ type, n: bTechs.filter(t => (t.types||[]).includes(type)).length }));
+      const gaps   = types.filter(t => t.n === 0).length;
+      const risks  = types.filter(t => t.n === 1).length;
+      return { branch, count: bTechs.length, types, gaps, risks };
+    })
+    .sort((a, b) => b.gaps - a.gaps || b.risks - a.risks);
+
+  void refreshKey;
+  const events   = (() => { try { return JSON.parse(localStorage.getItem('dispatch_analytics')||'[]'); } catch { return []; } })();
+  const weekAgo  = Date.now() - 7 * 86400000;
+  const recent   = events.filter(e => e.ts > weekAgo);
+  const avgRes   = events.length ? Math.round(events.reduce((s, e) => s + e.count, 0) / events.length) : 0;
+  const topZips  = Object.entries(events.filter(e => e.method==='zip')
+    .reduce((a, e) => ({...a, [e.query]: (a[e.query]||0)+1}), {}))
+    .sort((a,b) => b[1]-a[1]).slice(0, 5);
+  const typeAcc  = {};
+  events.forEach(e => (e.types||[]).forEach(t => { typeAcc[t] = (typeAcc[t]||0)+1; }));
+  const topTypes = Object.entries(typeAcc).sort((a,b) => b[1]-a[1]).slice(0, 5);
+  const methods  = events.reduce((a, e) => ({...a, [e.method]: (a[e.method]||0)+1}), {});
+
+  const TabBtn = ({ id, label }) => (
+    <button onClick={() => setSection(id)}
+      style={{ padding:'7px 14px', borderRadius:7, cursor:'pointer', transition:'all .15s',
+        border: section===id ? '1px solid #f59e0b' : '1px solid #1e2e43',
+        background: section===id ? 'rgba(245,158,11,.1)' : 'transparent',
+        color: section===id ? '#f59e0b' : '#64748b',
+        fontFamily:"'DM Mono',monospace", fontSize:11, letterSpacing:'.06em', textTransform:'uppercase' }}>
+      {label}
+    </button>
+  );
+
+  return (
+    <div>
+      <div style={{display:'flex',gap:8,marginBottom:20}}>
+        <TabBtn id="coverage"  label="📍 Coverage Gaps"/>
+        <TabBtn id="analytics" label="📊 Analytics"/>
+      </div>
+
+      {section==='coverage' && (
+        <div>
+          <p style={{fontSize:11,color:'#3d5068',fontFamily:"'DM Mono',monospace",marginBottom:14,lineHeight:1.8,letterSpacing:'.03em'}}>
+            Excludes <span style={{color:'#ef4444'}}>Do Not Schedule</span> techs.&ensp;
+            <span style={{color:'#ef4444'}}>●</span> no coverage&ensp;
+            <span style={{color:'#fbbf24'}}>●</span> 1 tech&ensp;
+            <span style={{color:'#22c55e'}}>●</span> 2+ techs
+          </p>
+          {coverage.length === 0
+            ? <div className="empty-state"><div className="empty-icon">📍</div><div className="empty-title">No Branch Data</div><div className="empty-text">Add technicians with branches to see coverage.</div></div>
+            : coverage.map(({branch, count, types, gaps, risks}) => (
+              <div key={branch} style={{background:'#0d1322',border:'1px solid #151e30',borderRadius:10,padding:'14px 16px',marginBottom:8}}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+                  <div>
+                    <span style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:17,fontWeight:700}}>{branch}</span>
+                    <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#3d5068',marginLeft:8}}>{count} tech{count!==1?'s':''}</span>
+                  </div>
+                  {gaps>0   && <span style={{background:'rgba(239,68,68,.1)',border:'1px solid rgba(239,68,68,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#ef4444',fontFamily:"'DM Mono',monospace"}}>{gaps} gap{gaps!==1?'s':''}</span>}
+                  {gaps===0 && risks>0   && <span style={{background:'rgba(251,191,36,.1)',border:'1px solid rgba(251,191,36,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#fbbf24',fontFamily:"'DM Mono',monospace"}}>{risks} at risk</span>}
+                  {gaps===0 && risks===0 && <span style={{background:'rgba(34,197,94,.1)',border:'1px solid rgba(34,197,94,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#22c55e',fontFamily:"'DM Mono',monospace"}}>Full coverage</span>}
+                </div>
+                <div style={{display:'flex',flexWrap:'wrap',gap:4}}>
+                  {types.map(({type,n}) => {
+                    const col = n===0 ? '#ef4444' : n===1 ? '#fbbf24' : '#22c55e';
+                    return <span key={type} style={{padding:'2px 7px',borderRadius:4,fontSize:9,fontFamily:"'DM Mono',monospace",fontWeight:700,letterSpacing:'.04em',background:`${col}18`,border:`1px solid ${col}35`,color:col,opacity:n===0?1:n===1?0.85:0.5}}>{type.toUpperCase()}</span>;
+                  })}
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      )}
+
+      {section==='analytics' && (
+        <div>
+          {events.length === 0
+            ? <div className="empty-state"><div className="empty-icon">📊</div><div className="empty-title">No Data Yet</div><div className="empty-text">Search analytics appear here after lookups are performed from this browser.</div></div>
+            : <>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginBottom:18}}>
+                {[{v:events.length,l:'Total'},{v:recent.length,l:'This Week'},{v:avgRes,l:'Avg Results'}].map(({v,l})=>(
+                  <div key={l} style={{background:'#0d1322',border:'1px solid #151e30',borderRadius:9,padding:'12px',textAlign:'center'}}>
+                    <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:30,fontWeight:900,color:'#f59e0b',lineHeight:1}}>{v}</div>
+                    <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#3d5068',letterSpacing:'.1em',textTransform:'uppercase',marginTop:4}}>{l}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:16}}>
+                {[{title:'Top ZIPs',items:topZips},{title:'Top Types',items:topTypes}].map(({title,items})=>(
+                  <div key={title}>
+                    <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#3d5068',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>{title}</div>
+                    {items.length===0 ? <div style={{color:'#3d5068',fontSize:11}}>—</div>
+                      : items.map(([label,n],i) => (
+                        <div key={label} style={{display:'flex',alignItems:'center',gap:6,marginBottom:5}}>
+                          <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#f59e0b',width:12,textAlign:'right',flexShrink:0}}>{i+1}</span>
+                          <div style={{flex:1,background:'#111827',borderRadius:3,height:17,position:'relative',overflow:'hidden'}}>
+                            <div style={{position:'absolute',inset:0,background:'rgba(245,158,11,.2)',width:`${Math.round(n/items[0][1]*100)}%`}}/>
+                            <div style={{position:'absolute',inset:'0 6px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                              <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#b0bec5',textTransform:'uppercase',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis',maxWidth:68}}>{label}</span>
+                              <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#64748b',flexShrink:0}}>{n}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    }
+                  </div>
+                ))}
+              </div>
+              <div style={{marginBottom:16}}>
+                <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#3d5068',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>By Method</div>
+                <div style={{display:'flex',gap:8}}>
+                  {[{k:'zip',l:'ZIP'},{k:'branch',l:'Branch'},{k:'find',l:'Name / ID'}].map(({k,l})=>(
+                    <div key={k} style={{flex:1,background:'#0d1322',border:'1px solid #151e30',borderRadius:7,padding:'10px 12px',textAlign:'center'}}>
+                      <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:22,fontWeight:800,color:'#94a3b8'}}>{methods[k]||0}</div>
+                      <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#3d5068',letterSpacing:'.06em',textTransform:'uppercase',marginTop:2}}>{l}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',borderTop:'1px solid #151e30',paddingTop:12}}>
+                <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#2d4463',letterSpacing:'.04em'}}>This browser only · {events.length}/500 stored</span>
+                <button onClick={()=>{ try{localStorage.removeItem('dispatch_analytics');}catch{} setRefreshKey(k=>k+1); }}
+                  style={{background:'transparent',border:'1px solid #1e2e43',borderRadius:5,padding:'4px 10px',color:'#64748b',fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:'.06em',cursor:'pointer',textTransform:'uppercase',transition:'all .15s'}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor='#ef4444';e.currentTarget.style.color='#ef4444';}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor='#1e2e43';e.currentTarget.style.color='#64748b';}}>
+                  Clear Data
+                </button>
+              </div>
+            </>
+          }
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
                      onSignOut, onMasterCodeChanged, onRestoreComplete, onStatusChange,
                      onAdd, onEdit, onDelete, onImport, saveStatus }) {
@@ -1383,13 +1538,12 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
         </div>
       </div>
 
-      {authLevel==="master" && (
-        <div className="admin-tabs">
-          <button className={`admin-tab${tab==="techs"?" tab-active":""}`} onClick={()=>{setTab("techs");setSearchQuery("");setFilterBranch("");}}>Technicians</button>
-          <button className={`admin-tab${tab==="backups"?" tab-active":""}`} onClick={()=>setTab("backups")}>💾 Backups</button>
-          <button className={`admin-tab${tab==="codes"?" tab-active":""}`} onClick={()=>setTab("codes")}>🔐 Access Codes</button>
-        </div>
-      )}
+      <div className="admin-tabs">
+        <button className={`admin-tab${tab==="techs"?" tab-active":""}`} onClick={()=>{setTab("techs");setSearchQuery("");setFilterBranch("");}}>Technicians</button>
+        <button className={`admin-tab${tab==="reports"?" tab-active":""}`} onClick={()=>setTab("reports")}>📊 Reports</button>
+        <button className={`admin-tab${tab==="backups"?" tab-active":""}`} onClick={()=>setTab("backups")}>💾 Backups</button>
+        {authLevel==="master" && <button className={`admin-tab${tab==="codes"?" tab-active":""}`} onClick={()=>setTab("codes")}>🔐 Codes</button>}
+      </div>
 
       {tab==="techs" && (
         <>
@@ -1496,6 +1650,8 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
         </>
       )}
 
+      {tab==="reports" && <ReportsTab techs={techs}/>}
+
       {tab==="backups" && (
         <BackupsTab authCode={authCode} onRestoreComplete={onRestoreComplete}/>
       )}
@@ -1574,13 +1730,14 @@ function TechModal({ mode, tech, allTechs, onSave, onClose }) {
         <div className="field">
           <label className="field-label">Phone Number</label>
           <input className="field-input" value={form.phone} onChange={e=>{upd("phone",formatPhone(e.target.value));setErr("");}} placeholder="(555) 000-0000"/>
-          {dupPhone&&<div className="field-warn">&#x26A0; {dupPhone.name} already uses this number</div>}
+          {dupPhone&&<div className="field-warn">⚠ {dupPhone.name} already uses this number</div>}
         </div>
         <div style={{display:"flex",gap:12}}>
           <div className="field" style={{flex:1}}>
             <label className="field-label">Status</label>
             <select className="field-input" value={form.status} onChange={e=>upd("status",e.target.value)}>
               <option value="none">None</option>
+              <option value="best-fit">Best Fit</option>
               <option value="manual-schedule">Manual Schedule</option>
               <option value="in-training">In Training</option>
               <option value="pto">PTO</option>
@@ -1726,6 +1883,26 @@ function GuidePage() {
           <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>PESTPAC</span>One-tap Copy button copies the username</div>
           <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>TYPES</span>Matched types are highlighted in color</div>
           <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>ZIP</span>Shows matched ZIP · "+N more" = additional coverage</div>
+        </div>
+      </div>
+
+      <div className="guide-card">
+        <div className="guide-card-title">⌨️ Keyboard Shortcuts</div>
+        {[
+          { keys:'Ctrl + K', desc:'Jump to Lookup and focus the ZIP field from anywhere in the app' },
+          { keys:'Esc',      desc:'Close any open modal' },
+        ].map(({keys,desc}) => (
+          <div key={keys} className="guide-row" style={{alignItems:'center'}}>
+            <span style={{fontFamily:"'DM Mono',monospace",fontSize:11,fontWeight:700,
+              background:'#111827',border:'1px solid #1e2e43',borderRadius:5,
+              padding:'3px 9px',color:'#f59e0b',whiteSpace:'nowrap',flexShrink:0}}>
+              {keys}
+            </span>
+            <span className="guide-row-desc">{desc}</span>
+          </div>
+        ))}
+        <div style={{marginTop:10,fontSize:12,color:'#3d5068',fontFamily:"'DM Mono',monospace",letterSpacing:'.03em"}}>
+          Mac users: use ⌘ in place of Ctrl
         </div>
       </div>
 
@@ -1980,7 +2157,15 @@ export default function App() {
     const on_  = ()=>setIsOffline(false);
     const off_ = ()=>setIsOffline(true);
     window.addEventListener('online', on_); window.addEventListener('offline', off_);
-    return ()=>{ window.removeEventListener('online',on_); window.removeEventListener('offline',off_); };
+    const kbd = (e)=>{
+      if ((e.ctrlKey||e.metaKey) && e.key==='k') {
+        e.preventDefault();
+        setView('search');
+        setTimeout(()=>document.querySelector('.zip-input')?.focus(), 60);
+      }
+    };
+    document.addEventListener('keydown', kbd);
+    return ()=>{ window.removeEventListener('online',on_); window.removeEventListener('offline',off_); document.removeEventListener('keydown',kbd); };
   },[]);
 
   const handleStatusChange = useCallback((id, newStatus) => {
