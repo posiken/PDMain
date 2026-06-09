@@ -1413,7 +1413,6 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
                 style={{paddingLeft:34,margin:0}}/>
               <span style={{position:"absolute",left:11,top:"50%",transform:"translateY(-50%)",fontSize:14,color:"#3d5068",pointerEvents:"none"}}>🔍</span>
             </div>
-            </div>
             {searchQuery && (
               <button className="btn-cancel" style={{flexShrink:0,padding:"9px 14px"}} onClick={()=>setSearchQuery("")}>Clear</button>
             )}
