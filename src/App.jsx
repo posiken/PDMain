@@ -1843,66 +1843,123 @@ function GuidePage() {
       <div style={{marginBottom:28,textAlign:"center"}}>
         <div className="hero-eyebrow">// Reference</div>
         <h1 style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:"clamp(36px,7vw,54px)",fontWeight:900,lineHeight:.95,marginBottom:10,letterSpacing:"-.02em"}}>How To Use</h1>
-        <p style={{color:"#64748b",fontSize:14,lineHeight:1.6}}>A quick reference for Trouble-Call Dispatch</p>
+        <p style={{color:"#64748b",fontSize:14,lineHeight:1.6}}>A complete reference for Trouble-Call Dispatch</p>
       </div>
 
+      {/* ── Search Methods ── */}
       <div className="guide-card">
-        <div className="guide-card-title">📍 Looking Up a Technician</div>
-        <div className="guide-step"><div className="guide-step-num">1</div><div className="guide-step-body"><strong>Enter the 5-digit ZIP code</strong> for the service location in the search bar at the top.</div></div>
-        <div className="guide-step"><div className="guide-step-num">2</div><div className="guide-step-body"><strong>Select one or more service types.</strong> You can combine types to find a technician who covers all of them.</div></div>
-        <div className="guide-step"><div className="guide-step-num">3</div><div className="guide-step-body">Results appear automatically, sorted by status — available technicians show first.</div></div>
+        <div className="guide-card-title">📍 Three Ways to Find a Technician</div>
+        <div className="guide-step"><div className="guide-step-num">1</div><div className="guide-step-body"><strong>ZIP Code</strong> — Enter the 5-digit service location ZIP. Then select one or more service types to see matching technicians.</div></div>
+        <div className="guide-step"><div className="guide-step-num">2</div><div className="guide-step-body"><strong>Branch</strong> — Select a branch from the dropdown to see all technicians assigned to that location.</div></div>
+        <div className="guide-step"><div className="guide-step-num">3</div><div className="guide-step-body"><strong>Name / PestPac Username</strong> — Type in the FIND field to search across all technicians by name or PestPac username instantly.</div></div>
         <div style={{marginTop:12,padding:"10px 14px",background:"rgba(245,158,11,.06)",borderRadius:6,border:"1px solid rgba(245,158,11,.15)",fontSize:13,color:"#94a3b8",lineHeight:1.6}}>
-          <strong style={{color:"#f59e0b"}}>Important:</strong> Supervisors only appear when the <strong>Supervisor</strong> button is selected — this prevents accidental scheduling.
+          <strong style={{color:"#f59e0b"}}>Supervisor guard:</strong> Supervisors only appear in results when the <strong>Supervisor</strong> service type is explicitly selected.
         </div>
       </div>
 
+      {/* ── Saved Shortcuts ── */}
+      <div className="guide-card">
+        <div className="guide-card-title">⚡ Saved Filter Shortcuts</div>
+        <div style={{fontSize:13,color:"#94a3b8",lineHeight:1.8}}>
+          Once you have a ZIP or branch selected with service types chosen, a <strong style={{color:"#f59e0b"}}>☆ Save</strong> button appears above the service type grid. Tap it to save that combination as a one-tap shortcut pill. Up to 5 shortcuts can be saved — they persist between sessions and can be deleted with the × on each pill.
+        </div>
+      </div>
+
+      {/* ── Service Types ── */}
       <div className="guide-card">
         <div className="guide-card-title">🏷️ Service Types</div>
-        <div className="guide-row"><TypeBadge type="GHP" highlight/><span className="guide-row-desc">General Household Pest — standard residential services</span></div>
-        <div className="guide-row"><TypeBadge type="Lawn" highlight/><span className="guide-row-desc">Lawn & Outdoor services</span></div>
-        <div className="guide-row"><TypeBadge type="Termite" highlight/><span className="guide-row-desc">Termite inspection and control</span></div>
-        <div className="guide-row"><TypeBadge type="Trouble Call" highlight/><span className="guide-row-desc">Trouble call response technicians</span></div>
-        <div className="guide-row"><TypeBadge type="Supervisor" highlight/><span className="guide-row-desc">Lead technicians and area supervisors</span></div>
+        {[
+          ["GHP",            "General Household Pest — standard residential service"],
+          ["Lawn",           "Lawn & outdoor treatment"],
+          ["Termite",        "Termite inspection and control"],
+          ["Mosquito",       "Mosquito reduction and barrier treatment"],
+          ["Commercial",     "Commercial accounts and properties"],
+          ["Bed Bugs",       "Bed bug treatment and heat services"],
+          ["Exclusion",      "Wildlife and pest exclusion work"],
+          ["Wildlife",       "Wildlife removal and relocation"],
+          ["TAP",            "TAP insulation installation"],
+          ["Sentricon",      "Sentricon termite baiting system"],
+          ["SMART",          "SMART monitoring and connected services"],
+          ["Pre Treat",      "Pre-construction termite pre-treatment"],
+          ["Post Treat",     "Post-construction termite treatment"],
+          ["Field Inspector","Property inspection services"],
+          ["Trouble Call",   "Trouble call response — callback specialists"],
+          ["Supervisor",     "Lead technicians and area supervisors"],
+        ].map(([type, desc]) => (
+          <div key={type} className="guide-row">
+            <TypeBadge type={type} highlight/>
+            <span className="guide-row-desc">{desc}</span>
+          </div>
+        ))}
       </div>
 
+      {/* ── Status Meanings ── */}
       <div className="guide-card">
-        <div className="guide-card-title">🔖 Status Meanings</div>
-        <div className="guide-row"><StatusBadge status="in-training"/><span className="guide-row-desc">Technician is in training — verify before scheduling</span></div>
+        <div className="guide-card-title">🔖 Technician Status</div>
+        <div className="guide-row"><StatusBadge status="best-fit"/><span className="guide-row-desc">Confirmed best match for this call — prioritize first</span></div>
+        <div className="guide-row"><StatusBadge status="manual-schedule"/><span className="guide-row-desc">Requires manual scheduling coordination before booking</span></div>
+        <div className="guide-row"><StatusBadge status="in-training"/><span className="guide-row-desc">Currently in training — verify availability before scheduling</span></div>
         <div className="guide-row"><StatusBadge status="pto"/><span className="guide-row-desc">On PTO — not available</span></div>
-        <div className="guide-row"><StatusBadge status="do-not-schedule"/><span className="guide-row-desc">Do not assign this technician</span></div>
-        <div style={{marginTop:8,fontSize:12,color:"#64748b",fontFamily:"'DM Mono',monospace",letterSpacing:".04em"}}>No badge shown = status not set</div>
+        <div className="guide-row"><StatusBadge status="do-not-schedule"/><span className="guide-row-desc">Do not assign — check notes or contact a supervisor</span></div>
+        <div style={{marginTop:8,fontSize:12,color:"#64748b",fontFamily:"'DM Mono',monospace",letterSpacing:".04em"}}>No badge = status not set · Results sort by status with Best Fit first</div>
       </div>
 
+      {/* ── Reading a Card ── */}
       <div className="guide-card">
         <div className="guide-card-title">📋 Reading a Result Card</div>
         <div style={{fontSize:13,color:"#94a3b8",lineHeight:2}}>
-          <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>PHONE</span>Tap to call · Copy button copies to clipboard</div>
-          <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>PESTPAC</span>One-tap Copy button copies the username</div>
-          <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>TYPES</span>Matched types are highlighted in color</div>
-          <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>ZIP</span>Shows matched ZIP · "+N more" = additional coverage</div>
+          <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>PHONE</span>Tap to call directly · Copy button copies number to clipboard</div>
+          <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>PESTPAC</span>Copy button copies the username — paste directly into PestPac</div>
+          <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>TYPES</span>Matched service types are highlighted in their badge color</div>
+          <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>ZIP</span>Shows matched ZIP · "+N more" means additional coverage areas</div>
+          <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>⚠ WARN</span>Red banner indicates a note requiring attention before scheduling</div>
         </div>
       </div>
 
+      {/* ── Pop-Out Window ── */}
+      <div className="guide-card">
+        <div className="guide-card-title">⧉ Desktop Pop-Out Window</div>
+        <div style={{fontSize:13,color:"#94a3b8",lineHeight:1.8}}>
+          On any desktop browser, tap the <strong style={{color:"#f59e0b"}}>⧉</strong> button in the top-right navigation to open a compact floating window. Keep the lookup visible on screen while working in other tabs or systems — no need to switch back and forth.
+        </div>
+      </div>
+
+      {/* ── Admin Panel ── */}
+      <div className="guide-card">
+        <div className="guide-card-title">🔐 Admin Panel</div>
+        <div style={{fontSize:13,color:"#94a3b8",lineHeight:1.9}}>
+          Access via <strong>Manage Techs</strong> in the navigation. Requires a manager or master access code.
+        </div>
+        <div style={{fontSize:13,color:"#94a3b8",lineHeight:1.9,marginTop:8}}>
+          <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>TECHNICIANS</span>Add, edit, or delete technicians · Quick status toggle in the table · Filter by branch or search by name · Export and import roster as JSON</div>
+          <div style={{marginTop:6}}><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>REPORTS</span>Coverage Gap report shows which service types lack coverage per branch · Usage Analytics tracks search patterns over time</div>
+          <div style={{marginTop:6}}><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>BACKUPS</span>Every save auto-creates a backup · Restore any of the last 10 states in one tap</div>
+          <div style={{marginTop:6}}><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>ACCESS CODES</span>Master only · Manage named manager codes and change the master password</div>
+        </div>
+      </div>
+
+      {/* ── Keyboard Shortcuts ── */}
       <div className="guide-card">
         <div className="guide-card-title">⌨️ Keyboard Shortcuts</div>
         {[
-          { keys:'Ctrl + K', desc:'Jump to Lookup and focus the ZIP field from anywhere in the app' },
-          { keys:'Esc',      desc:'Close any open modal' },
+          { keys:"Ctrl + K", desc:"Jump to Lookup and focus the ZIP field from anywhere in the app" },
+          { keys:"Esc",      desc:"Close any open modal or dialog" },
         ].map(({keys,desc}) => (
-          <div key={keys} className="guide-row" style={{alignItems:'center'}}>
+          <div key={keys} className="guide-row" style={{alignItems:"center"}}>
             <span style={{fontFamily:"'DM Mono',monospace",fontSize:11,fontWeight:700,
-              background:'#111827',border:'1px solid #1e2e43',borderRadius:5,
-              padding:'3px 9px',color:'#f59e0b',whiteSpace:'nowrap',flexShrink:0}}>
+              background:"#111827",border:"1px solid #1e2e43",borderRadius:5,
+              padding:"3px 9px",color:"#f59e0b",whiteSpace:"nowrap",flexShrink:0}}>
               {keys}
             </span>
             <span className="guide-row-desc">{desc}</span>
           </div>
         ))}
-        <div style={{marginTop:10,fontSize:12,color:'#3d5068',fontFamily:"'DM Mono',monospace",letterSpacing:'.03em'}}>
+        <div style={{marginTop:10,fontSize:12,color:"#3d5068",fontFamily:"'DM Mono',monospace",letterSpacing:".03em"}}>
           Mac users: use ⌘ in place of Ctrl
         </div>
       </div>
 
+      {/* ── Important Reminders ── */}
       <div className="guide-card" style={{borderColor:"rgba(245,158,11,.25)",background:"rgba(245,158,11,.04)"}}>
         <div className="guide-card-title">⚠️ Important Reminders</div>
         <div style={{fontSize:13,color:"#94a3b8",lineHeight:1.8}}>
@@ -1911,6 +1968,7 @@ function GuidePage() {
         </div>
       </div>
 
+      {/* ── Contact ── */}
       <div className="guide-card">
         <div className="guide-card-title">📞 Contact & Support</div>
         <div style={{fontSize:12,color:"#64748b",fontFamily:"'DM Mono',monospace",letterSpacing:".04em",marginBottom:8}}>Questions or requests about this app:</div>
