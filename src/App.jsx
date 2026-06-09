@@ -1167,9 +1167,9 @@ function ManagerRow({ mgr, onEdit, onDelete, isConfirming }) {
 // ─── STATUS SELECT ────────────────────────────────────────────────────────────
 const STATUS_OPTS = [
   { value:'none',            label:'None',            bg:'transparent',           color:'#64748b', bd:'#2d3f52'             },
+  { value:'manual-schedule', label:'Manual Schedule', bg:'rgba(129,140,248,.15)', color:'#818cf8', bd:'rgba(129,140,248,.4)' },
   { value:'in-training',     label:'In Training',     bg:'rgba(45,212,191,.15)',  color:'#2dd4bf', bd:'rgba(45,212,191,.4)' },
   { value:'pto',             label:'PTO',             bg:'rgba(251,191,36,.15)',  color:'#fbbf24', bd:'rgba(251,191,36,.4)' },
-  { value:'manual-schedule', label:'Manual Schedule',  bg:'rgba(129,140,248,.15)', color:'#818cf8', bd:'rgba(129,140,248,.4)' },
   { value:'do-not-schedule', label:'Do Not Schedule', bg:'rgba(239,68,68,.18)',   color:'#ef4444', bd:'rgba(239,68,68,.5)'  },
 ];
 function StatusSelect({ status, onChange }) {
