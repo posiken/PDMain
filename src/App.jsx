@@ -289,6 +289,29 @@ const CSS = `
   transition:all .18s;flex-shrink:0;white-space:nowrap;}
 .copy-btn:hover{border-color:#f59e0b;color:#f59e0b;}
 .copy-btn-ok{border-color:rgba(34,197,94,.4)!important;color:#22c55e!important;background:rgba(34,197,94,.08)!important;}
+/* Saved filter shortcuts */
+.shortcut-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px;}
+.shortcut-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;
+  background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:20px;
+  cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;color:#f59e0b;
+  letter-spacing:.04em;transition:background .15s;white-space:nowrap;
+  -webkit-tap-highlight-color:transparent;}
+.shortcut-pill:hover{background:rgba(245,158,11,.15);}
+.shortcut-pill-del{background:none;border:none;color:#94a3b8;cursor:pointer;
+  font-size:13px;padding:0 0 0 2px;line-height:1;}
+.shortcut-pill-del:hover{color:#ef4444;}
+.shortcut-save{padding:4px 10px;background:transparent;
+  border:1px dashed rgba(245,158,11,.35);border-radius:20px;cursor:pointer;
+  font-family:'DM Mono',monospace;font-size:10px;color:#64748b;letter-spacing:.04em;
+  transition:all .15s;white-space:nowrap;}
+.shortcut-save:hover{border-color:#f59e0b;color:#f59e0b;}
+/* Offline banner */
+.offline-banner{background:rgba(245,158,11,.1);border-bottom:1px solid rgba(245,158,11,.2);
+  padding:6px 24px;font-family:'DM Mono',monospace;font-size:10px;color:#f59e0b;
+  letter-spacing:.08em;text-align:center;text-transform:uppercase;}
+/* Duplicate-detection inline warning */
+.field-warn{font-family:'DM Mono',monospace;font-size:10px;color:#fbbf24;
+  letter-spacing:.04em;margin-top:-6px;margin-bottom:8px;}
 
 /* Pop-out nav button */
 .btn-popout{font-size:15px;padding:6px 10px!important;letter-spacing:0!important;}
@@ -579,6 +602,30 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
   const [selBranch,     setSelBranch]     = useState("");
   const [pestpacSearch, setPestpacSearch] = useState("");
   const [sortBy,        setSortBy]        = useState("status");
+  const [shortcuts, setShortcuts] = useState(()=>{
+    try { return JSON.parse(localStorage.getItem('dispatch_shortcuts')||'[]'); } catch { return []; }
+  });
+  const makeLabel = () => {
+    const loc = selBranch || zipInput;
+    const tStr = selTypes.slice(0,2).join(' + ')+(selTypes.length>2?` +${selTypes.length-2}`:'');
+    return `${loc} · ${tStr}`;
+  };
+  const saveShortcut = () => {
+    const label = makeLabel();
+    const sc = {id:'sc_'+Date.now().toString(36),label,zip:zipInput,branch:selBranch,types:[...selTypes]};
+    const updated = [sc,...shortcuts.filter(s=>s.label!==label)].slice(0,5);
+    setShortcuts(updated);
+    try { localStorage.setItem('dispatch_shortcuts',JSON.stringify(updated)); } catch {}
+  };
+  const deleteShortcut = id => {
+    const updated = shortcuts.filter(s=>s.id!==id);
+    setShortcuts(updated);
+    try { localStorage.setItem('dispatch_shortcuts',JSON.stringify(updated)); } catch {}
+  };
+  const applyShortcut = sc => {
+    setZipInput(sc.zip||''); setSelBranch(sc.branch||'');
+    setSelTypes(sc.types||[]); setPestpacSearch('');
+  };
   const zipReady    = zipInput.length === 5;
   const lookupReady = zipReady || !!selBranch;
 
@@ -679,6 +726,20 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           )}
         </div>
         <div className="type-section">
+          {(shortcuts.length>0 || (lookupReady && selTypes.length>0)) && (
+            <div className="shortcut-bar">
+              {shortcuts.map(sc=>(
+                <button key={sc.id} className="shortcut-pill" onClick={()=>applyShortcut(sc)}>
+                  {sc.label}
+                  <span className="shortcut-pill-del"
+                    onClick={e=>{e.stopPropagation();deleteShortcut(sc.id);}}>×</span>
+                </button>
+              ))}
+              {lookupReady && selTypes.length>0 && (
+                <button className="shortcut-save" onClick={saveShortcut}>☆ Save</button>
+              )}
+            </div>
+          )}
           <div className="type-label" style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
             <span>Select service type{selTypes.length>1?" (multiple)":""}</span>
             {selTypes.length>0 && (
@@ -1102,6 +1163,29 @@ function ManagerRow({ mgr, onEdit, onDelete, isConfirming }) {
   );
 }
 
+// ─── STATUS SELECT ────────────────────────────────────────────────────────────
+function StatusSelect({ status, onChange }) {
+  const S = {
+    none:              {bg:'transparent',           color:'#64748b', bd:'#1e2e43'            },
+    'in-training':     {bg:'rgba(45,212,191,.13)',  color:'#2dd4bf', bd:'rgba(45,212,191,.3)'},
+    pto:               {bg:'rgba(251,191,36,.13)',  color:'#fbbf24', bd:'rgba(251,191,36,.3)'},
+    'do-not-schedule': {bg:'rgba(239,68,68,.18)',   color:'#ef4444', bd:'rgba(239,68,68,.45)'},
+  };
+  const st = S[status] || S.none;
+  return (
+    <select value={status||'none'} onChange={e=>onChange(e.target.value)} title="Click to update status"
+      style={{background:st.bg,border:`1px solid ${st.bd}`,borderRadius:5,
+        padding:'3px 8px',fontSize:11,fontFamily:"'DM Mono',monospace",fontWeight:600,
+        letterSpacing:'.06em',color:st.color,cursor:'pointer',outline:'none',
+        WebkitAppearance:'none',appearance:'none',textTransform:'uppercase',minWidth:90}}>
+      <option value="none">None</option>
+      <option value="in-training">In Training</option>
+      <option value="pto">PTO</option>
+      <option value="do-not-schedule">Do Not Schedule</option>
+    </select>
+  );
+}
+
 // ─── BACKUPS TAB ──────────────────────────────────────────────────────────────
 function BackupsTab({ authCode, onRestoreComplete }) {
   const [backups,        setBackups]        = useState([]);
@@ -1195,7 +1279,7 @@ function BackupsTab({ authCode, onRestoreComplete }) {
 
 // ─── ADMIN VIEW ───────────────────────────────────────────────────────────────
 function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
-                     onSignOut, onMasterCodeChanged, onRestoreComplete,
+                     onSignOut, onMasterCodeChanged, onRestoreComplete, onStatusChange,
                      onAdd, onEdit, onDelete, onImport, saveStatus }) {
   const [tab,           setTab]           = useState("techs");
   const [searchQuery,   setSearchQuery]   = useState("");
@@ -1336,7 +1420,7 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
                         </div>
                       </td>
                       <td style={{fontFamily:"'DM Mono',monospace",fontSize:12,color:"#64748b"}}>{tech.phone}</td>
-                      <td><StatusBadge status={tech.status}/></td>
+                      <td><StatusSelect status={tech.status} onChange={s=>onStatusChange(tech.id,s)}/></td>
                       <td style={{fontFamily:"'DM Mono',monospace",fontSize:11,color:"#64748b"}}>{tech.branch||"—"}</td>
                       <td>
                         <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
@@ -1437,10 +1521,12 @@ function TechModal({ mode, tech, allTechs, onSave, onClose }) {
         <div className="field">
           <label className="field-label">PestPac Username</label>
           <input className="field-input" value={form.pestpacUsername} onChange={e=>upd("pestpacUsername",e.target.value.toUpperCase())} placeholder="e.g. jsmith" style={{fontFamily:"'DM Mono',monospace",fontSize:13}}/>
+          {dupPestpac&&<div className="field-warn">⚠ {dupPestpac.name} already uses this username</div>}
         </div>
         <div className="field">
           <label className="field-label">Phone Number</label>
           <input className="field-input" value={form.phone} onChange={e=>{upd("phone",formatPhone(e.target.value));setErr("");}} placeholder="(555) 000-0000"/>
+          {dupPhone&&<div className="field-warn">&#x26A0; {dupPhone.name} already uses this number</div>}
         </div>
         <div style={{display:"flex",gap:12}}>
           <div className="field" style={{flex:1}}>
@@ -1619,6 +1705,10 @@ function EntryModal({ mode, entry, onSave, onClose }) {
   const [err,    setErr]    = useState("");
   const [saving, setSaving] = useState(false);
   const upd = (k,v) => setForm(f=>({...f,[k]:v}));
+  const dupPhone   = form.phone && (allTechs||[]).find(t=>t.id!==tech?.id&&t.phone&&t.phone===form.phone);
+  const dupPestpac = form.pestpacUsername && (allTechs||[]).find(t=>
+    t.id!==tech?.id && t.pestpacUsername &&
+    t.pestpacUsername.toUpperCase()===form.pestpacUsername.toUpperCase());
   const submit = async () => {
     if (!form.title.trim()) { setErr("Title is required."); return; }
     setSaving(true);
@@ -1782,6 +1872,7 @@ export default function App() {
   const [authCode,   setAuthCode]   = useState("");   // kept in memory for API writes
   const [showLogin,  setShowLogin]  = useState(false);
   const [saveStatus, setSaveStatus] = useState(null); // null | "saving" | "ok" | "err"
+  const [isOffline,  setIsOffline]  = useState(typeof navigator!=="undefined"&&!navigator.onLine);
 
   // ── Load technicians from API on mount ─────────────────────────────────────
   const loadTechs = useCallback(async () => {
@@ -1839,6 +1930,20 @@ export default function App() {
 
   // When master changes their own code, keep authCode in sync
   // When master restores a backup, update the techs state immediately
+  useEffect(()=>{
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
+    const on_  = ()=>setIsOffline(false);
+    const off_ = ()=>setIsOffline(true);
+    window.addEventListener('online', on_); window.addEventListener('offline', off_);
+    return ()=>{ window.removeEventListener('online',on_); window.removeEventListener('offline',off_); };
+  },[]);
+
+  const handleStatusChange = useCallback((id, newStatus) => {
+    const t = techs.find(t=>t.id===id);
+    if (!t || !authCode) return;
+    persistTechs(techs.map(x=>x.id===id?{...x,status:newStatus}:x), authCode, `Status: ${t.name} → ${newStatus}`);
+  },[techs, authCode, persistTechs]);
+
   const handleRestoreComplete = useCallback((restoredTechs) => {
     setTechs(restoredTechs);
   }, []);
@@ -1910,13 +2015,18 @@ export default function App() {
             <button className="nav-pill btn-popout" onClick={openPopout} title="Open in mini window">⧉</button>
           </nav>
         </header>
+        {isOffline && (
+          <div className="offline-banner">
+            ⚡ Offline — showing cached data · Changes cannot be saved until reconnected
+          </div>
+        )}
 
         {view==="search"    && <SearchView techs={techs} zipInput={zipInput} setZipInput={setZipInput} result={result} setResult={setResult}/>}
         {view==="guide"     && <GuidePage/>}
         {view==="changelog" && <ChangelogPage authLevel={authLevel} authCode={authCode} authLabel={authLabel}/>}
         {view==="admin"     && <AdminView  techs={techs} confirmId={confirmId} authLevel={authLevel} authLabel={authLabel}
               authCode={authCode} onSignOut={handleSignOut} onMasterCodeChanged={handleMasterCodeChanged}
-              onRestoreComplete={handleRestoreComplete}
+              onRestoreComplete={handleRestoreComplete} onStatusChange={handleStatusChange}
               onAdd={()=>setModal({mode:"add"})} onEdit={t=>setModal({mode:"edit",tech:t})}
               onDelete={handleDelete} onImport={handleImport} saveStatus={saveStatus}/>}
 
