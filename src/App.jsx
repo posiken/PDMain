@@ -13,7 +13,7 @@ const TYPE_CFG     = {
   "Trouble Call":    { color:"#f87171", bg:"rgba(248,113,113,.13)", bd:"rgba(248,113,113,.32)" },
   Commercial:        { color:"#22d3ee", bg:"rgba(34,211,238,.13)",  bd:"rgba(34,211,238,.32)"  },
   Mosquito:          { color:"#a3e635", bg:"rgba(163,230,53,.13)",  bd:"rgba(163,230,53,.32)"  },
-  Exclusion:         { color:"#bfdbfe", bg:"rgba(251,191,36,.13)",  bd:"rgba(251,191,36,.32)"  },
+  Exclusion:         { color:"#b45309", bg:"rgba(251,191,36,.13)",  bd:"rgba(251,191,36,.32)"  },
   Wildlife:          { color:"#e879f9", bg:"rgba(232,121,249,.13)", bd:"rgba(232,121,249,.32)" },
   TAP:               { color:"#f472b6", bg:"rgba(244,114,182,.13)", bd:"rgba(244,114,182,.32)" },
   "Pre Treat":       { color:"#818cf8", bg:"rgba(129,140,248,.13)", bd:"rgba(129,140,248,.32)" },
@@ -343,7 +343,7 @@ function StatusBadge({ status }) {
     "do-not-schedule": { label:"DO NOT SCHEDULE", bg:"rgba(239,68,68,.18)",   color:"#ef4444", bd:"rgba(239,68,68,.4)"    },
     // Legacy aliases (existing techs in DB)
     "available":       { label:"Trouble Call",    bg:"rgba(34,197,94,.13)",   color:"#22c55e", bd:"rgba(34,197,94,.28)"   },
-    "on-call":         { label:"PTO",             bg:"rgba(251,191,36,.13)",  color:"#bfdbfe", bd:"rgba(251,191,36,.28)"  },
+    "on-call":         { label:"PTO",             bg:"rgba(251,191,36,.13)",  color:"#92400e", bd:"rgba(251,191,36,.28)"  },
     "off-duty":        { label:"DO NOT SCHEDULE", bg:"rgba(239,68,68,.18)",   color:"#ef4444", bd:"rgba(239,68,68,.4)"    },
   }[status] || { label:status, bg:"transparent", color:"#475569", bd:"#263047" };
   return (
@@ -356,9 +356,9 @@ function TypeBadge({ type, highlight }) {
   const c = TYPE_CFG[type]; if(!c) return null;
   return (
     <span style={{padding:"2px 9px",borderRadius:4,fontSize:10,fontFamily:"'DM Mono',monospace",
-      letterSpacing:"0.08em",textTransform:"uppercase",fontWeight:500,transition:"all .18s",
-      background:highlight?c.bg:"rgba(255,255,255,.04)",color:highlight?c.color:"#64748b",
-      border:highlight?`1px solid ${c.bd}`:"1px solid #1a2a3d"}}>{type}</span>
+      letterSpacing:"0.08em",textTransform:"uppercase",fontWeight:600,transition:"all .18s",
+      background:highlight?c.bg:"#f8fafc",color:highlight?c.color:"#475569",
+      border:highlight?`1px solid ${c.bd}`:"1px solid #cbd5e1"}}>{type}</span>
   );
 }
 
@@ -1070,7 +1070,7 @@ const STATUS_OPTS = [
   { value:'best-fit',       label:'Best Fit',        bg:'rgba(16,185,129,.15)',  color:'#10b981', bd:'rgba(16,185,129,.3)'  },
   { value:'manual-schedule', label:'Manual Schedule', bg:'rgba(129,140,248,.15)', color:'#818cf8', bd:'rgba(129,140,248,.4)' },
   { value:'in-training',     label:'In Training',     bg:'rgba(45,212,191,.15)',  color:'#2dd4bf', bd:'rgba(45,212,191,.4)' },
-  { value:'pto',             label:'PTO',             bg:'rgba(251,191,36,.15)',  color:'#bfdbfe', bd:'rgba(251,191,36,.4)' },
+  { value:'pto',             label:'PTO',             bg:'rgba(251,191,36,.15)',  color:'#92400e', bd:'rgba(251,191,36,.4)' },
   { value:'do-not-schedule', label:'Do Not Schedule', bg:'rgba(239,68,68,.18)',   color:'#ef4444', bd:'rgba(239,68,68,.5)'  },
 ];
 function StatusSelect({ status, onChange }) {
@@ -1242,7 +1242,7 @@ function ReportsTab({ techs }) {
 
   const tabStyle = (id) => ({
     padding:'7px 14px', borderRadius:7, cursor:'pointer', transition:'all .15s',
-    border: section===id ? '1px solid #2563eb' : '1px solid #1e2e43',
+    border: section===id ? '1px solid #2563eb' : '1px solid #e2e8f0',
     background: section===id ? 'rgba(37,99,235,.1)' : 'transparent',
     color: section===id ? '#2563eb' : '#64748b',
     fontFamily:"'DM Mono',monospace", fontSize:11, letterSpacing:'.06em', textTransform:'uppercase'
@@ -1260,7 +1260,7 @@ function ReportsTab({ techs }) {
           <p style={{fontSize:11,color:'#475569',fontFamily:"'DM Mono',monospace",marginBottom:14,lineHeight:1.8,letterSpacing:'.03em'}}>
             Excludes <span style={{color:'#ef4444'}}>Do Not Schedule</span> techs.&ensp;
             <span style={{color:'#ef4444'}}>●</span> no coverage&ensp;
-            <span style={{color:'#bfdbfe'}}>●</span> 1 tech&ensp;
+            <span style={{color:'#b45309'}}>●</span> 1 tech&ensp;
             <span style={{color:'#22c55e'}}>●</span> 2+ techs
           </p>
           {coverage.length === 0
@@ -1273,13 +1273,17 @@ function ReportsTab({ techs }) {
                     <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#475569',marginLeft:8}}>{count} tech{count!==1?'s':''}</span>
                   </div>
                   {gaps>0   && <span style={{background:'rgba(239,68,68,.1)',border:'1px solid rgba(239,68,68,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#ef4444',fontFamily:"'DM Mono',monospace"}}>{gaps} gap{gaps!==1?'s':''}</span>}
-                  {gaps===0 && risks>0   && <span style={{background:'rgba(251,191,36,.1)',border:'1px solid rgba(251,191,36,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#bfdbfe',fontFamily:"'DM Mono',monospace"}}>{risks} at risk</span>}
+                  {gaps===0 && risks>0   && <span style={{background:'rgba(251,191,36,.1)',border:'1px solid rgba(251,191,36,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#92400e',fontFamily:"'DM Mono',monospace"}}>{risks} at risk</span>}
                   {gaps===0 && risks===0 && <span style={{background:'rgba(34,197,94,.1)',border:'1px solid rgba(34,197,94,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#22c55e',fontFamily:"'DM Mono',monospace"}}>Full coverage</span>}
                 </div>
                 <div style={{display:'flex',flexWrap:'wrap',gap:4}}>
                   {types.map(({type,n}) => {
-                    const col = n===0 ? '#ef4444' : n===1 ? '#bfdbfe' : '#22c55e';
-                    return <span key={type} style={{padding:'2px 7px',borderRadius:4,fontSize:9,fontFamily:"'DM Mono',monospace",fontWeight:700,letterSpacing:'.04em',background:`${col}18`,border:`1px solid ${col}35`,color:col,opacity:n===0?1:n===1?0.85:0.5}}>{type.toUpperCase()}</span>;
+                    const col = n===0
+                      ? {t:'#dc2626',bg:'rgba(220,38,38,.1)', bd:'rgba(220,38,38,.3)'}
+                      : n===1
+                      ? {t:'#92400e',bg:'rgba(180,83,9,.08)',  bd:'rgba(180,83,9,.25)'}
+                      : {t:'#166534',bg:'rgba(22,101,52,.08)', bd:'rgba(22,101,52,.2)' };
+                    return <span key={type} style={{padding:'2px 7px',borderRadius:4,fontSize:9,fontFamily:"'DM Mono',monospace",fontWeight:700,letterSpacing:'.04em',background:col.bg,border:`1px solid ${col.bd}`,color:col.t}}>{type.toUpperCase()}</span>;
                   })}
                 </div>
               </div>
@@ -1312,8 +1316,8 @@ function ReportsTab({ techs }) {
                           <div style={{flex:1,background:'#f1f5f9',borderRadius:3,height:17,position:'relative',overflow:'hidden'}}>
                             <div style={{position:'absolute',inset:0,background:'rgba(37,99,235,.12)',width:`${Math.round(n/items[0][1]*100)}%`}}/>
                             <div style={{position:'absolute',inset:'0 6px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                              <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#b0bec5',textTransform:'uppercase',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis',maxWidth:68}}>{label}</span>
-                              <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#64748b',flexShrink:0}}>{n}</span>
+                              <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#334155',textTransform:'uppercase',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis',maxWidth:68}}>{label}</span>
+                              <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#334155',flexShrink:0}}>{n}</span>
                             </div>
                           </div>
                         </div>
