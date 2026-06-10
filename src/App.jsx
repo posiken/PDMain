@@ -96,6 +96,7 @@ const CSS = `
 .type-btn:focus:not(:focus-visible){border-color:#e2e8f0;box-shadow:none;}
 .type-btn:disabled{opacity:.4;cursor:not-allowed;}
 .type-btn-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;}
+.type-chk{font-family:'DM Mono',monospace;font-size:9px;font-weight:700;line-height:1;display:block;height:10px;color:#1e40af;transition:none;}
 .type-btn-sub{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;text-align:center;}
 .type-btn.ghp-active,.type-btn.lawn-active,.type-btn.tmte-active,.type-btn.spvr-active,.type-btn.tc-active,
 .type-btn.comm-active,.type-btn.mosq-active,.type-btn.excl-active,.type-btn.wild-active,.type-btn.tap-active,
@@ -651,6 +652,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
+                <span className="type-chk" style={{visibility:selTypes.includes(type)?"visible":"hidden"}}>✓</span>
                 <div className="type-btn-label">{type}</div>
               </button>
             ))}
@@ -661,6 +663,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
+                <span className="type-chk" style={{visibility:selTypes.includes(type)?"visible":"hidden"}}>✓</span>
                 <div className="type-btn-label">{type}</div>
               </button>
             ))}
@@ -671,6 +674,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
+                <span className="type-chk" style={{visibility:selTypes.includes(type)?"visible":"hidden"}}>✓</span>
                 <div className="type-btn-label">{type}</div>
               </button>
             ))}
@@ -681,6 +685,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
+                <span className="type-chk" style={{visibility:selTypes.includes(type)?"visible":"hidden"}}>✓</span>
                 <div className="type-btn-label">{type}</div>
               </button>
             ))}
@@ -1637,8 +1642,11 @@ function TechModal({ mode, tech, allTechs, onSave, onClose }) {
           <label className="field-label">Service Types — select all that apply</label>
           <div className="type-toggle-row">
             {TECH_TYPES.map(type=>(
-              <button key={type} className="type-toggle" style={form.types.includes(type)?{borderColor:"rgba(245,158,11,.55)",background:"rgba(245,158,11,.13)",color:"#bfdbfe"}:{}}
-                onClick={()=>{toggleType(type);setErr("");}}>
+              <button key={type} className="type-toggle"
+                style={form.types.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
+                onClick={e=>{toggleType(type);setErr("");e.currentTarget.blur();}}>
+                <span style={{display:"block",fontSize:8,lineHeight:"10px",fontFamily:"'DM Mono',monospace",
+                  fontWeight:700,color:"#1e40af",visibility:form.types.includes(type)?"visible":"hidden"}}>✓</span>
                 {type}
               </button>
             ))}
