@@ -115,7 +115,7 @@ const CSS = `
   display:flex;gap:14px;animation:slideIn .3s ease both;transition:border-color .2s,box-shadow .2s,transform .15s;}
 .tech-card:hover{border-color:#bfdbfe;box-shadow:0 4px 12px rgba(0,0,0,.07);transform:translateY(-1px);}
 .tech-warn-banner{background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:7px 12px;
-  margin-bottom:10px;display:flex;align-items:center;gap:8px;
+  flex:0 0 100%;display:flex;align-items:center;gap:8px;
   font-family:'DM Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;
   text-transform:uppercase;color:#c2410c;}
 @keyframes slideIn{from{opacity:0;transform:translateY(9px);}to{opacity:1;transform:translateY(0);}}
