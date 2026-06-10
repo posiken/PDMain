@@ -65,9 +65,10 @@ const CSS = `
 .top-bar{display:flex;align-items:center;justify-content:space-between;padding:13px 24px;
   border-bottom:1px solid #e2e8f0;background:#ffffff;position:sticky;top:0;z-index:99;
   box-shadow:0 1px 3px rgba(0,0,0,.06);}
-.brand{display:flex;align-items:center;gap:10px;}
-.brand-icon{width:32px;height:32px;background:#2563eb;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;}
-.brand-name{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.05em;color:#0f172a;line-height:1.15;}
+.brand{display:flex;align-items:center;gap:10px;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.brand:hover .brand-name{color:#2563eb;}
+.brand:hover .brand-name span{color:#1e40af;}
+.brand-name{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.05em;color:#0f172a;line-height:1.15;text-align:left;transition:color .18s;}
 .brand-name span{color:#2563eb;display:block;}
 .nav-pill{padding:7px 15px;border-radius:6px;border:1px solid #e2e8f0;background:transparent;color:#64748b;
   font-family:'Barlow',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;flex-shrink:0;}
@@ -96,7 +97,7 @@ const CSS = `
 .type-btn:focus:not(:focus-visible){border-color:#e2e8f0;box-shadow:none;}
 .type-btn:disabled{opacity:.4;cursor:not-allowed;}
 .type-btn-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;}
-.type-chk{font-family:'DM Mono',monospace;font-size:9px;font-weight:700;line-height:1;display:block;height:10px;color:#1e40af;transition:none;}
+.type-chk{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;line-height:1;color:#1e40af;margin-right:5px;}
 .type-btn-sub{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;text-align:center;}
 .type-btn.ghp-active,.type-btn.lawn-active,.type-btn.tmte-active,.type-btn.spvr-active,.type-btn.tc-active,
 .type-btn.comm-active,.type-btn.mosq-active,.type-btn.excl-active,.type-btn.wild-active,.type-btn.tap-active,
@@ -322,7 +323,6 @@ const CSS = `
   .app-footer{padding:24px 16px 20px;}
 }
 @media(max-width:360px){
-  .brand-icon{width:28px;height:28px;font-size:13px;border-radius:6px;}
   .brand-name{font-size:12px;}
   .nav-pill{padding:5px 9px;font-size:11px;}
   .zip-input{font-size:20px;}
@@ -652,8 +652,10 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
-                <span className="type-chk" style={{visibility:selTypes.includes(type)?"visible":"hidden"}}>✓</span>
-                <div className="type-btn-label">{type}</div>
+                <div className="type-btn-label">
+                  {selTypes.includes(type) && <span className="type-chk">✓</span>}
+                  {type}
+                </div>
               </button>
             ))}
           </div>
@@ -663,8 +665,10 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
-                <span className="type-chk" style={{visibility:selTypes.includes(type)?"visible":"hidden"}}>✓</span>
-                <div className="type-btn-label">{type}</div>
+                <div className="type-btn-label">
+                  {selTypes.includes(type) && <span className="type-chk">✓</span>}
+                  {type}
+                </div>
               </button>
             ))}
           </div>
@@ -674,8 +678,10 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
-                <span className="type-chk" style={{visibility:selTypes.includes(type)?"visible":"hidden"}}>✓</span>
-                <div className="type-btn-label">{type}</div>
+                <div className="type-btn-label">
+                  {selTypes.includes(type) && <span className="type-chk">✓</span>}
+                  {type}
+                </div>
               </button>
             ))}
           </div>
@@ -685,8 +691,10 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
-                <span className="type-chk" style={{visibility:selTypes.includes(type)?"visible":"hidden"}}>✓</span>
-                <div className="type-btn-label">{type}</div>
+                <div className="type-btn-label">
+                  {selTypes.includes(type) && <span className="type-chk">✓</span>}
+                  {type}
+                </div>
               </button>
             ))}
           </div>
@@ -1649,9 +1657,8 @@ function TechModal({ mode, tech, allTechs, onSave, onClose }) {
               <button key={type} className="type-toggle"
                 style={form.types.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 onClick={e=>{toggleType(type);setErr("");e.currentTarget.blur();}}>
-                <span style={{display:"block",fontSize:8,lineHeight:"10px",fontFamily:"'DM Mono',monospace",
-                  fontWeight:700,color:"#1e40af",visibility:form.types.includes(type)?"visible":"hidden"}}>✓</span>
-                {type}
+                {form.types.includes(type) && <span style={{fontSize:9,fontFamily:"'DM Mono',monospace",
+                  fontWeight:700,color:"#1e40af",marginRight:4}}>✓</span>}{type}
               </button>
             ))}
           </div>
@@ -2179,10 +2186,10 @@ export default function App() {
       <style>{CSS}</style>
       <div className="app">
         <header className="top-bar">
-          <div className="brand">
-            <div className="brand-icon">🐀</div>
+          <button className="brand" onClick={()=>{setView("search");setResult(null);setZipInput("");}}
+            title="Back to Lookup">
             <div className="brand-name">TROUBLE-CALL<span>DISPATCH</span></div>
-          </div>
+          </button>
           <nav className="top-nav">
             <button className={`nav-pill${view==="search"?" nav-active":""}`}
               onClick={()=>{setView("search");setResult(null);setZipInput("");}}>Lookup</button>
