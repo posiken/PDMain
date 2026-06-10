@@ -92,6 +92,8 @@ const CSS = `
   outline:none;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;min-width:0;overflow:hidden;}
 .type-btn:hover:not(:disabled){border-color:#2563eb;color:#1e40af;}
 .type-btn:active:not(:disabled){background:#ffffff;border-color:#e2e8f0;color:#64748b;transform:none;}
+.type-btn:focus{outline:none;}
+.type-btn:focus:not(:focus-visible){border-color:#e2e8f0;box-shadow:none;}
 .type-btn:disabled{opacity:.4;cursor:not-allowed;}
 .type-btn-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;}
 .type-btn-sub{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;text-align:center;}
@@ -648,7 +650,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
             {["GHP","Lawn","Termite","Mosquito"].map(type=>(
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
-                disabled={!lookupReady} onClick={()=>toggleType(type)}>
+                disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">{type}</div>
               </button>
             ))}
@@ -658,7 +660,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
             {["Commercial","Bed Bugs","Exclusion","Wildlife"].map(type=>(
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
-                disabled={!lookupReady} onClick={()=>toggleType(type)}>
+                disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">{type}</div>
               </button>
             ))}
@@ -668,7 +670,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
             {["TAP","Sentricon","SMART","Pre Treat"].map(type=>(
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
-                disabled={!lookupReady} onClick={()=>toggleType(type)}>
+                disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">{type}</div>
               </button>
             ))}
@@ -678,7 +680,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
             {["Post Treat","Field Inspector","Trouble Call","Supervisor"].map(type=>(
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
-                disabled={!lookupReady} onClick={()=>toggleType(type)}>
+                disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">{type}</div>
               </button>
             ))}
