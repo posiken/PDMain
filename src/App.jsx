@@ -13,7 +13,7 @@ const TYPE_CFG     = {
   "Trouble Call":    { color:"#f87171", bg:"rgba(248,113,113,.13)", bd:"rgba(248,113,113,.32)" },
   Commercial:        { color:"#22d3ee", bg:"rgba(34,211,238,.13)",  bd:"rgba(34,211,238,.32)"  },
   Mosquito:          { color:"#a3e635", bg:"rgba(163,230,53,.13)",  bd:"rgba(163,230,53,.32)"  },
-  Exclusion:         { color:"#fbbf24", bg:"rgba(251,191,36,.13)",  bd:"rgba(251,191,36,.32)"  },
+  Exclusion:         { color:"#bfdbfe", bg:"rgba(251,191,36,.13)",  bd:"rgba(251,191,36,.32)"  },
   Wildlife:          { color:"#e879f9", bg:"rgba(232,121,249,.13)", bd:"rgba(232,121,249,.32)" },
   TAP:               { color:"#f472b6", bg:"rgba(244,114,182,.13)", bd:"rgba(244,114,182,.32)" },
   "Pre Treat":       { color:"#818cf8", bg:"rgba(129,140,248,.13)", bd:"rgba(129,140,248,.32)" },
@@ -66,20 +66,20 @@ const CSS = `
   border-bottom:1px solid #e2e8f0;background:#ffffff;position:sticky;top:0;z-index:99;
   box-shadow:0 1px 3px rgba(0,0,0,.06);}
 .brand{display:flex;align-items:center;gap:10px;}
-.brand-icon{width:32px;height:32px;background:#f59e0b;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.brand-icon{width:32px;height:32px;background:#2563eb;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;}
 .brand-name{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.05em;color:#0f172a;line-height:1.15;}
-.brand-name span{color:#d97706;display:block;}
+.brand-name span{color:#2563eb;display:block;}
 .nav-pill{padding:7px 15px;border-radius:6px;border:1px solid #e2e8f0;background:transparent;color:#64748b;
   font-family:'Barlow',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;flex-shrink:0;}
-.nav-pill:hover{border-color:#d97706;color:#d97706;}
-.nav-active{background:#fef3c7;border-color:#fbbf24!important;color:#b45309!important;}
+.nav-pill:hover{border-color:#2563eb;color:#2563eb;}
+.nav-active{background:#eff6ff;border-color:#bfdbfe!important;color:#1e40af!important;}
 
 .search-hero{max-width:600px;margin:60px auto 0;padding:0 20px;text-align:center;}
-.hero-eyebrow{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#d97706;margin-bottom:12px;}
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#2563eb;margin-bottom:12px;}
 .hero-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(44px,8vw,68px);font-weight:900;line-height:.95;margin-bottom:12px;letter-spacing:-.02em;color:#0f172a;}
 .hero-sub{color:#64748b;font-size:15px;margin-bottom:28px;line-height:1.6;}
 .search-bar{display:flex;border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;background:#ffffff;transition:border-color .2s,box-shadow .2s;}
-.search-bar:focus-within{border-color:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.1);}
+.search-bar:focus-within{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
 .zip-input{flex:1;padding:16px 20px;font-family:'DM Mono',monospace;font-size:28px;font-weight:500;letter-spacing:.15em;background:transparent;border:none;outline:none;color:#0f172a;}
 .zip-input::placeholder{color:#cbd5e1;}
 .type-section{margin-top:14px;}
@@ -90,7 +90,7 @@ const CSS = `
 .type-btn{padding:16px 8px;border-radius:9px;border:1.5px solid #e2e8f0;background:#ffffff;color:#64748b;
   cursor:pointer;transition:none;display:flex;flex-direction:column;align-items:center;gap:5px;
   outline:none;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;min-width:0;overflow:hidden;}
-.type-btn:hover:not(:disabled){border-color:#d97706;color:#b45309;}
+.type-btn:hover:not(:disabled){border-color:#2563eb;color:#1e40af;}
 .type-btn:active:not(:disabled){background:#ffffff;border-color:#e2e8f0;color:#64748b;transform:none;}
 .type-btn:disabled{opacity:.4;cursor:not-allowed;}
 .type-btn-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;}
@@ -98,11 +98,11 @@ const CSS = `
 .type-btn.ghp-active,.type-btn.lawn-active,.type-btn.tmte-active,.type-btn.spvr-active,.type-btn.tc-active,
 .type-btn.comm-active,.type-btn.mosq-active,.type-btn.excl-active,.type-btn.wild-active,.type-btn.tap-active,
 .type-btn.pret-active,.type-btn.post-active,.type-btn.smrt-active,.type-btn.sent-active,
-.type-btn.bbug-active,.type-btn.finsp-active{border-color:#d97706;background:#fef3c7;color:#b45309;}
+.type-btn.bbug-active,.type-btn.finsp-active{border-color:#2563eb;background:#eff6ff;color:#1e40af;}
 .type-btn.ghp-active:active,.type-btn.lawn-active:active,.type-btn.tmte-active:active,.type-btn.spvr-active:active,
 .type-btn.tc-active:active,.type-btn.comm-active:active,.type-btn.mosq-active:active,.type-btn.excl-active:active,
 .type-btn.wild-active:active,.type-btn.tap-active:active,.type-btn.pret-active:active,.type-btn.post-active:active,
-.type-btn.smrt-active:active,.type-btn.sent-active:active,.type-btn.bbug-active:active,.type-btn.finsp-active:active{border-color:#d97706;background:#fef3c7;color:#b45309;}
+.type-btn.smrt-active:active,.type-btn.sent-active:active,.type-btn.bbug-active:active,.type-btn.finsp-active:active{border-color:#2563eb;background:#eff6ff;color:#1e40af;}
 
 .results-wrap{max-width:600px;margin:24px auto 0;padding:0 20px 60px;}
 .results-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e2e8f0;}
@@ -110,54 +110,58 @@ const CSS = `
 
 .tech-card{background:#ffffff;border:1px solid #e2e8f0;border-radius:9px;padding:18px;margin-bottom:9px;
   display:flex;gap:14px;animation:slideIn .3s ease both;transition:border-color .2s,box-shadow .2s,transform .15s;}
-.tech-card:hover{border-color:#fbbf24;box-shadow:0 4px 12px rgba(0,0,0,.07);transform:translateY(-1px);}
+.tech-card:hover{border-color:#bfdbfe;box-shadow:0 4px 12px rgba(0,0,0,.07);transform:translateY(-1px);}
+.tech-warn-banner{background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:7px 12px;
+  margin-bottom:10px;display:flex;align-items:center;gap:8px;
+  font-family:'DM Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:#c2410c;}
 @keyframes slideIn{from{opacity:0;transform:translateY(9px);}to{opacity:1;transform:translateY(0);}}
-.tech-avatar{width:44px;height:44px;border-radius:50%;background:#fef3c7;border:2px solid #fcd34d;
-  display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#b45309;flex-shrink:0;}
+.tech-avatar{width:44px;height:44px;border-radius:50%;background:#eff6ff;border:2px solid #bfdbfe;
+  display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#1e40af;flex-shrink:0;}
 .tech-name{font-family:'Barlow Condensed',sans-serif;font-size:21px;font-weight:700;color:#0f172a;}
 .tech-phone{display:block;font-family:'DM Mono',monospace;font-size:14px;font-weight:600;color:#334155;text-decoration:none;margin-bottom:7px;letter-spacing:.03em;}
-.tech-phone:hover{color:#d97706;}
+.tech-phone:hover{color:#2563eb;}
 .tech-notes{font-size:13px;color:#64748b;margin-bottom:8px;}
 .tag-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px;}
 .zip-tags{display:flex;flex-wrap:wrap;gap:5px;}
 .zip-tag{font-family:'DM Mono',monospace;font-size:11px;padding:2px 8px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;color:#64748b;}
-.zip-hl{background:#fef3c7;border-color:#fcd34d;color:#b45309;font-weight:500;}
-.zip-more{font-family:'DM Mono',monospace;font-size:11px;padding:2px 8px;background:#fef3c7;border:1px solid #fcd34d;border-radius:4px;color:#b45309;font-weight:500;}
+.zip-hl{background:#eff6ff;border-color:#bfdbfe;color:#1e40af;font-weight:500;}
+.zip-more{font-family:'DM Mono',monospace;font-size:11px;padding:2px 8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;color:#1e40af;font-weight:500;}
 .empty-state{text-align:center;padding:52px 20px;}
 .empty-icon{font-size:42px;margin-bottom:13px;}
 .empty-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;margin-bottom:7px;color:#0f172a;}
 .empty-text{color:#64748b;font-size:14px;line-height:1.6;max-width:300px;margin:0 auto;}
 
-.disclaimer{background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:13px 15px;margin-top:16px;display:flex;gap:10px;align-items:flex-start;text-align:left;}
+.disclaimer{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:13px 15px;margin-top:16px;display:flex;gap:10px;align-items:flex-start;text-align:left;}
 .disclaimer-icon{font-size:15px;flex-shrink:0;margin-top:1px;opacity:.8;}
 .disclaimer-text{font-size:12px;color:#78350f;line-height:1.65;}
-.disclaimer-text strong{color:#b45309;font-weight:600;}
+.disclaimer-text strong{color:#1e40af;font-weight:600;}
 
 .admin-view{max-width:980px;margin:0 auto;padding:32px 20px 60px;}
 .admin-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
 .admin-head-left{display:flex;flex-direction:column;gap:5px;}
 .admin-title{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:900;color:#0f172a;}
 .admin-meta{font-family:'DM Mono',monospace;font-size:11px;color:#94a3b8;letter-spacing:.08em;}
-.admin-meta span{color:#d97706;}
+.admin-meta span{color:#2563eb;}
 .admin-head-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .session-badge{display:flex;align-items:center;gap:7px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:20px;padding:5px 12px;font-family:'DM Mono',monospace;font-size:11px;color:#64748b;letter-spacing:.06em;}
 .session-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .btn-signout{padding:6px 13px;background:transparent;border:1px solid #e2e8f0;border-radius:6px;color:#64748b;font-size:12px;cursor:pointer;transition:all .18s;font-family:'Barlow',sans-serif;}
 .btn-signout:hover{border-color:rgba(239,68,68,.4);color:#ef4444;}
-.btn-add{padding:9px 18px;background:#f59e0b;border:none;border-radius:6px;color:#ffffff;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:background .18s;}
-.btn-add:hover{background:#d97706;}
+.btn-add{padding:9px 18px;background:#2563eb;border:none;border-radius:6px;color:#ffffff;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:background .18s;}
+.btn-add:hover{background:#2563eb;}
 .btn-outline{padding:7px 14px;background:transparent;border:1px solid #e2e8f0;border-radius:6px;color:#64748b;font-family:'Barlow',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:6px;}
-.btn-outline:hover{border-color:#d97706;color:#d97706;}
+.btn-outline:hover{border-color:#2563eb;color:#2563eb;}
 .admin-tabs{display:flex;gap:2px;margin-bottom:24px;border-bottom:1px solid #e2e8f0;}
 .admin-tab{padding:10px 18px;background:transparent;border:none;border-bottom:2px solid transparent;color:#64748b;font-family:'Barlow',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .18s;margin-bottom:-1px;}
 .admin-tab:hover{color:#334155;}
-.tab-active{color:#d97706!important;border-bottom-color:#d97706!important;}
-.import-banner{background:#fffbeb;border:1px solid #fcd34d;border-radius:9px;padding:16px 20px;margin-bottom:20px;animation:slideIn .25s ease both;}
+.tab-active{color:#2563eb!important;border-bottom-color:#2563eb!important;}
+.import-banner{background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;padding:16px 20px;margin-bottom:20px;animation:slideIn .25s ease both;}
 .import-banner-title{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;margin-bottom:4px;color:#0f172a;}
 .import-banner-sub{font-size:13px;color:#64748b;margin-bottom:14px;line-height:1.5;}
 .import-banner-actions{display:flex;gap:8px;}
 .save-toast{display:flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.06em;padding:5px 12px;border-radius:6px;border:1px solid transparent;transition:all .3s;}
-.save-saving{color:#b45309;border-color:rgba(217,119,6,.3);background:rgba(217,119,6,.08);}
+.save-saving{color:#1e40af;border-color:rgba(37,99,235,.2);background:rgba(37,99,235,.08);}
 .save-ok    {color:#15803d;border-color:rgba(21,128,61,.3); background:rgba(21,128,61,.08);}
 .save-err   {color:#dc2626;border-color:rgba(220,38,38,.3); background:rgba(220,38,38,.08);}
 
@@ -167,19 +171,19 @@ const CSS = `
 .tech-table td{padding:12px 14px;border-bottom:1px solid #f1f5f9;vertical-align:middle;color:#334155;}
 .tech-table tr:last-child td{border-bottom:none;}
 .tech-table tbody tr:hover td{background:#fafafa;}
-.row-avatar{width:30px;height:30px;border-radius:50%;background:#fef3c7;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#b45309;}
+.row-avatar{width:30px;height:30px;border-radius:50%;background:#eff6ff;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#1e40af;}
 .btn-edit{padding:5px 12px;background:transparent;border:1px solid #e2e8f0;border-radius:5px;color:#64748b;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .18s;}
-.btn-edit:hover{border-color:#d97706;color:#d97706;}
+.btn-edit:hover{border-color:#2563eb;color:#2563eb;}
 .btn-del{padding:5px 12px;background:transparent;border:1px solid rgba(239,68,68,.25);border-radius:5px;color:#ef4444;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .18s;}
 .btn-del:hover{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.5);}
 .btn-del-confirm{padding:5px 12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.35);border-radius:5px;color:#dc2626;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;}
 .btn-cancel{padding:9px 16px;background:transparent;border:1px solid #e2e8f0;border-radius:6px;color:#64748b;font-family:'Barlow',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .18s;}
 .btn-cancel:hover{border-color:#94a3b8;color:#334155;}
-.btn-save{padding:9px 20px;background:#f59e0b;border:none;border-radius:6px;color:#ffffff;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:background .18s;}
-.btn-save:hover{background:#d97706;}
+.btn-save{padding:9px 20px;background:#2563eb;border:none;border-radius:6px;color:#ffffff;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:background .18s;}
+.btn-save:hover{background:#2563eb;}
 .btn-save:disabled{background:#e2e8f0;color:#94a3b8;cursor:not-allowed;}
 .btn-restore{padding:5px 13px;background:transparent;border:1px solid #e2e8f0;border-radius:5px;color:#64748b;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .18s;}
-.btn-restore:hover{border-color:#d97706;color:#d97706;}
+.btn-restore:hover{border-color:#2563eb;color:#2563eb;}
 .btn-popout{font-size:16px!important;padding:6px 10px!important;}
 
 .overlay{position:fixed;inset:0;background:rgba(15,23,42,.4);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;}
@@ -190,16 +194,16 @@ const CSS = `
 .field{margin-bottom:16px;}
 .field-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#64748b;margin-bottom:7px;display:block;}
 .field-input{width:100%;padding:11px 14px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;color:#0f172a;font-family:'Barlow',sans-serif;font-size:15px;font-weight:400;outline:none;transition:border-color .2s,box-shadow .2s;}
-.field-input:focus{border-color:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.1);}
+.field-input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
 .field-textarea{width:100%;padding:11px 14px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;color:#0f172a;font-family:'Barlow',sans-serif;font-size:15px;resize:vertical;outline:none;transition:border-color .2s,box-shadow .2s;}
-.field-textarea:focus{border-color:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.1);}
+.field-textarea:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
 .err-box{background:#fee2e2;border:1px solid #fca5a5;border-radius:6px;padding:10px 14px;font-size:13px;color:#dc2626;margin-bottom:14px;}
-.field-warn{font-family:'DM Mono',monospace;font-size:10px;color:#d97706;letter-spacing:.04em;margin-top:-6px;margin-bottom:8px;}
+.field-warn{font-family:'DM Mono',monospace;font-size:10px;color:#2563eb;letter-spacing:.04em;margin-top:-6px;margin-bottom:8px;}
 .type-toggle-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:4px;}
 .type-toggle{padding:8px 4px;border-radius:6px;border:1.5px solid #e2e8f0;background:#f8fafc;color:#64748b;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-align:center;cursor:pointer;transition:none;text-transform:uppercase;}
-.type-toggle:hover{border-color:#d97706;color:#b45309;}
+.type-toggle:hover{border-color:#2563eb;color:#1e40af;}
 .warn-toggle{display:flex;align-items:center;gap:8px;font-size:13px;color:#64748b;cursor:pointer;}
-.warn-toggle input{accent-color:#d97706;}
+.warn-toggle input{accent-color:#2563eb;}
 .zip-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;min-height:32px;}
 .zip-token{display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:11px;padding:3px 9px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;color:#334155;}
 .zip-token-del{background:none;border:none;color:#94a3b8;cursor:pointer;font-size:13px;padding:0;line-height:1;}
@@ -211,23 +215,23 @@ const CSS = `
 .backup-meta strong{color:#334155;display:block;margin-bottom:2px;}
 
 .copy-btn{padding:3px 9px;background:transparent;border:1px solid #e2e8f0;border-radius:4px;color:#94a3b8;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .18s;}
-.copy-btn:hover{border-color:#d97706;color:#d97706;}
+.copy-btn:hover{border-color:#2563eb;color:#2563eb;}
 .copy-btn-ok{border-color:rgba(21,128,61,.4)!important;color:#15803d!important;background:rgba(21,128,61,.08)!important;}
 
 .shortcut-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px;}
-.shortcut-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:20px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;color:#b45309;letter-spacing:.04em;transition:background .15s;white-space:nowrap;-webkit-tap-highlight-color:transparent;}
-.shortcut-pill:hover{background:#fde68a;}
+.shortcut-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:20px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;color:#1e40af;letter-spacing:.04em;transition:background .15s;white-space:nowrap;-webkit-tap-highlight-color:transparent;}
+.shortcut-pill:hover{background:#dbeafe;}
 .shortcut-pill-del{background:none;border:none;color:#94a3b8;cursor:pointer;font-size:13px;padding:0 0 0 2px;line-height:1;}
 .shortcut-pill-del:hover{color:#ef4444;}
-.shortcut-save{padding:4px 10px;background:transparent;border:1px dashed #fbbf24;border-radius:20px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;color:#94a3b8;letter-spacing:.04em;transition:all .15s;white-space:nowrap;}
-.shortcut-save:hover{border-color:#d97706;color:#d97706;}
+.shortcut-save{padding:4px 10px;background:transparent;border:1px dashed #bfdbfe;border-radius:20px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;color:#94a3b8;letter-spacing:.04em;transition:all .15s;white-space:nowrap;}
+.shortcut-save:hover{border-color:#2563eb;color:#2563eb;}
 
-.offline-banner{background:#fef3c7;border-bottom:1px solid #fcd34d;padding:6px 24px;font-family:'DM Mono',monospace;font-size:10px;color:#b45309;letter-spacing:.08em;text-align:center;text-transform:uppercase;}
+.offline-banner{background:#eff6ff;border-bottom:1px solid #bfdbfe;padding:6px 24px;font-family:'DM Mono',monospace;font-size:10px;color:#1e40af;letter-spacing:.08em;text-align:center;text-transform:uppercase;}
 
 .guide-card{background:#ffffff;border:1px solid #e2e8f0;border-radius:9px;padding:20px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
 .guide-card-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;margin-bottom:14px;letter-spacing:.02em;color:#0f172a;}
 .guide-step{display:flex;gap:12px;margin-bottom:10px;align-items:flex-start;}
-.guide-step-num{font-family:'DM Mono',monospace;font-size:11px;color:#d97706;background:#fef3c7;border:1px solid #fcd34d;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.guide-step-num{font-family:'DM Mono',monospace;font-size:11px;color:#2563eb;background:#eff6ff;border:1px solid #bfdbfe;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
 .guide-step-body{font-size:13px;color:#475569;line-height:1.7;padding-top:2px;}
 .guide-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
 .guide-row-desc{font-size:13px;color:#475569;line-height:1.5;}
@@ -240,8 +244,8 @@ const CSS = `
 
 .sort-bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
 .sort-btn{padding:5px 12px;background:transparent;border:1px solid #e2e8f0;border-radius:20px;color:#94a3b8;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .15s;}
-.sort-btn:hover{border-color:#d97706;color:#d97706;}
-.sort-btn-active{background:#fef3c7;border-color:#fbbf24!important;color:#b45309!important;}
+.sort-btn:hover{border-color:#2563eb;color:#2563eb;}
+.sort-btn-active{background:#eff6ff;border-color:#bfdbfe!important;color:#1e40af!important;}
 
 .top-nav{display:flex;gap:6px;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;min-width:0;}
 .top-nav::-webkit-scrollbar{display:none;}
@@ -252,12 +256,12 @@ const CSS = `
 .lookup-or::before{background:linear-gradient(to right,transparent,#e2e8f0);}
 .lookup-or::after{background:linear-gradient(to left,transparent,#e2e8f0);}
 .branch-select{width:100%;padding:16px 18px;background:#ffffff;border:2px solid #e2e8f0;border-radius:10px;color:#64748b;font-family:'Barlow',sans-serif;font-size:17px;font-weight:500;outline:none;cursor:pointer;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none;}
-.branch-select:focus{border-color:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.1);}
-.branch-select.branch-active{border-color:#d97706;color:#b45309;box-shadow:0 0 0 3px rgba(217,119,6,.1);}
+.branch-select:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.branch-select.branch-active{border-color:#2563eb;color:#1e40af;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
 .pp-row{display:flex;align-items:center;gap:10px;padding:11px 16px;background:#ffffff;border:2px solid #e2e8f0;border-radius:10px;transition:border-color .2s,box-shadow .2s;}
-.pp-row:focus-within{border-color:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.1);}
-.pp-row.pp-active{border-color:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.1);}
-.pp-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;color:#d97706;letter-spacing:.12em;flex-shrink:0;}
+.pp-row:focus-within{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.pp-row.pp-active{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.pp-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;color:#2563eb;letter-spacing:.12em;flex-shrink:0;}
 .pp-input{flex:1;background:transparent;border:none;outline:none;font-family:'DM Mono',monospace;font-size:15px;font-weight:500;color:#0f172a;letter-spacing:.06em;}
 .pp-input::placeholder{color:#cbd5e1;}
 
@@ -269,7 +273,7 @@ const CSS = `
 .footer-contact-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#cbd5e1;margin-bottom:11px;}
 .footer-contact-name{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#94a3b8;margin-bottom:7px;}
 .footer-link{display:block;font-family:'DM Mono',monospace;font-size:12px;color:#64748b;text-decoration:none;margin-bottom:4px;transition:color .18s;letter-spacing:.04em;}
-.footer-link:hover{color:#d97706;}
+.footer-link:hover{color:#2563eb;}
 
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-track{background:#f8fafc;}
@@ -330,13 +334,13 @@ function StatusBadge({ status }) {
     // Current statuses
     "best-fit":        { label:"Best Fit",       bg:"rgba(16,185,129,.15)",  color:"#10b981", bd:"rgba(16,185,129,.3)"   },
     "trouble-call":    { label:"Trouble Call",    bg:"rgba(34,197,94,.13)",   color:"#22c55e", bd:"rgba(34,197,94,.28)"   },
-    "in-training":     { label:"In Training",     bg:"rgba(45,212,191,.13)",  color:"#2dd4bf", bd:"rgba(45,212,191,.28)"  },
-    "pto":             { label:"PTO",              bg:"rgba(251,191,36,.13)",  color:"#fbbf24", bd:"rgba(251,191,36,.28)"  },
+    "in-training":     { label:"In Training",     bg:"rgba(14,116,144,.1)",   color:"#0e7490", bd:"rgba(45,212,191,.28)"  },
+    "pto":             { label:"PTO",              bg:"rgba(251,191,36,.15)",  color:"#92400e", bd:"rgba(251,191,36,.3)"   },
     "manual-schedule":  { label:"Manual Schedule",  bg:"rgba(129,140,248,.15)", color:"#818cf8", bd:"rgba(129,140,248,.35)"  },
     "do-not-schedule": { label:"DO NOT SCHEDULE", bg:"rgba(239,68,68,.18)",   color:"#ef4444", bd:"rgba(239,68,68,.4)"    },
     // Legacy aliases (existing techs in DB)
     "available":       { label:"Trouble Call",    bg:"rgba(34,197,94,.13)",   color:"#22c55e", bd:"rgba(34,197,94,.28)"   },
-    "on-call":         { label:"PTO",             bg:"rgba(251,191,36,.13)",  color:"#fbbf24", bd:"rgba(251,191,36,.28)"  },
+    "on-call":         { label:"PTO",             bg:"rgba(251,191,36,.13)",  color:"#bfdbfe", bd:"rgba(251,191,36,.28)"  },
     "off-duty":        { label:"DO NOT SCHEDULE", bg:"rgba(239,68,68,.18)",   color:"#ef4444", bd:"rgba(239,68,68,.4)"    },
   }[status] || { label:status, bg:"transparent", color:"#475569", bd:"#263047" };
   return (
@@ -456,9 +460,9 @@ function SortBar({ sortBy, setSortBy, opts }) {
       {opts.map(o=>(
         <button key={o.value} onClick={()=>setSortBy(o.value)} style={{
           padding:"4px 10px",borderRadius:5,cursor:"pointer",
-          border:`1px solid ${sortBy===o.value?"#f59e0b":"#1a2a3d"}`,
-          background:sortBy===o.value?"rgba(245,158,11,.1)":"transparent",
-          color:sortBy===o.value?"#f59e0b":"#64748b",
+          border:`1px solid ${sortBy===o.value?"#2563eb":"#1a2a3d"}`,
+          background:sortBy===o.value?"rgba(37,99,235,.1)":"transparent",
+          color:sortBy===o.value?"#2563eb":"#64748b",
           fontFamily:"'DM Mono',monospace",fontSize:10,letterSpacing:".05em",
           transition:"border-color .15s,color .15s,background .15s",whiteSpace:"nowrap",
         }}>{o.label}</button>
@@ -643,7 +647,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           <div className="type-grid type-grid-4">
             {["GHP","Lawn","Termite","Mosquito"].map(type=>(
               <button key={type} className="type-btn"
-                style={selTypes.includes(type)?{borderColor:"#f59e0b",background:"rgba(245,158,11,.2)",color:"#fbbf24",boxShadow:"0 0 8px rgba(245,158,11,.6),0 0 22px rgba(245,158,11,.18)"}:{}}
+                style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={()=>toggleType(type)}>
                 <div className="type-btn-label">{type}</div>
               </button>
@@ -653,7 +657,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           <div className="type-grid type-grid-4">
             {["Commercial","Bed Bugs","Exclusion","Wildlife"].map(type=>(
               <button key={type} className="type-btn"
-                style={selTypes.includes(type)?{borderColor:"#f59e0b",background:"rgba(245,158,11,.2)",color:"#fbbf24",boxShadow:"0 0 8px rgba(245,158,11,.6),0 0 22px rgba(245,158,11,.18)"}:{}}
+                style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={()=>toggleType(type)}>
                 <div className="type-btn-label">{type}</div>
               </button>
@@ -663,7 +667,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           <div className="type-grid type-grid-4">
             {["TAP","Sentricon","SMART","Pre Treat"].map(type=>(
               <button key={type} className="type-btn"
-                style={selTypes.includes(type)?{borderColor:"#f59e0b",background:"rgba(245,158,11,.2)",color:"#fbbf24",boxShadow:"0 0 8px rgba(245,158,11,.6),0 0 22px rgba(245,158,11,.18)"}:{}}
+                style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={()=>toggleType(type)}>
                 <div className="type-btn-label">{type}</div>
               </button>
@@ -673,7 +677,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           <div className="type-grid type-grid-4">
             {["Post Treat","Field Inspector","Trouble Call","Supervisor"].map(type=>(
               <button key={type} className="type-btn"
-                style={selTypes.includes(type)?{borderColor:"#f59e0b",background:"rgba(245,158,11,.2)",color:"#fbbf24",boxShadow:"0 0 8px rgba(245,158,11,.6),0 0 22px rgba(245,158,11,.18)"}:{}}
+                style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={()=>toggleType(type)}>
                 <div className="type-btn-label">{type}</div>
               </button>
@@ -687,8 +691,8 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           <div className="results-head">
             <span className="results-label">
               {result.pestpac
-                ? <><span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#64748b",letterSpacing:".1em"}}>FIND&nbsp;</span><span style={{color:"#f59e0b"}}>{result.pestpac}</span></>
-                : <><span style={{color:"#f59e0b"}}>{result.branch || result.zip}</span>&nbsp;·&nbsp;
+                ? <><span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#64748b",letterSpacing:".1em"}}>FIND&nbsp;</span><span style={{color:"#2563eb"}}>{result.pestpac}</span></>
+                : <><span style={{color:"#2563eb"}}>{result.branch || result.zip}</span>&nbsp;·&nbsp;
                     {result.types.map((t,i)=>(
                       <span key={t}>
                         <span style={{color:TYPE_CFG[t]?.color}}>{t}</span>
@@ -707,12 +711,12 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
               <div className="empty-title">No Match Found</div>
               <div className="empty-text">
                 {result.pestpac
-                  ? <>No technician found matching&nbsp;<strong style={{color:"#f59e0b"}}>{result.pestpac}</strong>.</>
+                  ? <>No technician found matching&nbsp;<strong style={{color:"#2563eb"}}>{result.pestpac}</strong>.</>
                   : <>No technicians matching&nbsp;
-                      <strong style={{color:"#f59e0b"}}>{result.types.join(" + ")}</strong>
+                      <strong style={{color:"#2563eb"}}>{result.types.join(" + ")}</strong>
                       {result.branch
-                        ? <>&nbsp;are assigned to the <strong style={{color:"#f59e0b"}}>{result.branch}</strong> branch.</>
-                        : <>&nbsp;are assigned to ZIP&nbsp;<strong style={{color:"#f59e0b"}}>{result.zip}</strong>.</>
+                        ? <>&nbsp;are assigned to the <strong style={{color:"#2563eb"}}>{result.branch}</strong> branch.</>
+                        : <>&nbsp;are assigned to ZIP&nbsp;<strong style={{color:"#2563eb"}}>{result.zip}</strong>.</>
                       }
                     </>
                 }
@@ -1059,7 +1063,7 @@ const STATUS_OPTS = [
   { value:'best-fit',       label:'Best Fit',        bg:'rgba(16,185,129,.15)',  color:'#10b981', bd:'rgba(16,185,129,.3)'  },
   { value:'manual-schedule', label:'Manual Schedule', bg:'rgba(129,140,248,.15)', color:'#818cf8', bd:'rgba(129,140,248,.4)' },
   { value:'in-training',     label:'In Training',     bg:'rgba(45,212,191,.15)',  color:'#2dd4bf', bd:'rgba(45,212,191,.4)' },
-  { value:'pto',             label:'PTO',             bg:'rgba(251,191,36,.15)',  color:'#fbbf24', bd:'rgba(251,191,36,.4)' },
+  { value:'pto',             label:'PTO',             bg:'rgba(251,191,36,.15)',  color:'#bfdbfe', bd:'rgba(251,191,36,.4)' },
   { value:'do-not-schedule', label:'Do Not Schedule', bg:'rgba(239,68,68,.18)',   color:'#ef4444', bd:'rgba(239,68,68,.5)'  },
 ];
 function StatusSelect({ status, onChange }) {
@@ -1156,11 +1160,11 @@ function BackupsTab({ authCode, onRestoreComplete }) {
 
   return (
     <div>
-      <div style={{marginBottom:20,padding:"14px 18px",background:"#fef3c7",border:"1px solid rgba(245,158,11,.18)",borderRadius:8}}>
+      <div style={{marginBottom:20,padding:"14px 18px",background:"#eff6ff",border:"1px solid rgba(37,99,235,.12)",borderRadius:8}}>
         <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:16,fontWeight:700,marginBottom:4}}>Automatic Backups</div>
         <div style={{fontSize:13,color:"#475569",lineHeight:1.6}}>
           A snapshot is saved automatically every time technicians are added, edited, deleted, or imported.
-          The last <strong style={{color:"#f59e0b"}}>10 backups</strong> are kept. Older ones are removed automatically.
+          The last <strong style={{color:"#2563eb"}}>10 backups</strong> are kept. Older ones are removed automatically.
         </div>
       </div>
 
@@ -1231,9 +1235,9 @@ function ReportsTab({ techs }) {
 
   const tabStyle = (id) => ({
     padding:'7px 14px', borderRadius:7, cursor:'pointer', transition:'all .15s',
-    border: section===id ? '1px solid #f59e0b' : '1px solid #1e2e43',
-    background: section===id ? 'rgba(245,158,11,.1)' : 'transparent',
-    color: section===id ? '#f59e0b' : '#64748b',
+    border: section===id ? '1px solid #2563eb' : '1px solid #1e2e43',
+    background: section===id ? 'rgba(37,99,235,.1)' : 'transparent',
+    color: section===id ? '#2563eb' : '#64748b',
     fontFamily:"'DM Mono',monospace", fontSize:11, letterSpacing:'.06em', textTransform:'uppercase'
   });
 
@@ -1249,7 +1253,7 @@ function ReportsTab({ techs }) {
           <p style={{fontSize:11,color:'#475569',fontFamily:"'DM Mono',monospace",marginBottom:14,lineHeight:1.8,letterSpacing:'.03em'}}>
             Excludes <span style={{color:'#ef4444'}}>Do Not Schedule</span> techs.&ensp;
             <span style={{color:'#ef4444'}}>●</span> no coverage&ensp;
-            <span style={{color:'#fbbf24'}}>●</span> 1 tech&ensp;
+            <span style={{color:'#bfdbfe'}}>●</span> 1 tech&ensp;
             <span style={{color:'#22c55e'}}>●</span> 2+ techs
           </p>
           {coverage.length === 0
@@ -1262,12 +1266,12 @@ function ReportsTab({ techs }) {
                     <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#475569',marginLeft:8}}>{count} tech{count!==1?'s':''}</span>
                   </div>
                   {gaps>0   && <span style={{background:'rgba(239,68,68,.1)',border:'1px solid rgba(239,68,68,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#ef4444',fontFamily:"'DM Mono',monospace"}}>{gaps} gap{gaps!==1?'s':''}</span>}
-                  {gaps===0 && risks>0   && <span style={{background:'rgba(251,191,36,.1)',border:'1px solid rgba(251,191,36,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#fbbf24',fontFamily:"'DM Mono',monospace"}}>{risks} at risk</span>}
+                  {gaps===0 && risks>0   && <span style={{background:'rgba(251,191,36,.1)',border:'1px solid rgba(251,191,36,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#bfdbfe',fontFamily:"'DM Mono',monospace"}}>{risks} at risk</span>}
                   {gaps===0 && risks===0 && <span style={{background:'rgba(34,197,94,.1)',border:'1px solid rgba(34,197,94,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#22c55e',fontFamily:"'DM Mono',monospace"}}>Full coverage</span>}
                 </div>
                 <div style={{display:'flex',flexWrap:'wrap',gap:4}}>
                   {types.map(({type,n}) => {
-                    const col = n===0 ? '#ef4444' : n===1 ? '#fbbf24' : '#22c55e';
+                    const col = n===0 ? '#ef4444' : n===1 ? '#bfdbfe' : '#22c55e';
                     return <span key={type} style={{padding:'2px 7px',borderRadius:4,fontSize:9,fontFamily:"'DM Mono',monospace",fontWeight:700,letterSpacing:'.04em',background:`${col}18`,border:`1px solid ${col}35`,color:col,opacity:n===0?1:n===1?0.85:0.5}}>{type.toUpperCase()}</span>;
                   })}
                 </div>
@@ -1285,7 +1289,7 @@ function ReportsTab({ techs }) {
               <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginBottom:18}}>
                 {[{v:events.length,l:'Total'},{v:recent.length,l:'This Week'},{v:avgRes,l:'Avg Results'}].map(({v,l})=>(
                   <div key={l} style={{background:'#ffffff',border:'1px solid #e2e8f0',borderRadius:9,padding:'12px',textAlign:'center'}}>
-                    <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:30,fontWeight:900,color:'#f59e0b',lineHeight:1}}>{v}</div>
+                    <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:30,fontWeight:900,color:'#2563eb',lineHeight:1}}>{v}</div>
                     <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginTop:4}}>{l}</div>
                   </div>
                 ))}
@@ -1297,9 +1301,9 @@ function ReportsTab({ techs }) {
                     {items.length===0 ? <div style={{color:'#475569',fontSize:11}}>—</div>
                       : items.map(([label,n],i) => (
                         <div key={label} style={{display:'flex',alignItems:'center',gap:6,marginBottom:5}}>
-                          <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#f59e0b',width:12,textAlign:'right',flexShrink:0}}>{i+1}</span>
+                          <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#2563eb',width:12,textAlign:'right',flexShrink:0}}>{i+1}</span>
                           <div style={{flex:1,background:'#f1f5f9',borderRadius:3,height:17,position:'relative',overflow:'hidden'}}>
-                            <div style={{position:'absolute',inset:0,background:'rgba(245,158,11,.2)',width:`${Math.round(n/items[0][1]*100)}%`}}/>
+                            <div style={{position:'absolute',inset:0,background:'rgba(37,99,235,.12)',width:`${Math.round(n/items[0][1]*100)}%`}}/>
                             <div style={{position:'absolute',inset:'0 6px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                               <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#b0bec5',textTransform:'uppercase',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis',maxWidth:68}}>{label}</span>
                               <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#64748b',flexShrink:0}}>{n}</span>
@@ -1400,7 +1404,7 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
             </div>
           )}
           <div className="session-badge">
-            <span className="session-dot" style={{background:authLevel==="master"?"#f59e0b":"#38bdf8"}}/>
+            <span className="session-dot" style={{background:authLevel==="master"?"#2563eb":"#38bdf8"}}/>
             {authLabel}
           </div>
           <button className="btn-signout" onClick={onSignOut}>Sign Out</button>
@@ -1427,10 +1431,10 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
             <select
               value={filterBranch} onChange={e=>setFilterBranch(e.target.value)}
               style={{background:"#ffffff",border:"1.5px solid #e2e8f0",borderRadius:8,
-                padding:"9px 14px",color:filterBranch?"#f59e0b":"#64748b",fontFamily:"'Barlow',sans-serif",
+                padding:"9px 14px",color:filterBranch?"#2563eb":"#64748b",fontFamily:"'Barlow',sans-serif",
                 fontSize:13,cursor:"pointer",outline:"none",WebkitAppearance:"none",
                 appearance:"none",flexShrink:0,minWidth:140,
-                boxShadow:filterBranch?"0 0 0 2px rgba(245,158,11,.12)":"none",
+                boxShadow:filterBranch?"0 0 0 2px rgba(37,99,235,.12)":"none",
                 borderColor:filterBranch?"rgba(245,158,11,.5)":"#151e30",transition:"border-color .2s,box-shadow .2s"}}>
               <option value="">All Branches</option>
               {branchOpts.map(b=><option key={b} value={b}>{b}</option>)}
@@ -1461,7 +1465,7 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
             <div className="import-banner">
               <div className="import-banner-title">📁 {importPending.filename}</div>
               <div className="import-banner-sub">
-                <strong style={{color:"#f59e0b"}}>{importPending.techs.length} technicians</strong> found.
+                <strong style={{color:"#2563eb"}}>{importPending.techs.length} technicians</strong> found.
                 This will replace your current {techs.length} technician{techs.length!==1?"s":""}. Cannot be undone.
               </div>
               <div className="import-banner-actions">
@@ -1631,7 +1635,7 @@ function TechModal({ mode, tech, allTechs, onSave, onClose }) {
           <label className="field-label">Service Types — select all that apply</label>
           <div className="type-toggle-row">
             {TECH_TYPES.map(type=>(
-              <button key={type} className="type-toggle" style={form.types.includes(type)?{borderColor:"rgba(245,158,11,.55)",background:"rgba(245,158,11,.13)",color:"#fbbf24"}:{}}
+              <button key={type} className="type-toggle" style={form.types.includes(type)?{borderColor:"rgba(245,158,11,.55)",background:"rgba(245,158,11,.13)",color:"#bfdbfe"}:{}}
                 onClick={()=>{toggleType(type);setErr("");}}>
                 {type}
               </button>
@@ -1730,8 +1734,8 @@ function GuidePage() {
         <div className="guide-step"><div className="guide-step-num">1</div><div className="guide-step-body"><strong>ZIP Code</strong> — Enter the 5-digit service location ZIP. Then select one or more service types to see matching technicians.</div></div>
         <div className="guide-step"><div className="guide-step-num">2</div><div className="guide-step-body"><strong>Branch</strong> — Select a branch from the dropdown to see all technicians assigned to that location.</div></div>
         <div className="guide-step"><div className="guide-step-num">3</div><div className="guide-step-body"><strong>Name / PestPac Username</strong> — Type in the FIND field to search across all technicians by name or PestPac username instantly.</div></div>
-        <div style={{marginTop:12,padding:"10px 14px",background:"#fef3c7",borderRadius:6,border:"1px solid rgba(245,158,11,.15)",fontSize:13,color:"#475569",lineHeight:1.6}}>
-          <strong style={{color:"#f59e0b"}}>Supervisor guard:</strong> Supervisors only appear in results when the <strong>Supervisor</strong> service type is explicitly selected.
+        <div style={{marginTop:12,padding:"10px 14px",background:"#eff6ff",borderRadius:6,border:"1px solid rgba(245,158,11,.15)",fontSize:13,color:"#475569",lineHeight:1.6}}>
+          <strong style={{color:"#2563eb"}}>Supervisor guard:</strong> Supervisors only appear in results when the <strong>Supervisor</strong> service type is explicitly selected.
         </div>
       </div>
 
@@ -1739,7 +1743,7 @@ function GuidePage() {
       <div className="guide-card">
         <div className="guide-card-title">⚡ Saved Filter Shortcuts</div>
         <div style={{fontSize:13,color:"#475569",lineHeight:1.8}}>
-          Once you have a ZIP or branch selected with service types chosen, a <strong style={{color:"#f59e0b"}}>☆ Save</strong> button appears above the service type grid. Tap it to save that combination as a one-tap shortcut pill. Up to 5 shortcuts can be saved — they persist between sessions and can be deleted with the × on each pill.
+          Once you have a ZIP or branch selected with service types chosen, a <strong style={{color:"#2563eb"}}>☆ Save</strong> button appears above the service type grid. Tap it to save that combination as a one-tap shortcut pill. Up to 5 shortcuts can be saved — they persist between sessions and can be deleted with the × on each pill.
         </div>
       </div>
 
@@ -1786,11 +1790,11 @@ function GuidePage() {
       <div className="guide-card">
         <div className="guide-card-title">📋 Reading a Result Card</div>
         <div style={{fontSize:13,color:"#475569",lineHeight:2}}>
-          <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>PHONE</span>Tap to call directly · Copy button copies number to clipboard</div>
-          <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>PESTPAC</span>Copy button copies the username — paste directly into PestPac</div>
-          <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>TYPES</span>Matched service types are highlighted in their badge color</div>
-          <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>ZIP</span>Shows matched ZIP · "+N more" means additional coverage areas</div>
-          <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>⚠ WARN</span>Red banner indicates a note requiring attention before scheduling</div>
+          <div><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>PHONE</span>Tap to call directly · Copy button copies number to clipboard</div>
+          <div><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>PESTPAC</span>Copy button copies the username — paste directly into PestPac</div>
+          <div><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>TYPES</span>Matched service types are highlighted in their badge color</div>
+          <div><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>ZIP</span>Shows matched ZIP · "+N more" means additional coverage areas</div>
+          <div><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>⚠ WARN</span>Red banner indicates a note requiring attention before scheduling</div>
         </div>
       </div>
 
@@ -1798,7 +1802,7 @@ function GuidePage() {
       <div className="guide-card">
         <div className="guide-card-title">⧉ Desktop Pop-Out Window</div>
         <div style={{fontSize:13,color:"#475569",lineHeight:1.8}}>
-          On any desktop browser, tap the <strong style={{color:"#f59e0b"}}>⧉</strong> button in the top-right navigation to open a compact floating window. Keep the lookup visible on screen while working in other tabs or systems — no need to switch back and forth.
+          On any desktop browser, tap the <strong style={{color:"#2563eb"}}>⧉</strong> button in the top-right navigation to open a compact floating window. Keep the lookup visible on screen while working in other tabs or systems — no need to switch back and forth.
         </div>
       </div>
 
@@ -1809,10 +1813,10 @@ function GuidePage() {
           Access via <strong>Manage Techs</strong> in the navigation. Requires a manager or master access code.
         </div>
         <div style={{fontSize:13,color:"#475569",lineHeight:1.9,marginTop:8}}>
-          <div><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>TECHNICIANS</span>Add, edit, or delete technicians · Quick status toggle in the table · Filter by branch or search by name · Export and import roster as JSON</div>
-          <div style={{marginTop:6}}><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>REPORTS</span>Coverage Gap report shows which service types lack coverage per branch · Usage Analytics tracks search patterns over time</div>
-          <div style={{marginTop:6}}><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>BACKUPS</span>Every save auto-creates a backup · Restore any of the last 10 states in one tap</div>
-          <div style={{marginTop:6}}><span style={{color:"#f59e0b",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>ACCESS CODES</span>Master only · Manage named manager codes and change the master password</div>
+          <div><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>TECHNICIANS</span>Add, edit, or delete technicians · Quick status toggle in the table · Filter by branch or search by name · Export and import roster as JSON</div>
+          <div style={{marginTop:6}}><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>REPORTS</span>Coverage Gap report shows which service types lack coverage per branch · Usage Analytics tracks search patterns over time</div>
+          <div style={{marginTop:6}}><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>BACKUPS</span>Every save auto-creates a backup · Restore any of the last 10 states in one tap</div>
+          <div style={{marginTop:6}}><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>ACCESS CODES</span>Master only · Manage named manager codes and change the master password</div>
         </div>
       </div>
 
@@ -1826,7 +1830,7 @@ function GuidePage() {
           <div key={keys} className="guide-row" style={{alignItems:"center"}}>
             <span style={{fontFamily:"'DM Mono',monospace",fontSize:11,fontWeight:700,
               background:"#111827",border:"1px solid #e2e8f0",borderRadius:5,
-              padding:"3px 9px",color:"#f59e0b",whiteSpace:"nowrap",flexShrink:0}}>
+              padding:"3px 9px",color:"#2563eb",whiteSpace:"nowrap",flexShrink:0}}>
               {keys}
             </span>
             <span className="guide-row-desc">{desc}</span>
@@ -1838,7 +1842,7 @@ function GuidePage() {
       </div>
 
       {/* ── Important Reminders ── */}
-      <div className="guide-card" style={{borderColor:"rgba(245,158,11,.25)",background:"rgba(245,158,11,.04)"}}>
+      <div className="guide-card" style={{borderColor:"rgba(37,99,235,.2)",background:"rgba(245,158,11,.04)"}}>
         <div className="guide-card-title">⚠️ Important Reminders</div>
         <div style={{fontSize:13,color:"#475569",lineHeight:1.8}}>
           All scheduling decisions remain subject to established drive times, technician duties, and standard operating procedures.
