@@ -500,6 +500,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
   const [selBranch,     setSelBranch]     = useState("");
   const [pestpacSearch, setPestpacSearch] = useState("");
   const [sortBy,        setSortBy]        = useState("status");
+  const [showAlso,      setShowAlso]      = useState(false);
   const [shortcuts, setShortcuts] = useState(()=>{
     try { return JSON.parse(localStorage.getItem('dispatch_shortcuts')||'[]'); } catch { return []; }
   });
@@ -598,6 +599,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
       logAnalytic('zip', zip, selTypes, matches.length + alsoMatches.length);
     }
   }, [selTypes, zipInput, selBranch, pestpacSearch, techs]);
+  useEffect(()=>{ setShowAlso(false); }, [zipInput, selBranch, selTypes, pestpacSearch]);
 
   return (
     <>
@@ -669,7 +671,9 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
                 style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:20,padding:"3px 11px",
                   fontFamily:"'DM Mono',monospace",fontSize:10,fontWeight:700,color:"#1e40af",
                   cursor:"pointer",letterSpacing:".05em",whiteSpace:"nowrap"}}>
-                {result.matches.length + (result.also?.matches.length||0)} matches ↓
+                {result.zip && result.also
+                  ? (result.matches.length>0 ? `${result.matches.length} confirmed ↓` : `${result.also.matches.length} in branch ↓`)
+                  : `${result.matches.length + (result.also?.matches.length||0)} matches ↓`}
               </button>
             )}
             {selTypes.length>0 && (
@@ -680,22 +684,8 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
               </button>
             )}
           </div>
-          {/* ── Featured top row: Residential GHP + Commercial ── */}
+          {/* ── Call type first: Trouble Call vs Production ── */}
           <div className="type-grid type-grid-2" style={{marginBottom:2}}>
-            {["GHP","Commercial","Lawn","Termite"].map(type=>(
-              <button key={type} className="type-btn type-btn-feat"
-                style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
-                onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
-                <div className="type-btn-label">
-                  {selTypes.includes(type) && <span className="type-chk">✓</span>}
-                  {type==="GHP" ? "Res GHP" : type==="Commercial" ? "Commercial GHP" : type}
-                </div>
-                <div className="type-btn-sub">{TYPE_SUB[type]}</div>
-              </button>
-            ))}
-          </div>
-          {/* ── Trouble Call vs Production ── */}
-          <div className="type-grid type-grid-2" style={{marginTop:10}}>
             {["Trouble Call","Production"].map(type=>(
               <button key={type} className="type-btn type-btn-feat"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
@@ -703,6 +693,21 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
                 <div className="type-btn-label">
                   {selTypes.includes(type) && <span className="type-chk">✓</span>}
                   {type}
+                </div>
+                <div className="type-btn-sub">{TYPE_SUB[type]}</div>
+              </button>
+            ))}
+          </div>
+          <div className="type-group-divider"/>
+          {/* ── Core services ── */}
+          <div className="type-grid type-grid-2">
+            {["GHP","Commercial","Lawn","Termite"].map(type=>(
+              <button key={type} className="type-btn type-btn-feat"
+                style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
+                onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
+                <div className="type-btn-label">
+                  {selTypes.includes(type) && <span className="type-chk">✓</span>}
+                  {type==="GHP" ? "Res GHP" : type==="Commercial" ? "Commercial GHP" : type}
                 </div>
                 <div className="type-btn-sub">{TYPE_SUB[type]}</div>
               </button>
@@ -781,7 +786,11 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
               }
             </span>
             <span className="results-label" style={{color:"#64748b"}}>
-              {(result.matches.length + (result.also?.matches.length||0))===0?"no techs found":`${(result.matches.length + (result.also?.matches.length||0))} tech${(result.matches.length + (result.also?.matches.length||0))>1?"s":""} found`}
+              {result.zip && result.also
+                ? (result.matches.length>0
+                    ? `${result.matches.length} confirmed`
+                    : `0 confirmed · ${result.also.matches.length} in branch`)
+                : ((result.matches.length + (result.also?.matches.length||0))===0?"no techs found":`${(result.matches.length + (result.also?.matches.length||0))} tech${(result.matches.length + (result.also?.matches.length||0))>1?"s":""} found`)}
             </span>
           </div>
           {(result.matches.length + (result.also?.matches.length||0))===0 ? (
@@ -849,26 +858,38 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           ) : (
             <>
               <SortBar sortBy={sortBy} setSortBy={setSortBy} opts={SORT_OPTS_LOOKUP}/>
-              {result.zip && result.also && result.matches.length>0 && result.also.matches.length>0 && (
+              {result.zip && result.also && result.matches.length>0 && (
                 <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,fontWeight:700,letterSpacing:".1em",
                   textTransform:"uppercase",color:"#1e40af",margin:"2px 0 10px"}}>
-                  ✓ Covering ZIP {result.zip} ({result.matches.length})
+                  ✓ Confirmed for ZIP {result.zip} ({result.matches.length})
                 </div>
               )}
               {sortTechs(result.matches, sortBy, techs).map((tech,i)=>(
                 <TechCard key={tech.id} tech={tech} highlightZip={result.zip} highlightTypes={result.types} index={i}/>
               ))}
               {result.also && result.also.matches.length>0 && (
-                <>
-                  <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,fontWeight:700,letterSpacing:".1em",
-                    textTransform:"uppercase",color:"#94a3b8",margin:"16px 0 10px",display:"flex",alignItems:"center",gap:10}}>
-                    <span style={{flexShrink:0}}>Also serving {result.also.branches.join(" / ")} ({result.also.matches.length})</span>
-                    <span style={{flex:1,height:1,background:"#e2e8f0"}}/>
-                  </div>
-                  {sortTechs(result.also.matches, sortBy, techs).map((tech,i)=>(
-                    <TechCard key={tech.id} tech={tech} highlightZip={result.zip} highlightTypes={result.types} index={result.matches.length+i}/>
-                  ))}
-                </>
+                !showAlso ? (
+                  <button onClick={()=>setShowAlso(true)}
+                    style={{display:"block",width:"100%",marginTop:14,padding:"11px 14px",
+                      background:"transparent",border:"1.5px dashed #cbd5e1",borderRadius:9,cursor:"pointer",
+                      fontFamily:"'DM Mono',monospace",fontSize:11,color:"#64748b",letterSpacing:".05em"}}>
+                    View {result.also.matches.length} {result.also.branches.join(" / ")} tech{result.also.matches.length>1?"s":""} NOT confirmed for this ZIP ▾
+                  </button>
+                ) : (
+                  <>
+                    <div style={{marginTop:16,marginBottom:10,padding:"10px 13px",background:"#fff7ed",
+                      border:"1px solid #fed7aa",borderRadius:8,display:"flex",gap:9,alignItems:"flex-start"}}>
+                      <span style={{fontSize:15,lineHeight:1,flexShrink:0}}>⚠</span>
+                      <span style={{fontSize:12,color:"#9a3412",lineHeight:1.6}}>
+                        These <strong>{result.also.branches.join(" / ")}</strong> techs are <strong>NOT confirmed for ZIP {result.zip}</strong>.
+                        Verify coverage with the branch before scheduling — shown for reference only.
+                      </span>
+                    </div>
+                    {sortTechs(result.also.matches, sortBy, techs).map((tech,i)=>(
+                      <TechCard key={tech.id} tech={tech} highlightZip={result.zip} highlightTypes={result.types} index={result.matches.length+i}/>
+                    ))}
+                  </>
+                )
               )}
             </>
           )}
@@ -1913,7 +1934,7 @@ function GuidePage() {
       {/* ── Search Methods ── */}
       <div className="guide-card">
         <div className="guide-card-title">📍 Three Ways to Find a Technician</div>
-        <div className="guide-step"><div className="guide-step-num">1</div><div className="guide-step-body"><strong>ZIP Code</strong> — Enter the 5-digit service location ZIP. Techs explicitly covering that ZIP appear first, followed by all matching techs from the branch that serves it — so a ZIP search always shows the full local crew.</div></div>
+        <div className="guide-step"><div className="guide-step-num">1</div><div className="guide-step-body"><strong>ZIP Code</strong> — Enter the 5-digit service location ZIP. Techs confirmed for that ZIP appear first. Other techs from the serving branch are tucked behind a "NOT confirmed for this ZIP" button — reference only; verify coverage with the branch before scheduling them.</div></div>
         <div className="guide-step"><div className="guide-step-num">2</div><div className="guide-step-body"><strong>Branch</strong> — Select a branch from the dropdown to see all technicians assigned to that location.</div></div>
         <div className="guide-step"><div className="guide-step-num">3</div><div className="guide-step-body"><strong>Name / PestPac Username</strong> — Type in the FIND field to search across all technicians by name or PestPac username instantly.</div></div>
         <div style={{marginTop:12,padding:"10px 14px",background:"#eff6ff",borderRadius:6,border:"1px solid rgba(245,158,11,.15)",fontSize:13,color:"#475569",lineHeight:1.6}}>
