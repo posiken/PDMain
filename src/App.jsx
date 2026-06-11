@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 const STATUS_ORDER = { "none": 5, "best-fit": 0, "trouble-call": 0, "manual-schedule": 1, "in-training": 2, "pto": 3, "do-not-schedule": 4,
                         available: 0, "on-call": 2, "off-duty": 3 }; // legacy aliases
 const TECH_TYPES   = ["GHP","Lawn","Termite","Mosquito","Bed Bugs","Commercial","Exclusion","Wildlife","TAP","Sentricon","SMART","Pre Treat","Post Treat","Field Inspector","Trouble Call","Supervisor"];
-const BRANCHES     = ["Jax N","Jax E","Jax W","Jax S","St. Augustine","Melbourne","Ocala","Sarasota","Ft. Myers/Naples","Tampa","Orlando","WPB-FTL","Daytona"];
+const BRANCHES     = ["Jax N","Jax E","Jax W","Jax S","St. Augustine","Daytona","Gainesville","Ocala","Orlando","Melbourne","Port St Lucie","WPB-FTL","Sarasota","Tampa","Ft. Myers/Naples"];
 const TYPE_CFG     = {
   GHP:               { color:"#38bdf8", bg:"rgba(56,189,248,.13)",  bd:"rgba(56,189,248,.32)"  },
   Lawn:              { color:"#4ade80", bg:"rgba(74,222,128,.13)",  bd:"rgba(74,222,128,.32)"  },
