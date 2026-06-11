@@ -87,6 +87,7 @@ const CSS = `
 .type-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;text-align:left;}
 .type-grid{display:grid;gap:10px;}
 .type-grid-4{grid-template-columns:repeat(4,minmax(0,1fr));}
+.type-grid-2{grid-template-columns:repeat(2,minmax(0,1fr));}
 @media(max-width:480px){.type-grid-4{grid-template-columns:repeat(2,minmax(0,1fr));}}
 .type-btn{padding:16px 8px;border-radius:9px;border:1.5px solid #e2e8f0;background:#ffffff;color:#64748b;
   cursor:pointer;transition:none;display:flex;flex-direction:column;align-items:center;gap:5px;
@@ -99,6 +100,7 @@ const CSS = `
 .type-btn-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;}
 .type-chk{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;line-height:1;color:#1e40af;margin-right:5px;}
 .type-btn-sub{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;text-align:center;}
+.type-btn-feat{padding:14px 8px;}
 .type-btn.ghp-active,.type-btn.lawn-active,.type-btn.tmte-active,.type-btn.spvr-active,.type-btn.tc-active,
 .type-btn.comm-active,.type-btn.mosq-active,.type-btn.excl-active,.type-btn.wild-active,.type-btn.tap-active,
 .type-btn.pret-active,.type-btn.post-active,.type-btn.smrt-active,.type-btn.sent-active,
@@ -480,8 +482,8 @@ const TYPE_ACTIVE_CLASS = {
   Supervisor:"spvr-active", "Trouble Call":"tc-active"
 };
 const TYPE_SUB = {
-  GHP:"General Household", Lawn:"Lawn & Outdoor", Termite:"Termite Control",
-  Supervisor:"Lead / Oversight", "Trouble Call":"Trouble Calls"
+  GHP:"Residential", Commercial:"Commercial", Lawn:"Lawn & Outdoor",
+  Termite:"Termite Control", Supervisor:"Lead / Oversight", "Trouble Call":"Trouble Calls"
 };
 
 function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
@@ -647,8 +649,24 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
               </button>
             )}
           </div>
+          {/* ── Featured top row: Residential GHP + Commercial ── */}
+          <div className="type-grid type-grid-2" style={{marginBottom:2}}>
+            {["GHP","Commercial"].map(type=>(
+              <button key={type} className="type-btn type-btn-feat"
+                style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
+                disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
+                <div className="type-btn-label">
+                  {selTypes.includes(type) && <span className="type-chk">✓</span>}
+                  {type==="GHP" ? "Res GHP" : "Commercial"}
+                </div>
+                <div className="type-btn-sub">{TYPE_SUB[type]}</div>
+              </button>
+            ))}
+          </div>
+          <div className="type-group-divider"/>
+          {/* ── Remaining 14 types in 4-column rows ── */}
           <div className="type-grid type-grid-4">
-            {["GHP","Lawn","Termite","Mosquito"].map(type=>(
+            {["Lawn","Termite","Mosquito","Bed Bugs"].map(type=>(
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
@@ -661,7 +679,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           </div>
           <div className="type-group-divider"/>
           <div className="type-grid type-grid-4">
-            {["Commercial","Bed Bugs","Exclusion","Wildlife"].map(type=>(
+            {["Exclusion","Wildlife","TAP","Sentricon"].map(type=>(
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
@@ -674,7 +692,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           </div>
           <div className="type-group-divider"/>
           <div className="type-grid type-grid-4">
-            {["TAP","Sentricon","SMART","Pre Treat"].map(type=>(
+            {["SMART","Pre Treat","Post Treat","Field Inspector"].map(type=>(
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
@@ -686,15 +704,16 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
             ))}
           </div>
           <div className="type-group-divider"/>
-          <div className="type-grid type-grid-4">
-            {["Post Treat","Field Inspector","Trouble Call","Supervisor"].map(type=>(
-              <button key={type} className="type-btn"
+          <div className="type-grid type-grid-2">
+            {["Trouble Call","Supervisor"].map(type=>(
+              <button key={type} className="type-btn type-btn-feat"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">
                   {selTypes.includes(type) && <span className="type-chk">✓</span>}
                   {type}
                 </div>
+                <div className="type-btn-sub">{TYPE_SUB[type]||""}</div>
               </button>
             ))}
           </div>
