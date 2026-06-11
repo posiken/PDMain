@@ -249,6 +249,22 @@ const CSS = `
 .guide-step-body{font-size:13px;color:#475569;line-height:1.7;padding-top:2px;}
 .guide-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
 .guide-row-desc{font-size:13px;color:#475569;line-height:1.5;}
+.cheat-search{position:sticky;top:58px;z-index:50;background:#f8fafc;padding:8px 0 10px;}
+.cheat-chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;-ms-overflow-style:none;scrollbar-width:none;}
+.cheat-chips::-webkit-scrollbar{display:none;}
+.cheat-code{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.04em;
+  background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:5px;padding:3px 8px;
+  cursor:pointer;white-space:nowrap;transition:all .15s;}
+.cheat-code:hover{background:#dbeafe;}
+.cheat-code.copied{background:rgba(21,128,61,.1);border-color:rgba(21,128,61,.4);color:#15803d;}
+.cheat-row{padding:11px 0;border-bottom:1px solid #f1f5f9;}
+.cheat-row:last-child{border-bottom:none;}
+.cheat-freq{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;color:#64748b;
+  background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:2px 7px;white-space:nowrap;}
+.cheat-name{font-size:12px;font-weight:600;color:#334155;letter-spacing:.02em;}
+.cheat-desc{font-size:12.5px;color:#475569;line-height:1.6;margin-top:4px;}
+.cheat-inc{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#475569;line-height:1.65;margin-bottom:6px;}
+.cheat-inc span:first-child{flex-shrink:0;font-weight:700;}
 
 .entry-card{background:#ffffff;border:1px solid #e2e8f0;border-radius:9px;padding:18px 20px;margin-bottom:10px;}
 .entry-date{font-family:'DM Mono',monospace;font-size:10px;color:#94a3b8;letter-spacing:.08em;margin-bottom:5px;}
@@ -569,19 +585,28 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
     if (!lookupReady || selTypes.length===0) { setResult(null); return; }
 
     const supervisorOk = (tt) => tt.includes("Supervisor") ? selTypes.includes("Supervisor") : true;
+    // Trouble Call / Production are call-type lenses for techs only — supervisors
+    // are matched purely by service type (GHP, Lawn, Termite, etc.)
+    const typeOk = (tt) => {
+      const isSup = tt.includes("Supervisor");
+      return selTypes.every(st => {
+        if (isSup && (st==="Trouble Call" || st==="Production")) return true;
+        if (st==="Production") return !tt.includes("Trouble Call");
+        return tt.includes(st);
+      });
+    };
 
     if (selBranch) {
       const matches = techs
         .filter(t => {
           const tt = t.types||[];
-          return t.branch===selBranch && selTypes.every(st=>st==="Production" ? !tt.includes("Trouble Call") : tt.includes(st)) && supervisorOk(tt);
+          return t.branch===selBranch && typeOk(tt) && supervisorOk(tt);
         })
         .sort((a,b)=>(STATUS_ORDER[a.status]??3)-(STATUS_ORDER[b.status]??3));
       setResult({ zip:null, branch:selBranch, pestpac:null, types:[...selTypes], matches });
       logAnalytic('branch', selBranch, selTypes, matches.length);
     } else {
       const zip = zipInput.trim();
-      const typeOk = tt => selTypes.every(st=>st==="Production" ? !tt.includes("Trouble Call") : tt.includes(st));
       const byStatus = (a,b)=>(STATUS_ORDER[a.status]??3)-(STATUS_ORDER[b.status]??3);
       // Tier 1 — techs explicitly covering this ZIP
       const matches = techs
@@ -1922,6 +1947,255 @@ function TechModal({ mode, tech, allTechs, onSave, onClose }) {
 }
 
 // ─── GUIDE PAGE ───────────────────────────────────────────────────────────────
+// ─── CS CHEAT SHEET ──────────────────────────────────────────────────────────
+const CHEAT_DATA = [
+  { id:"policies", label:"Key Policies", emoji:"📌", points:[
+      ["✓","Turner does NOT charge for estimates or service calls."],
+      ["✓","Serious pest / termite / lawn issues may add a one-time clean-out fee to the initial startup charge, priced by extent of infestation."],
+      ["✗","NO wildlife coverage on standard services (squirrels, possums, etc.)."],
+      ["✓","Free re-treatments between regular services on guaranteed plans — satisfaction 100% guaranteed."],
+    ], codes:[] },
+
+  { id:"ghp", label:"GHP / TurnerShield", emoji:"🏠", points:[
+      ["✓","De-web exterior, perimeter treatment; interior on request / service calls as needed."],
+      ["✓","Covers roaches, ants, millipedes, centipedes, earwigs, spiders, scorpions, fleas, ticks, rodents, occasional invaders + snake repellant."],
+      ["✗","NO termite or bed bug coverage."],
+      ["✓","Tri-annual (every 4 months) is the standard — all new sales/setups should be tri-annual."],
+    ], codes:[
+      ["PCE3","TurnerShield Pest Prevention — Eco3","3x/yr",true,"Basic pest control, interior on request. Most common GHP — all new sales & setups."],
+      ["PCQ","TurnerShield — Quarterly","4x/yr",true,"Basic pest control, interior on request. Typically from acquired companies."],
+      ["PCEOM","TurnerShield — Every Other Month","6x/yr",true,"Basic pest control, interior on request. Typically from acquired companies."],
+      ["PCM","TurnerShield — Monthly","12x/yr",true,"Basic pest control, interior on request. Typically from acquired companies."],
+      ["PCA","TurnerShield — Annual","1x/yr",true,"Exterior + interior if needed. Typically townhomes or condos."],
+      ["PC-RODENT","Pest Control Rodent Prevention","varies",true,"Residential rodent service — usually a few rodent boxes on property. Frequency varies by sale. More common in South FL."],
+      ["PC2","TurnerShield — Twice a Year","2x/yr",false,"Exterior + interior if needed. Typically townhomes or condos."],
+      ["PCB","TurnerShield — Every Other Week","26x/yr",false,"Basic pest control, interior on request. Typically from acquired companies."],
+      ["PCW","TurnerShield — Weekly","52x/yr",false,"Basic pest control, interior on request. Typically from acquired companies."],
+      ["PCQT","TurnerTubes — Quarterly","4x/yr",false,"Pest control for homes with in-wall tubes. Interior on request."],
+      ["PCFA","TurnerShield — Fire Ant Service","varies",false,"Fire ant service by GHP tech. Typically one-time; recurring on request."],
+      ["PC-FLEA","Pest Control Flea Prevention","varies",false,"Flea prevention by GHP tech. Typically one-time; recurring on request."],
+      ["PC-SENTINEL","Pest Control — Sentinel","12x/yr",false,"(FAHEY) Bundled pest control with sentinel stations."],
+      ["RPLATPL TMS","Res. Platinum Plus w/ Termite & ATBS","6x/yr",false,"(Catseye) Bundled pest control + termite warranty + monitoring stations."],
+      ["RPLATPL TERMITE","Res. Platinum Plus w/ Termite","varies",false,"(Catseye) Bundled pest control + termite warranty + monitoring stations."],
+    ] },
+
+  { id:"tg", label:"TurnerGuard", emoji:"🛡️", points:[
+      ["✓","All-inclusive: pest control + termite warranty in one bundle. NO excluded pests — even fleas and carpenter ants."],
+      ["✓","Platinum = REPAIR & retreat termite warranty. Retreat = RETREAT-only warranty."],
+      ["✓","Liquid termite treatment at install + ATBS monitoring stations checked each service. Annual termite inspection included (TGP3AA)."],
+      ["✓","Bed bug CHEMICAL treatments included after the first year."],
+      ["✗","Bed bug HEAT treatments are always a separate service."],
+      ["✓","Free re-treatment when termiticide is due to be refreshed."],
+    ], codes:[
+      ["TGPP3","TurnerGuard Platinum E3 — Tri-Annual","3x/yr",true,"No excluded pests. Termite REPAIR warranty + service calls between visits."],
+      ["TGR3","TurnerGuard Retreat E3 — Tri-Annual","3x/yr",true,"No excluded pests. Termite RETREAT warranty + service calls between visits."],
+      ["TGTHP3","TurnerGuard THP E3 — Tri-Annual","3x/yr",true,"OLD code. No excluded pests; retreat warranty + service calls."],
+      ["TGTHPR3","TurnerGuard Retreat THP E3","3x/yr",false,"OLD code. No excluded pests; retreat warranty + service calls."],
+      ["TGP3AA","TurnerGuard Platinum E3 — Annual","1x/yr",false,"The annual termite inspection code."],
+      ["TG3-INITIAL","TurnerGuard E3 Startup Fee","—",true,"Startup fee code for all new TGs."],
+      ["TG-INITIAL","TurnerGuard Startup Fee","—",true,"Legacy startup fee code for new TGs."],
+      ["TGR3I","TG Retreat E3 — Initial Tri-Annual","—",true,"Initial code for the pest-control portion of the TG install."],
+      ["TGPPQ","TurnerGuard Platinum — Quarterly","4x/yr",false,"No longer offered. Repair warranty + service calls."],
+      ["TG3-MISC","TurnerGuard E3 — Miscellaneous","—",false,"Other TG-related charges (e.g. rake back rock for termite treatment)."],
+      ["TG3DOWN","TurnerGuard E3 Downgrade","—",false,"Downgrading from TurnerGuard to an ATR."],
+      ["TGZTRANS","TurnerGuard Transfer Fee","—",false,"Transfer of a TG warranty between homeowners."],
+      ["ESTIMATE-TG","Estimate for TurnerGuard","—",false,"TurnerGuard estimate code."],
+      ["TGRQ","TurnerGuard Retreat — Quarterly","4x/yr",false,"Retreat warranty + pest control (quarterly legacy)."],
+    ] },
+
+  { id:"lawn", label:"Lawn / TurnerGreen", emoji:"🌱", points:[
+      ["✓","Every-other-month service: fertilization, weed control, fungicide, insecticide. Requires a verified working in-ground irrigation system — products must be watered in evenly."],
+      ["✓","No irrigation? Insecticide-only service is available (LANDOTGIO)."],
+      ["✓","Grasses: St. Augustine, Bermuda, Bahia, Zoysia, Centipede. Zoysia is treated MONTHLY."],
+      ["✓","Covered insects (turf-damaging, treated year-round): chinch bugs, sod webworms, army worms, spittle bugs, spider mites, grubs, mole crickets. Chinch = hot/dry months; webworms = cooler months."],
+      ["✗","Uncontrollable weeds NOT covered: crab grass, torpedo grass, Bermuda grass invasion."],
+      ["✗","Regular outside pests (roaches/ants) in the lawn aren't covered — courtesy treatment only."],
+      ["✓","Fungus (large/brown patch): advise customer to pause watering & mowing affected areas. Treated as needed — no preventative."],
+      ["✗","Mushrooms: NOT treated. Advise: pluck with a plastic bag and dispose outside — don't kick it, that spreads spores."],
+      ["✗","NO palm or tree treatments under standard lawn (separate codes exist). One-time services carry a 30-day warranty only."],
+    ], codes:[
+      ["LANDOTG","TurnerGreen Lawn Service","6x/yr",true,"Residential lawn — fertilization, weed control, fungicide, insecticide. St. Augustine (typical). Pests: grubs, chinch bugs, sod webworms, army worms, mole crickets."],
+      ["LANDOTGBH","Bahia TurnerGreen Lawn","6x/yr",true,"Same coverage for Bahia grass."],
+      ["LANDOTGZY","Zoysia TurnerGreen Lawn","12x/yr",true,"Same coverage for Zoysia — monthly schedule."],
+      ["LANDOCOM","Commercial Lawn Service","6x/yr",true,"Commercial lawn — fertilization, weed control, fungicide, insecticide."],
+      ["LANDOSHRUB","TurnerGreen Shrub w/ Flea & Tick","6x/yr",true,"Residential shrubs — fertilization, fungus control, insecticide on non-fruit ornamentals. NO weed control in flower beds."],
+      ["LANDOCOMS","Commercial Shrub Service","6x/yr",false,"Commercial shrubs — fertilization, fungus, insecticide on fruit ornamentals. NO weed control in beds."],
+      ["LANDOFA","Guaranteed Fire Ant Control","varies",true,"Fire ant treatment — bait or spray depending on frequency; may recur."],
+      ["LANDOTGIO","Lawn Service — Insect Only","6x/yr",false,"Insecticide-only. NOT responsible for look, color, or health of lawn."],
+      ["LANDOTGFLEA","Lawn Plus Flea Service","one-time",false,"Insecticide for fleas & ticks only (flea/tick is included in shrub coverage)."],
+      ["LANDOTGMOLE","Turner Mole Treatment","one-time",false,"Mole baiting around burrows; may include follow-ups. 30-day warranty."],
+      ["LANDOTGCCA","Lawn — Caribbean Crazy Ants","varies",false,"Caribbean crazy ant insecticide; may recur."],
+      ["LANDO1","Lawn — One Time Service","one-time",false,"Non-recurring lawn service — add-on or one-time green-up."],
+      ["LANDOTREEDR","Tree Drench","2x/yr",false,"Root-system drench: fertilizer, insecticide, fungicide."],
+      ["LANDOTREEINJ","Tree Injection","3x/yr",false,"Nutrient/insecticide/fungicide injection around tree or palm."],
+    ] },
+
+  { id:"smart", label:"SMART", emoji:"📡", points:[
+      ["✓","SMART = 24/7 connected rodent monitoring bundled with pest control or TurnerGuard."],
+    ], codes:[
+      ["PC3SMART","TurnerShield SMART — Tri-Annual","3x/yr",true,"GHP + SMART rodent monitoring."],
+      ["PCSMART","TurnerShield SMART — PC & SMART","3x/yr",true,"GHP + SMART rodent monitoring."],
+      ["PCSMARTI","PC & SMART — Initial","1x",true,"Tech installs SMART equipment during first GHP service."],
+      ["PCSMART-INITIAL","PC & SMART — Startup Fee","1x",true,"Startup fee for PCSMART services."],
+      ["PC3SMARTIC","SMART Installation Complete","1x",false,"Marks SMART installation complete."],
+      ["TG3SMART","TurnerGuard SMART — Tri-Annual","3x/yr",true,"Full TG (repair warranty, no excluded pests) + SMART."],
+      ["TG3SMARTI","TurnerGuard SMART — Installation","1x",true,"Initial pest-control code for TG install w/ SMART."],
+      ["TG3SMARTIC","TG SMART Installation Complete","1x",false,"Marks TG SMART installation complete."],
+      ["TGP3SMART","TG Platinum E3 — SMART Package","3x/yr",true,"First line of the TGP3SMART package setup."],
+      ["TGR3SMART","TG Retreat E3 — SMART Package","3x/yr",true,"First line of the TGR3SMART package setup."],
+    ] },
+
+  { id:"tc", label:"Service Calls (Customer)", emoji:"📞", points:[
+      ["✓","Customer-initiated visits between regular services — always free on guaranteed plans."],
+    ], codes:[
+      ["PCE3TC","TurnerShield Eco3 — Trouble Call","—",true,"PCE3-specific customer service call."],
+      ["PCTC","TurnerShield — Service Call","—",true,"Non-specific (also flea or rodent service calls)."],
+      ["PCTCT","TurnerTubes — Service Call","—",false,"Tubes-home customer service call."],
+      ["LANDOSC","TurnerGreen Lawn — Service Call","—",true,"Lawn-specific customer service call."],
+      ["TG3TC","TurnerGuard E3 Trouble Call","—",true,"TG-only customer service call."],
+      ["TGTC","TurnerGuard Trouble Call","—",true,"TG-only customer service call."],
+      ["PC3TCSMART","TurnerShield SMART — Trouble Call","—",true,"Used with PCSMART services."],
+      ["TGTCSMART","TurnerGuard SMART — Trouble Call","—",true,"Used with TGSMART services."],
+    ] },
+
+  { id:"fu", label:"Follow-Ups (Tech/Sales)", emoji:"🔁", points:[
+      ["✓","Tech- or sales-initiated additional visits — NOT customer-requested."],
+    ], codes:[
+      ["PC3-FOLLOW UP","Pest Control E3 Follow Up","—",true,"PCE3-specific tech/sales follow-up."],
+      ["PC-FOLLOW UP","Pest Control Follow Up","—",true,"Non-specific (flea or rodent follow-ups too)."],
+      ["LANDOSCFU","Lawn Service Call Follow-Up","—",false,"Lawn-specific tech/sales follow-up."],
+    ] },
+
+  { id:"termite", label:"Termite Warranties", emoji:"🪵", points:[
+      ["✓","Subterranean termite coverage — contract length is in the Setup."],
+      ["✓","REPAIR codes cover damage repair + retreat; RETREAT codes cover re-treatment only."],
+      ["✗","NO coverage if the annual renewal isn't paid."],
+    ], codes:[
+      ["WR-REPAIR","Subterranean Termite — Repair","annual",true,"Repair + retreat warranty."],
+      ["WR-RETREAT","Subterranean Termite — Retreat","annual",true,"Retreat-only warranty."],
+      ["WC-REPAIR","Subterranean Termite — Repair (WC)","annual",false,"Repair + retreat warranty."],
+      ["WC-RETREAT","Subterranean Termite — Retreat (WC)","annual",false,"Retreat-only warranty."],
+    ] },
+
+  { id:"comm", label:"Commercial", emoji:"🏢", points:[
+      ["✓","Coverage varies by account — tends to be à la carte based on the customer's needs and budget."],
+      ["✓","ALWAYS check the Setup or Agreement in Documents to confirm what's covered."],
+    ], codes:[
+      ["CPCM","Commercial Pest Control — Monthly","12x/yr",true,"Coverage per account Setup/Agreement."],
+      ["CPCB","Commercial PC — Every Other Week","26x/yr",false,"Coverage per account Setup/Agreement."],
+      ["CPCW","Commercial PC — Weekly","52x/yr",false,"Coverage per account Setup/Agreement."],
+      ["CPCEOM","Commercial PC — Every Other Month","6x/yr",true,"Coverage per account Setup/Agreement."],
+      ["CPCQ","Commercial PC — Quarterly","4x/yr",true,"Coverage per account Setup/Agreement."],
+    ] },
+
+  { id:"mosq", label:"Mosquito", emoji:"🦟", points:[
+      ["✗","Not effective on no-see-ums."],
+      ["✓","Customers can customize which months they want treated."],
+    ], codes:[
+      ["MOSULV","Mosquito Control","custom",true,"Customer picks treatment months."],
+    ] },
+
+  { id:"impact", label:"Impact (Acquired)", emoji:"⭐", points:[
+      ["✓","Legacy services from the Impact acquisition."],
+    ], codes:[
+      ["PC-SPI","Pest Control Spider Control","2x/yr",true,"Every 6 months, callbacks included. Chemical swept onto all beams in pool cage, lanai, front entry, garage doors, coach lights."],
+      ["PC-EXCLUSION","Rodent Exclusion","one-time",true,"One-time fee, LIFETIME guarantee if they have PC or Sentricon with Impact. Seals roof openings — converging roof lines, J-vents, stack pipes — to keep rodents out of the attic."],
+    ] },
+];
+
+function CheatCode({ code }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button className={`cheat-code${copied?" copied":""}`} title="Tap to copy"
+      onClick={()=>{ navigator.clipboard?.writeText(code); setCopied(true); setTimeout(()=>setCopied(false),1200); }}>
+      {copied ? "✓ copied" : code}
+    </button>
+  );
+}
+
+function CheatSheetPage() {
+  const [q,   setQ]   = useState("");
+  const [cat, setCat] = useState("all");
+  const query = q.trim().toLowerCase();
+
+  const visible = CHEAT_DATA.map(sec => {
+    if (!query) return (cat==="all"||cat===sec.id) ? sec : null;
+    const codes = sec.codes.filter(([c,n,f,_,d]) =>
+      (c+" "+n+" "+d).toLowerCase().includes(query));
+    const pointHit = sec.points.some(([_,p])=>p.toLowerCase().includes(query)) ||
+                     sec.label.toLowerCase().includes(query);
+    if (!codes.length && !pointHit) return null;
+    return { ...sec, codes: codes.length?codes:sec.codes, _pointsDim: !pointHit && codes.length>0 };
+  }).filter(Boolean);
+
+  return (
+    <div style={{maxWidth:680,margin:"0 auto",padding:"28px 20px 60px"}}>
+      <div style={{textAlign:"center",marginBottom:14}}>
+        <div className="hero-eyebrow">// CS Reference</div>
+        <h1 style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:"clamp(34px,6.5vw,48px)",fontWeight:900,lineHeight:.95,letterSpacing:"-.02em"}}>Service Cheat Sheet</h1>
+        <p style={{color:"#64748b",fontSize:13,marginTop:8}}>Codes, coverage & talking points — tap any code to copy it.</p>
+      </div>
+
+      <div className="cheat-search">
+        <div className="pp-row" style={{marginBottom:8}}>
+          <span className="pp-label">SEARCH</span>
+          <input className="pp-input" placeholder="code, pest, or service… (e.g. PCE3, chinch, mushroom)"
+            value={q} onChange={e=>setQ(e.target.value)}/>
+          {q && <button onClick={()=>setQ("")}
+            style={{background:"none",border:"none",color:"#64748b",cursor:"pointer",
+              fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:".1em",textTransform:"uppercase",padding:0}}>Clear</button>}
+        </div>
+        <div className="cheat-chips">
+          <button className={`sort-btn${cat==="all"?" sort-btn-active":""}`} onClick={()=>setCat("all")}>All</button>
+          {CHEAT_DATA.map(s=>(
+            <button key={s.id} className={`sort-btn${cat===s.id?" sort-btn-active":""}`}
+              onClick={()=>{setCat(s.id);setQ("");}}>{s.emoji} {s.label}</button>
+          ))}
+        </div>
+      </div>
+
+      {visible.length===0 && (
+        <div className="empty-state">
+          <div className="empty-icon">🔍</div>
+          <div className="empty-title">Nothing Found</div>
+          <div className="empty-text">No codes or coverage notes match "<strong style={{color:"#2563eb"}}>{q}</strong>".</div>
+        </div>
+      )}
+
+      {visible.map(sec=>(
+        <div key={sec.id} className="guide-card">
+          <div className="guide-card-title">{sec.emoji} {sec.label}</div>
+          {!sec._pointsDim && sec.points.map(([mark,text],i)=>(
+            <div key={i} className="cheat-inc">
+              <span style={{color:mark==="✓"?"#15803d":"#dc2626"}}>{mark}</span>
+              <span>{text}</span>
+            </div>
+          ))}
+          {sec.codes.length>0 && (
+            <div style={{marginTop:sec.points.length&&!sec._pointsDim?10:0}}>
+              {sec.codes.map(([code,name,freq,common,desc])=>(
+                <div key={code+name} className="cheat-row">
+                  <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+                    <CheatCode code={code}/>
+                    {common && <span style={{width:7,height:7,borderRadius:"50%",background:"#15803d",flexShrink:0}} title="Common"/>}
+                    <span className="cheat-name">{name}</span>
+                    <span className="cheat-freq" style={{marginLeft:"auto"}}>{freq}</span>
+                  </div>
+                  <div className="cheat-desc">{desc}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+
+      <div style={{textAlign:"center",fontFamily:"'DM Mono',monospace",fontSize:10,color:"#cbd5e1",letterSpacing:".08em",marginTop:8}}>
+        ● = common code · Sources: Service Code Outline v1 + Turner Service Coverage
+      </div>
+    </div>
+  );
+}
+
 function GuidePage() {
   return (
     <div style={{maxWidth:640,margin:"0 auto",padding:"40px 20px 60px"}}>
@@ -1938,7 +2212,7 @@ function GuidePage() {
         <div className="guide-step"><div className="guide-step-num">2</div><div className="guide-step-body"><strong>Branch</strong> — Select a branch from the dropdown to see all technicians assigned to that location.</div></div>
         <div className="guide-step"><div className="guide-step-num">3</div><div className="guide-step-body"><strong>Name / PestPac Username</strong> — Type in the FIND field to search across all technicians by name or PestPac username instantly.</div></div>
         <div style={{marginTop:12,padding:"10px 14px",background:"#eff6ff",borderRadius:6,border:"1px solid rgba(245,158,11,.15)",fontSize:13,color:"#475569",lineHeight:1.6}}>
-          <strong style={{color:"#2563eb"}}>Supervisor guard:</strong> Supervisors only appear when the <strong>Supervisor</strong> type is explicitly selected. Supervisors are tagged with their specialty, so combine <strong>Supervisor + GHP</strong> (or Lawn, Termite, etc.) to find the right one — Branch Managers appear under Supervisor alone.
+          <strong style={{color:"#2563eb"}}>Supervisor guard:</strong> Supervisors only appear when the <strong>Supervisor</strong> type is explicitly selected. Supervisors are tagged with their specialty, so combine <strong>Supervisor + GHP</strong> (or Lawn, Termite, etc.) to find the right one — Branch Managers appear under Supervisor alone. Trouble Call and Production never filter supervisors — they match by service type only.
         </div>
       </div>
 
@@ -1969,7 +2243,7 @@ function GuidePage() {
           ["Post Treat",     "Post-construction termite treatment"],
           ["Field Inspector","Property inspection services"],
           ["Trouble Call",   "New starts, floaters & callback specialists"],
-          ["Production",     "Lookup-only filter — every tech WITHOUT the Trouble Call tag (standard route techs)"],
+          ["Production",     "Lookup-only filter — every tech WITHOUT the Trouble Call tag (standard route techs). Does not apply to supervisors"],
           ["Supervisor",     "Lead technicians and area supervisors"],
         ].map(([type, desc]) => (
           <div key={type} className="guide-row">
@@ -2387,6 +2661,8 @@ export default function App() {
           <nav className="top-nav">
             <button className={`nav-pill${view==="search"?" nav-active":""}`}
               onClick={()=>{setView("search");setResult(null);setZipInput("");}}>Lookup</button>
+            <button className={`nav-pill${view==="cheats"?" nav-active":""}`}
+              onClick={()=>setView("cheats")}>Codes</button>
             <button className={`nav-pill${view==="guide"?" nav-active":""}`}
               onClick={()=>setView("guide")}>Help</button>
             <button className={`nav-pill${view==="changelog"?" nav-active":""}`}
@@ -2404,6 +2680,7 @@ export default function App() {
         )}
 
         {view==="search"    && <SearchView techs={techs} zipInput={zipInput} setZipInput={setZipInput} result={result} setResult={setResult}/>}
+        {view==="cheats"    && <CheatSheetPage/>}
         {view==="guide"     && <GuidePage/>}
         {view==="changelog" && <ChangelogPage authLevel={authLevel} authCode={authCode} authLabel={authLabel}/>}
         {view==="admin"     && <AdminView  techs={techs} confirmId={confirmId} authLevel={authLevel} authLabel={authLabel}
