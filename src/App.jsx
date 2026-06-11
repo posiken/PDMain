@@ -778,18 +778,28 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
                       textTransform:"uppercase",color:"#94a3b8",marginBottom:9,textAlign:"center"}}>
                       Next step — try fewer service types, or contact:
                     </div>
-                    {sups.length>0 ? sups.map(s=>(
+                    {sups.length>0 ? sups.map(s=>{
+                      const spec = (s.types||[]).filter(t=>t!=="Supervisor");
+                      const dept = spec.length ? spec.join(" / ") + " Supervisor"
+                        : (/branch manager/i.test(s.notes||"") ? "Branch Manager" : "Supervisor");
+                      const hit = spec.some(t=>result.types.includes(t));
+                      return (
                       <div key={s.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",
-                        gap:10,padding:"9px 13px",background:"#ffffff",border:"1px solid #e2e8f0",
+                        gap:10,padding:"9px 13px",background:"#ffffff",
+                        border:hit?"1px solid #bfdbfe":"1px solid #e2e8f0",
                         borderRadius:8,marginBottom:6}}>
                         <div style={{minWidth:0}}>
                           <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:16,fontWeight:700,color:"#0f172a"}}>{s.name}</div>
-                          <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#94a3b8",letterSpacing:".06em"}}>{s.branch||"Regional"} · Supervisor</div>
+                          <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:".06em",
+                            color:hit?"#1e40af":"#94a3b8",fontWeight:hit?700:400}}>
+                            {s.branch||"Regional"} · {dept}
+                          </div>
                         </div>
                         <a href={`tel:${s.phone}`} style={{fontFamily:"'DM Mono',monospace",fontSize:12,fontWeight:600,
                           color:"#2563eb",textDecoration:"none",whiteSpace:"nowrap"}}>{s.phone}</a>
                       </div>
-                    )) : (
+                      );
+                    }) : (
                       <div style={{fontSize:13,color:"#64748b",textAlign:"center"}}>
                         Contact a branch supervisor or router for assistance.
                       </div>
