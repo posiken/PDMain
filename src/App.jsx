@@ -170,6 +170,13 @@ const CSS = `
 .save-saving{color:#1e40af;border-color:rgba(37,99,235,.2);background:rgba(37,99,235,.08);}
 .save-ok    {color:#15803d;border-color:rgba(21,128,61,.3); background:rgba(21,128,61,.08);}
 .save-err   {color:#dc2626;border-color:rgba(220,38,38,.3); background:rgba(220,38,38,.08);}
+.bulk-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;margin-bottom:10px;
+  background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;animation:slideIn .2s ease both;}
+.bulk-count{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:#1e40af;letter-spacing:.06em;}
+.bulk-cancel{margin-left:auto;background:none;border:none;color:#64748b;cursor:pointer;
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;}
+.bulk-cancel:hover{color:#dc2626;}
+.row-check{width:15px;height:15px;accent-color:#2563eb;cursor:pointer;}
 
 .table-wrap{border:1px solid #e2e8f0;border-radius:9px;overflow:hidden;}
 .tech-table{width:100%;border-collapse:collapse;}
@@ -755,6 +762,38 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
                     </>
                 }
               </div>
+              {!result.pestpac && (()=>{
+                let branches = result.branch ? [result.branch]
+                  : [...new Set(techs.filter(t=>t.zipCodes.includes(result.zip)).map(t=>t.branch).filter(Boolean))];
+                const sups = techs.filter(t=>
+                  (t.types||[]).includes("Supervisor") &&
+                  (branches.length===0 || branches.includes(t.branch))
+                ).slice(0,4);
+                return (
+                  <div style={{maxWidth:380,margin:"22px auto 0",textAlign:"left"}}>
+                    <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,letterSpacing:".12em",
+                      textTransform:"uppercase",color:"#94a3b8",marginBottom:9,textAlign:"center"}}>
+                      Next step — try fewer service types, or contact:
+                    </div>
+                    {sups.length>0 ? sups.map(s=>(
+                      <div key={s.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",
+                        gap:10,padding:"9px 13px",background:"#ffffff",border:"1px solid #e2e8f0",
+                        borderRadius:8,marginBottom:6}}>
+                        <div style={{minWidth:0}}>
+                          <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:16,fontWeight:700,color:"#0f172a"}}>{s.name}</div>
+                          <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#94a3b8",letterSpacing:".06em"}}>{s.branch||"Regional"} · Supervisor</div>
+                        </div>
+                        <a href={`tel:${s.phone}`} style={{fontFamily:"'DM Mono',monospace",fontSize:12,fontWeight:600,
+                          color:"#2563eb",textDecoration:"none",whiteSpace:"nowrap"}}>{s.phone}</a>
+                      </div>
+                    )) : (
+                      <div style={{fontSize:13,color:"#64748b",textAlign:"center"}}>
+                        Contact a branch supervisor or router for assistance.
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           ) : (
             <>
@@ -1382,13 +1421,15 @@ function ReportsTab({ techs }) {
 }
 
 function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
-                     onSignOut, onMasterCodeChanged, onRestoreComplete, onStatusChange,
+                     onSignOut, onMasterCodeChanged, onRestoreComplete, onStatusChange, onBulkStatus,
                      onAdd, onEdit, onDelete, onImport, saveStatus }) {
   const [tab,           setTab]           = useState("techs");
   const [searchQuery,   setSearchQuery]   = useState("");
   const [sortBy,        setSortBy]        = useState("name-asc");
   const [filterBranch,  setFilterBranch]  = useState("");
   const [importPending, setImportPending] = useState(null);
+  const [selectedIds,   setSelectedIds]   = useState(new Set());
+  const [bulkStatus,    setBulkStatus]    = useState("none");
   const [importErr,     setImportErr]     = useState("");
   const fileRef = useRef(null);
   const uniqueZips = new Set(techs.flatMap(t=>t.zipCodes)).size;
@@ -1521,13 +1562,43 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
             </div>
           ) : (
             <div className="table-wrap">
+              {selectedIds.size>0 && (
+                <div className="bulk-bar">
+                  <span className="bulk-count">{selectedIds.size} selected</span>
+                  <StatusSelect status={bulkStatus} onChange={setBulkStatus}/>
+                  <button className="btn-save" style={{padding:"5px 14px",fontSize:12}}
+                    onClick={()=>{onBulkStatus([...selectedIds], bulkStatus);setSelectedIds(new Set());}}>
+                    Apply to {selectedIds.size}
+                  </button>
+                  <button className="bulk-cancel" onClick={()=>setSelectedIds(new Set())}>Clear</button>
+                </div>
+              )}
               <table className="tech-table">
                 <thead>
-                  <tr><th>Technician</th><th>Phone</th><th>Status</th><th>Branch</th><th>Service Types</th><th>ZIP Codes</th><th>Notes</th><th></th></tr>
+                  <tr>
+                    <th style={{width:34}}>
+                      <input type="checkbox" className="row-check"
+                        checked={filteredTechs.length>0 && filteredTechs.every(t=>selectedIds.has(t.id))}
+                        onChange={e=>{
+                          const next = new Set(selectedIds);
+                          filteredTechs.forEach(t=> e.target.checked ? next.add(t.id) : next.delete(t.id));
+                          setSelectedIds(next);
+                        }}/>
+                    </th>
+                    <th>Technician</th><th>Phone</th><th>Status</th><th>Branch</th><th>Service Types</th><th>ZIP Codes</th><th>Notes</th><th></th></tr>
                 </thead>
                 <tbody>
                   {sortTechs(filteredTechs, sortBy, techs).map(tech=>(
                     <tr key={tech.id}>
+                      <td>
+                        <input type="checkbox" className="row-check"
+                          checked={selectedIds.has(tech.id)}
+                          onChange={()=>{
+                            const next = new Set(selectedIds);
+                            next.has(tech.id) ? next.delete(tech.id) : next.add(tech.id);
+                            setSelectedIds(next);
+                          }}/>
+                      </td>
                       <td>
                         <div style={{display:"flex",alignItems:"center",gap:9}}>
                           <div className="row-avatar">{ini(tech.name)}</div>
@@ -1853,7 +1924,7 @@ function GuidePage() {
           Access via <strong>Manage Techs</strong> in the navigation. Requires a manager or master access code.
         </div>
         <div style={{fontSize:13,color:"#475569",lineHeight:1.9,marginTop:8}}>
-          <div><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>TECHNICIANS</span>Add, edit, or delete technicians · Quick status toggle in the table · Filter by branch or search by name · Export and import roster as JSON</div>
+          <div><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>TECHNICIANS</span>Add, edit, or delete technicians · Quick status toggle in the table · Select multiple techs for bulk status updates · Filter by branch or search by name · Export and import roster as JSON</div>
           <div style={{marginTop:6}}><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>REPORTS</span>Coverage Gap report shows which service types lack coverage per branch · Usage Analytics tracks search patterns over time</div>
           <div style={{marginTop:6}}><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>BACKUPS</span>Every save auto-creates a backup · Restore any of the last 10 states in one tap</div>
           <div style={{marginTop:6}}><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>ACCESS CODES</span>Master only · Manage named manager codes and change the master password</div>
@@ -2151,6 +2222,17 @@ export default function App() {
     persistTechs(techs.map(x=>x.id===id?{...x,status:newStatus}:x), authCode, `Status: ${t.name} → ${newStatus}`);
   },[techs, authCode, persistTechs]);
 
+  const handleBulkStatus = useCallback((ids, newStatus) => {
+    if (!authCode || !ids.length) return;
+    const idSet = new Set(ids);
+    const label = newStatus==="none" ? "None" : newStatus.replace(/-/g," ");
+    persistTechs(
+      techs.map(t=>idSet.has(t.id)?{...t,status:newStatus}:t),
+      authCode,
+      `Bulk status: ${ids.length} tech${ids.length>1?"s":""} → ${label}`
+    );
+  },[techs, authCode, persistTechs]);
+
   const handleRestoreComplete = useCallback((restoredTechs) => {
     setTechs(restoredTechs);
   }, []);
@@ -2233,7 +2315,7 @@ export default function App() {
         {view==="changelog" && <ChangelogPage authLevel={authLevel} authCode={authCode} authLabel={authLabel}/>}
         {view==="admin"     && <AdminView  techs={techs} confirmId={confirmId} authLevel={authLevel} authLabel={authLabel}
               authCode={authCode} onSignOut={handleSignOut} onMasterCodeChanged={handleMasterCodeChanged}
-              onRestoreComplete={handleRestoreComplete} onStatusChange={handleStatusChange}
+              onRestoreComplete={handleRestoreComplete} onStatusChange={handleStatusChange} onBulkStatus={handleBulkStatus}
               onAdd={()=>setModal({mode:"add"})} onEdit={t=>setModal({mode:"edit",tech:t})}
               onDelete={handleDelete} onImport={handleImport} saveStatus={saveStatus}/>}
 
