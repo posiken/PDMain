@@ -531,6 +531,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
       localStorage.setItem('dispatch_analytics', JSON.stringify([...prev,ev].slice(-500)));
     } catch {}
   };
+  const resultsRef  = useRef(null);
   const zipReady    = zipInput.length === 5;
   const lookupReady = zipReady || !!selBranch;
 
@@ -579,14 +580,22 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
       logAnalytic('branch', selBranch, selTypes, matches.length);
     } else {
       const zip = zipInput.trim();
+      const typeOk = tt => selTypes.every(st=>st==="Production" ? !tt.includes("Trouble Call") : tt.includes(st));
+      const byStatus = (a,b)=>(STATUS_ORDER[a.status]??3)-(STATUS_ORDER[b.status]??3);
+      // Tier 1 — techs explicitly covering this ZIP
       const matches = techs
-        .filter(t => {
-          const tt = t.types||[];
-          return t.zipCodes.includes(zip) && selTypes.every(st=>st==="Production" ? !tt.includes("Trouble Call") : tt.includes(st)) && supervisorOk(tt);
-        })
-        .sort((a,b)=>(STATUS_ORDER[a.status]??3)-(STATUS_ORDER[b.status]??3));
-      setResult({ zip, branch:null, pestpac:null, types:[...selTypes], matches });
-      logAnalytic('zip', zip, selTypes, matches.length);
+        .filter(t => t.zipCodes.includes(zip) && typeOk(t.types||[]) && supervisorOk(t.types||[]))
+        .sort(byStatus);
+      // Tier 2 — infer which branch(es) serve this ZIP from ANY tech's coverage,
+      // then include type-matching techs from those branches (not already in tier 1)
+      const zipBranches = [...new Set(techs.filter(t=>t.zipCodes.includes(zip)).map(t=>t.branch).filter(Boolean))];
+      const seen = new Set(matches.map(t=>t.id));
+      const alsoMatches = techs
+        .filter(t => zipBranches.includes(t.branch) && !seen.has(t.id) && typeOk(t.types||[]) && supervisorOk(t.types||[]))
+        .sort(byStatus);
+      setResult({ zip, branch:null, pestpac:null, types:[...selTypes], matches,
+                  also:{ branches:zipBranches, matches:alsoMatches } });
+      logAnalytic('zip', zip, selTypes, matches.length + alsoMatches.length);
     }
   }, [selTypes, zipInput, selBranch, pestpacSearch, techs]);
 
@@ -595,7 +604,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
       <div className="search-hero">
         <div className="hero-eyebrow">// Technician Availability</div>
         <h1 className="hero-title">Tech Lookup</h1>
-        <p className="hero-sub">Enter a ZIP code or select a branch, then choose a service type.</p>
+        <p className="hero-sub">Choose service types and a ZIP or branch — any order works.</p>
         <div className="search-bar">
           <input className="zip-input" type="text" inputMode="numeric" placeholder="00000"
             value={zipInput} maxLength={5} autoFocus
@@ -655,6 +664,14 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           )}
           <div className="type-label" style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
             <span>Select service type{selTypes.length>1?" (multiple)":""}</span>
+            {result && !result.pestpac && (result.matches.length + (result.also?.matches.length||0))>0 && (
+              <button onClick={()=>resultsRef.current?.scrollIntoView({behavior:"smooth"})}
+                style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:20,padding:"3px 11px",
+                  fontFamily:"'DM Mono',monospace",fontSize:10,fontWeight:700,color:"#1e40af",
+                  cursor:"pointer",letterSpacing:".05em",whiteSpace:"nowrap"}}>
+                {result.matches.length + (result.also?.matches.length||0)} matches ↓
+              </button>
+            )}
             {selTypes.length>0 && (
               <button onClick={()=>setSelTypes([])}
                 style={{background:"none",border:"none",color:"#64748b",fontFamily:"'DM Mono',monospace",
@@ -668,7 +685,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
             {["GHP","Commercial","Lawn","Termite"].map(type=>(
               <button key={type} className="type-btn type-btn-feat"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
-                disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
+                onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">
                   {selTypes.includes(type) && <span className="type-chk">✓</span>}
                   {type==="GHP" ? "Res GHP" : type==="Commercial" ? "Commercial GHP" : type}
@@ -682,7 +699,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
             {["Trouble Call","Production"].map(type=>(
               <button key={type} className="type-btn type-btn-feat"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
-                disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
+                onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">
                   {selTypes.includes(type) && <span className="type-chk">✓</span>}
                   {type}
@@ -697,7 +714,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
             {["Mosquito","Bed Bugs","Exclusion","Wildlife"].map(type=>(
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
-                disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
+                onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">
                   {selTypes.includes(type) && <span className="type-chk">✓</span>}
                   {type}
@@ -710,7 +727,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
             {["TAP","Sentricon","SMART","Pre Treat"].map(type=>(
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
-                disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
+                onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">
                   {selTypes.includes(type) && <span className="type-chk">✓</span>}
                   {type}
@@ -723,7 +740,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
             {["Post Treat","Field Inspector"].map(type=>(
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
-                disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
+                onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">
                   {selTypes.includes(type) && <span className="type-chk">✓</span>}
                   {type}
@@ -736,7 +753,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
             {["Supervisor"].map(type=>(
               <button key={type} className="type-btn type-btn-feat"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
-                disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
+                onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">
                   {selTypes.includes(type) && <span className="type-chk">✓</span>}
                   {type}
@@ -749,7 +766,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
       </div>
 
       {result ? (
-        <div className="results-wrap">
+        <div className="results-wrap" ref={resultsRef}>
           <div className="results-head">
             <span className="results-label">
               {result.pestpac
@@ -764,10 +781,10 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
               }
             </span>
             <span className="results-label" style={{color:"#64748b"}}>
-              {result.matches.length===0?"no techs found":`${result.matches.length} tech${result.matches.length>1?"s":""} found`}
+              {(result.matches.length + (result.also?.matches.length||0))===0?"no techs found":`${(result.matches.length + (result.also?.matches.length||0))} tech${(result.matches.length + (result.also?.matches.length||0))>1?"s":""} found`}
             </span>
           </div>
-          {result.matches.length===0 ? (
+          {(result.matches.length + (result.also?.matches.length||0))===0 ? (
             <div className="empty-state">
               <div className="empty-icon">🔍</div>
               <div className="empty-title">No Match Found</div>
@@ -832,9 +849,27 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           ) : (
             <>
               <SortBar sortBy={sortBy} setSortBy={setSortBy} opts={SORT_OPTS_LOOKUP}/>
+              {result.zip && result.also && result.matches.length>0 && result.also.matches.length>0 && (
+                <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,fontWeight:700,letterSpacing:".1em",
+                  textTransform:"uppercase",color:"#1e40af",margin:"2px 0 10px"}}>
+                  ✓ Covering ZIP {result.zip} ({result.matches.length})
+                </div>
+              )}
               {sortTechs(result.matches, sortBy, techs).map((tech,i)=>(
                 <TechCard key={tech.id} tech={tech} highlightZip={result.zip} highlightTypes={result.types} index={i}/>
               ))}
+              {result.also && result.also.matches.length>0 && (
+                <>
+                  <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,fontWeight:700,letterSpacing:".1em",
+                    textTransform:"uppercase",color:"#94a3b8",margin:"16px 0 10px",display:"flex",alignItems:"center",gap:10}}>
+                    <span style={{flexShrink:0}}>Also serving {result.also.branches.join(" / ")} ({result.also.matches.length})</span>
+                    <span style={{flex:1,height:1,background:"#e2e8f0"}}/>
+                  </div>
+                  {sortTechs(result.also.matches, sortBy, techs).map((tech,i)=>(
+                    <TechCard key={tech.id} tech={tech} highlightZip={result.zip} highlightTypes={result.types} index={result.matches.length+i}/>
+                  ))}
+                </>
+              )}
             </>
           )}
         </div>
@@ -842,7 +877,9 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
         <div style={{textAlign:"center",marginTop:48,color:"#2a3f58"}}>
           <div style={{fontSize:48,marginBottom:10}}>📍</div>
           <div style={{fontFamily:"'DM Mono',monospace",fontSize:11,letterSpacing:"0.13em",textTransform:"uppercase"}}>
-            {lookupReady ? "Select a service type above" : "Enter a ZIP, choose a branch, or search by name"}
+            {lookupReady ? "Select a service type above"
+              : selTypes.length>0 ? "Now enter a ZIP or choose a branch above"
+              : "Enter a ZIP, choose a branch, or search by name"}
           </div>
         </div>
       )}
@@ -1876,7 +1913,7 @@ function GuidePage() {
       {/* ── Search Methods ── */}
       <div className="guide-card">
         <div className="guide-card-title">📍 Three Ways to Find a Technician</div>
-        <div className="guide-step"><div className="guide-step-num">1</div><div className="guide-step-body"><strong>ZIP Code</strong> — Enter the 5-digit service location ZIP. Then select one or more service types to see matching technicians.</div></div>
+        <div className="guide-step"><div className="guide-step-num">1</div><div className="guide-step-body"><strong>ZIP Code</strong> — Enter the 5-digit service location ZIP. Techs explicitly covering that ZIP appear first, followed by all matching techs from the branch that serves it — so a ZIP search always shows the full local crew.</div></div>
         <div className="guide-step"><div className="guide-step-num">2</div><div className="guide-step-body"><strong>Branch</strong> — Select a branch from the dropdown to see all technicians assigned to that location.</div></div>
         <div className="guide-step"><div className="guide-step-num">3</div><div className="guide-step-body"><strong>Name / PestPac Username</strong> — Type in the FIND field to search across all technicians by name or PestPac username instantly.</div></div>
         <div style={{marginTop:12,padding:"10px 14px",background:"#eff6ff",borderRadius:6,border:"1px solid rgba(245,158,11,.15)",fontSize:13,color:"#475569",lineHeight:1.6}}>
