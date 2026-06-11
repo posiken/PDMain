@@ -768,7 +768,10 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
                 const sups = techs.filter(t=>
                   (t.types||[]).includes("Supervisor") &&
                   (branches.length===0 || branches.includes(t.branch))
-                ).slice(0,4);
+                ).sort((a,b)=>{
+                  const hit = t => result.types.filter(ty=>ty!=="Supervisor"&&(t.types||[]).includes(ty)).length;
+                  return hit(b)-hit(a);
+                }).slice(0,4);
                 return (
                   <div style={{maxWidth:380,margin:"22px auto 0",textAlign:"left"}}>
                     <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,letterSpacing:".12em",
@@ -1846,7 +1849,7 @@ function GuidePage() {
         <div className="guide-step"><div className="guide-step-num">2</div><div className="guide-step-body"><strong>Branch</strong> — Select a branch from the dropdown to see all technicians assigned to that location.</div></div>
         <div className="guide-step"><div className="guide-step-num">3</div><div className="guide-step-body"><strong>Name / PestPac Username</strong> — Type in the FIND field to search across all technicians by name or PestPac username instantly.</div></div>
         <div style={{marginTop:12,padding:"10px 14px",background:"#eff6ff",borderRadius:6,border:"1px solid rgba(245,158,11,.15)",fontSize:13,color:"#475569",lineHeight:1.6}}>
-          <strong style={{color:"#2563eb"}}>Supervisor guard:</strong> Supervisors only appear in results when the <strong>Supervisor</strong> service type is explicitly selected.
+          <strong style={{color:"#2563eb"}}>Supervisor guard:</strong> Supervisors only appear when the <strong>Supervisor</strong> type is explicitly selected. Supervisors are tagged with their specialty, so combine <strong>Supervisor + GHP</strong> (or Lawn, Termite, etc.) to find the right one — Branch Managers appear under Supervisor alone.
         </div>
       </div>
 
