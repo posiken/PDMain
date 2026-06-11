@@ -11,6 +11,7 @@ const TYPE_CFG     = {
   Termite:           { color:"#fb923c", bg:"rgba(251,146,60,.13)",  bd:"rgba(251,146,60,.32)"  },
   Supervisor:        { color:"#c084fc", bg:"rgba(192,132,252,.13)", bd:"rgba(192,132,252,.32)" },
   "Trouble Call":    { color:"#f87171", bg:"rgba(248,113,113,.13)", bd:"rgba(248,113,113,.32)" },
+  Production:        { color:"#475569", bg:"rgba(71,85,105,.1)",    bd:"rgba(71,85,105,.3)"    },
   Commercial:        { color:"#22d3ee", bg:"rgba(34,211,238,.13)",  bd:"rgba(34,211,238,.32)"  },
   Mosquito:          { color:"#a3e635", bg:"rgba(163,230,53,.13)",  bd:"rgba(163,230,53,.32)"  },
   Exclusion:         { color:"#b45309", bg:"rgba(251,191,36,.13)",  bd:"rgba(251,191,36,.32)"  },
@@ -490,7 +491,8 @@ const TYPE_ACTIVE_CLASS = {
 };
 const TYPE_SUB = {
   GHP:"Residential", Commercial:"Commercial", Lawn:"Lawn & Outdoor",
-  Termite:"Termite Control", Supervisor:"Lead / Oversight", "Trouble Call":"Trouble Calls"
+  Termite:"Termite Control", Supervisor:"Lead / Oversight",
+  "Trouble Call":"New Starts / Callbacks", Production:"Route Techs"
 };
 
 function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
@@ -536,9 +538,14 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
   const branchOptions = [...new Set(techs.map(t=>t.branch).filter(Boolean))].sort();
 
   const toggleType = (type) => {
-    setSelTypes(prev =>
-      prev.includes(type) ? prev.filter(t=>t!==type) : [...prev, type]
-    );
+    setSelTypes(prev => {
+      if (prev.includes(type)) return prev.filter(t=>t!==type);
+      // Trouble Call and Production are opposites — selecting one clears the other
+      const cleared = type==="Production" ? prev.filter(t=>t!=="Trouble Call")
+                    : type==="Trouble Call" ? prev.filter(t=>t!=="Production")
+                    : prev;
+      return [...cleared, type];
+    });
   };
 
   // Re-run search whenever zip, branch, pestpac, or selected types change
@@ -565,7 +572,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
       const matches = techs
         .filter(t => {
           const tt = t.types||[];
-          return t.branch===selBranch && selTypes.every(st=>tt.includes(st)) && supervisorOk(tt);
+          return t.branch===selBranch && selTypes.every(st=>st==="Production" ? !tt.includes("Trouble Call") : tt.includes(st)) && supervisorOk(tt);
         })
         .sort((a,b)=>(STATUS_ORDER[a.status]??3)-(STATUS_ORDER[b.status]??3));
       setResult({ zip:null, branch:selBranch, pestpac:null, types:[...selTypes], matches });
@@ -575,7 +582,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
       const matches = techs
         .filter(t => {
           const tt = t.types||[];
-          return t.zipCodes.includes(zip) && selTypes.every(st=>tt.includes(st)) && supervisorOk(tt);
+          return t.zipCodes.includes(zip) && selTypes.every(st=>st==="Production" ? !tt.includes("Trouble Call") : tt.includes(st)) && supervisorOk(tt);
         })
         .sort((a,b)=>(STATUS_ORDER[a.status]??3)-(STATUS_ORDER[b.status]??3));
       setResult({ zip, branch:null, pestpac:null, types:[...selTypes], matches });
@@ -664,14 +671,28 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">
                   {selTypes.includes(type) && <span className="type-chk">✓</span>}
-                  {type==="GHP" ? "Res GHP" : "Commercial"}
+                  {type==="GHP" ? "Res GHP" : "Commercial GHP"}
+                </div>
+                <div className="type-btn-sub">{TYPE_SUB[type]}</div>
+              </button>
+            ))}
+          </div>
+          {/* ── Trouble Call vs Production ── */}
+          <div className="type-grid type-grid-2" style={{marginTop:10}}>
+            {["Trouble Call","Production"].map(type=>(
+              <button key={type} className="type-btn type-btn-feat"
+                style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
+                disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
+                <div className="type-btn-label">
+                  {selTypes.includes(type) && <span className="type-chk">✓</span>}
+                  {type}
                 </div>
                 <div className="type-btn-sub">{TYPE_SUB[type]}</div>
               </button>
             ))}
           </div>
           <div className="type-group-divider"/>
-          {/* ── Remaining 14 types in 4-column rows ── */}
+          {/* ── Specialty types in 4-column rows ── */}
           <div className="type-grid type-grid-4">
             {["Lawn","Termite","Mosquito","Bed Bugs"].map(type=>(
               <button key={type} className="type-btn"
@@ -711,8 +732,8 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
             ))}
           </div>
           <div className="type-group-divider"/>
-          <div className="type-grid type-grid-2">
-            {["Trouble Call","Supervisor"].map(type=>(
+          <div className="type-grid" style={{gridTemplateColumns:"1fr"}}>
+            {["Supervisor"].map(type=>(
               <button key={type} className="type-btn type-btn-feat"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
@@ -1889,7 +1910,8 @@ function GuidePage() {
           ["Pre Treat",      "Pre-construction termite pre-treatment"],
           ["Post Treat",     "Post-construction termite treatment"],
           ["Field Inspector","Property inspection services"],
-          ["Trouble Call",   "Trouble call response — callback specialists"],
+          ["Trouble Call",   "New starts, floaters & callback specialists"],
+          ["Production",     "Lookup-only filter — every tech WITHOUT the Trouble Call tag (standard route techs)"],
           ["Supervisor",     "Lead technicians and area supervisors"],
         ].map(([type, desc]) => (
           <div key={type} className="guide-row">
