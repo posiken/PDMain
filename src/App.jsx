@@ -594,7 +594,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
     <>
       <div className="search-hero">
         <div className="hero-eyebrow">// Technician Availability</div>
-        <h1 className="hero-title">Dispatch Lookup</h1>
+        <h1 className="hero-title">Tech Lookup</h1>
         <p className="hero-sub">Enter a ZIP code or select a branch, then choose a service type.</p>
         <div className="search-bar">
           <input className="zip-input" type="text" inputMode="numeric" placeholder="00000"
@@ -665,13 +665,13 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           </div>
           {/* ── Featured top row: Residential GHP + Commercial ── */}
           <div className="type-grid type-grid-2" style={{marginBottom:2}}>
-            {["GHP","Commercial"].map(type=>(
+            {["GHP","Commercial","Lawn","Termite"].map(type=>(
               <button key={type} className="type-btn type-btn-feat"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">
                   {selTypes.includes(type) && <span className="type-chk">✓</span>}
-                  {type==="GHP" ? "Res GHP" : "Commercial GHP"}
+                  {type==="GHP" ? "Res GHP" : type==="Commercial" ? "Commercial GHP" : type}
                 </div>
                 <div className="type-btn-sub">{TYPE_SUB[type]}</div>
               </button>
@@ -694,7 +694,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           <div className="type-group-divider"/>
           {/* ── Specialty types in 4-column rows ── */}
           <div className="type-grid type-grid-4">
-            {["Lawn","Termite","Mosquito","Bed Bugs"].map(type=>(
+            {["Mosquito","Bed Bugs","Exclusion","Wildlife"].map(type=>(
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
@@ -707,7 +707,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           </div>
           <div className="type-group-divider"/>
           <div className="type-grid type-grid-4">
-            {["Exclusion","Wildlife","TAP","Sentricon"].map(type=>(
+            {["TAP","Sentricon","SMART","Pre Treat"].map(type=>(
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
@@ -719,8 +719,8 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
             ))}
           </div>
           <div className="type-group-divider"/>
-          <div className="type-grid type-grid-4">
-            {["SMART","Pre Treat","Post Treat","Field Inspector"].map(type=>(
+          <div className="type-grid type-grid-2">
+            {["Post Treat","Field Inspector"].map(type=>(
               <button key={type} className="type-btn"
                 style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
                 disabled={!lookupReady} onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
@@ -1870,7 +1870,7 @@ function GuidePage() {
       <div style={{marginBottom:28,textAlign:"center"}}>
         <div className="hero-eyebrow">// Reference</div>
         <h1 style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:"clamp(36px,7vw,54px)",fontWeight:900,lineHeight:.95,marginBottom:10,letterSpacing:"-.02em"}}>How To Use</h1>
-        <p style={{color:"#64748b",fontSize:14,lineHeight:1.6}}>A complete reference for Trouble-Call Dispatch</p>
+        <p style={{color:"#64748b",fontSize:14,lineHeight:1.6}}>A complete reference for Tech Dispatch</p>
       </div>
 
       {/* ── Search Methods ── */}
@@ -2324,7 +2324,7 @@ export default function App() {
         <header className="top-bar">
           <button className="brand" onClick={()=>{setView("search");setResult(null);setZipInput("");}}
             title="Back to Lookup">
-            <div className="brand-name">TROUBLE-CALL<span>DISPATCH</span></div>
+            <div className="brand-name">TECH<span>DISPATCH</span></div>
           </button>
           <nav className="top-nav">
             <button className={`nav-pill${view==="search"?" nav-active":""}`}
