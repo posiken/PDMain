@@ -2214,6 +2214,25 @@ function GuidePage() {
         <div style={{marginTop:12,padding:"10px 14px",background:"#eff6ff",borderRadius:6,border:"1px solid rgba(245,158,11,.15)",fontSize:13,color:"#475569",lineHeight:1.6}}>
           <strong style={{color:"#2563eb"}}>Supervisor guard:</strong> Supervisors only appear when the <strong>Supervisor</strong> type is explicitly selected. Supervisors are tagged with their specialty, so combine <strong>Supervisor + GHP</strong> (or Lawn, Termite, etc.) to find the right one — Branch Managers appear under Supervisor alone. Trouble Call and Production never filter supervisors — they match by service type only.
         </div>
+        <div style={{marginTop:8,padding:"10px 14px",background:"#f8fafc",borderRadius:6,border:"1px solid #e2e8f0",fontSize:13,color:"#94a3b8",lineHeight:1.6}}>
+          <strong style={{color:"#475569"}}>No coverage?</strong> When a search returns nothing, the right supervisors for that branch appear automatically as tap-to-call contacts, labeled by department.
+        </div>
+      </div>
+
+      {/* ── Call Type ── */}
+      <div className="guide-card">
+        <div className="guide-card-title">📟 Trouble Call vs Production</div>
+        <div style={{fontSize:13,color:"#475569",lineHeight:1.8}}>
+          The first two buttons pick the <strong>call type</strong>: <strong style={{color:"#2563eb"}}>Trouble Call</strong> shows new-start, floater, and callback techs; <strong style={{color:"#2563eb"}}>Production</strong> shows everyone else (standard route techs). They're opposites, so selecting one clears the other. Combine with a service — e.g. Trouble Call + Res GHP — for precise results.
+        </div>
+      </div>
+
+      {/* ── Codes Page ── */}
+      <div className="guide-card">
+        <div className="guide-card-title">🧾 Service Code Cheat Sheet</div>
+        <div style={{fontSize:13,color:"#475569",lineHeight:1.8}}>
+          The <strong>Codes</strong> page in the navigation is a full CS reference: ~75 service codes organized by category (GHP, TurnerGuard, Lawn, SMART, service calls, and more) with coverage talking points — what's included ✓ and what's not ✗. Search by code, pest, or service, and tap any code to copy it straight into PestPac.
+        </div>
       </div>
 
       {/* ── Saved Shortcuts ── */}
