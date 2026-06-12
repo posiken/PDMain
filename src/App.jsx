@@ -60,6 +60,7 @@ const api = {
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=DM+Mono:wght@400;500&family=Barlow:wght@400;500;600&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;}
 
 .app{min-height:100vh;background:#f8fafc;color:#0f172a;font-family:'Barlow',sans-serif;}
 
@@ -393,6 +394,13 @@ function TechCard({ tech, highlightZip, highlightTypes, index }) {
   const extraZips = tech.zipCodes.length - 1;
   const [copiedPhone,    setCopiedPhone]    = useState(false);
   const [copiedUsername, setCopiedUsername] = useState(false);
+  const [copiedAll,      setCopiedAll]      = useState(false);
+  const handleCopyAll = () => {
+    const block = `${tech.name}\nPhone: ${tech.phone}\nPestPac: ${tech.pestpacUsername||"—"}\nBranch: ${tech.branch||"—"}`;
+    navigator.clipboard?.writeText(block)
+      .then(()=>{ setCopiedAll(true); setTimeout(()=>setCopiedAll(false), 2000); })
+      .catch(()=>{});
+  };
 
   const handleCopyPhone = () => {
     navigator.clipboard.writeText(tech.phone)
@@ -445,11 +453,15 @@ function TechCard({ tech, highlightZip, highlightTypes, index }) {
           </div>
         )}
         {tech.notes && <div className="tech-notes">{tech.notes}</div>}
-        <div className="zip-tags">
+        <div className="zip-tags" style={{alignItems:"center"}}>
           {highlightZip
             ? <><span className="zip-tag zip-hl">{highlightZip}</span>{extraZips>0&&<span className="zip-more">+{extraZips} more</span>}</>
             : <span className="zip-more">{tech.zipCodes.length} ZIP{tech.zipCodes.length!==1?"s":""}</span>
           }
+          <button className={`copy-btn${copiedAll?" copy-btn-ok":""}`} style={{marginLeft:"auto"}}
+            onClick={handleCopyAll} title="Copy name, phone, PestPac & branch">
+            {copiedAll ? "✓ Copied!" : "⧉ Copy Info"}
+          </button>
         </div>
       </div>
     </div>
@@ -517,6 +529,9 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
   const [pestpacSearch, setPestpacSearch] = useState("");
   const [sortBy,        setSortBy]        = useState("status");
   const [showAlso,      setShowAlso]      = useState(false);
+  const [recentZips, setRecentZips] = useState(()=>{
+    try { return JSON.parse(localStorage.getItem('dispatch_recent_zips')||'[]'); } catch { return []; }
+  });
   const [shortcuts, setShortcuts] = useState(()=>{
     try { return JSON.parse(localStorage.getItem('dispatch_shortcuts')||'[]'); } catch { return []; }
   });
@@ -622,6 +637,13 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
       setResult({ zip, branch:null, pestpac:null, types:[...selTypes], matches,
                   also:{ branches:zipBranches, matches:alsoMatches } });
       logAnalytic('zip', zip, selTypes, matches.length + alsoMatches.length);
+      if (matches.length + alsoMatches.length > 0) {
+        setRecentZips(prev=>{
+          const next = [zip, ...prev.filter(z=>z!==zip)].slice(0,5);
+          try { localStorage.setItem('dispatch_recent_zips', JSON.stringify(next)); } catch {}
+          return next;
+        });
+      }
     }
   }, [selTypes, zipInput, selBranch, pestpacSearch, techs]);
   useEffect(()=>{ setShowAlso(false); }, [zipInput, selBranch, selTypes, pestpacSearch]);
@@ -641,6 +663,17 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
               if(v) { setSelBranch(""); setPestpacSearch(""); }
             }}/>
         </div>
+        {!zipInput && !selBranch && !pestpacSearch && recentZips.length>0 && (
+          <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center",marginTop:8}}>
+            <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:".12em",textTransform:"uppercase",color:"#cbd5e1"}}>Recent</span>
+            {recentZips.map(z=>(
+              <button key={z} onClick={()=>setZipInput(z)}
+                style={{fontFamily:"'DM Mono',monospace",fontSize:11,fontWeight:500,padding:"3px 10px",
+                  background:"#f1f5f9",border:"1px solid #e2e8f0",borderRadius:20,color:"#475569",
+                  cursor:"pointer",letterSpacing:".06em"}}>{z}</button>
+            ))}
+          </div>
+        )}
 
         <div className="lookup-or">or</div>
 
@@ -2154,6 +2187,12 @@ function CheatSheetPage() {
         </div>
       </div>
 
+      {query && visible.length>0 && (
+        <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,letterSpacing:".1em",textTransform:"uppercase",
+          color:"#94a3b8",margin:"2px 0 12px",textAlign:"center"}}>
+          {visible.reduce((n,s)=>n+s.codes.length,0)} codes · {visible.length} categor{visible.length===1?"y":"ies"}
+        </div>
+      )}
       {visible.length===0 && (
         <div className="empty-state">
           <div className="empty-icon">🔍</div>
@@ -2563,7 +2602,7 @@ export default function App() {
   const openPopout = () => {
     const w = 440, h = 740;
     const l = Math.max(0, (window.screen.availWidth || window.screen.width) - w - 20);
-    window.open(window.location.origin, "TroubleCallDispatch",
+    window.open(window.location.origin, "TechDispatch",
       `width=${w},height=${h},left=${l},top=20,resizable=yes,scrollbars=yes`);
   };
 
@@ -2654,8 +2693,19 @@ export default function App() {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   if (!ready) return (
-    <div style={{minHeight:"100vh",background:"#f8fafc",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16}}>
-      <div style={{fontFamily:"'DM Mono',monospace",fontSize:13,color:"#3d5068"}}>Connecting to database…</div>
+    <div style={{minHeight:"100vh",background:"#f8fafc",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:18}}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@900&family=DM+Mono:wght@500&display=swap');
+        @keyframes tdPulse{0%,100%{opacity:.35;transform:scale(.85);}50%{opacity:1;transform:scale(1);}}`}</style>
+      <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:900,fontSize:34,letterSpacing:".06em",color:"#0f172a",lineHeight:1}}>
+        TECH<span style={{color:"#2563eb"}}> DISPATCH</span>
+      </div>
+      <div style={{display:"flex",gap:7}}>
+        {[0,1,2].map(i=>(
+          <span key={i} style={{width:8,height:8,borderRadius:"50%",background:"#2563eb",
+            animation:`tdPulse 1.1s ease-in-out ${i*0.18}s infinite`}}/>
+        ))}
+      </div>
+      <div style={{fontFamily:"'DM Mono',monospace",fontSize:11,letterSpacing:".14em",textTransform:"uppercase",color:"#94a3b8"}}>Loading roster</div>
     </div>
   );
 
@@ -2663,7 +2713,7 @@ export default function App() {
     <div style={{minHeight:"100vh",background:"#f8fafc",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16}}>
       <div style={{fontSize:36}}>⚠️</div>
       <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:24,fontWeight:700}}>Connection Failed</div>
-      <div style={{fontSize:13,color:"#64748b",maxWidth:300,textAlign:"center",lineHeight:1.6}}>Could not reach the database. Check your environment variables and Supabase project status.</div>
+      <div style={{fontSize:13,color:"#64748b",maxWidth:300,textAlign:"center",lineHeight:1.6}}>Couldn't reach the server. Check your internet connection and try again.</div>
       <button className="btn-add" onClick={loadTechs}>Retry</button>
     </div>
   );
