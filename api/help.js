@@ -30,6 +30,23 @@ async function getAgent(supabase, username, token) {
   }
 }
 
+async function getSupStatus(supabase) {
+  try {
+    const { data } = await supabase
+      .from('app_config').select('value').eq('key', 'sup_status').single()
+    return data?.value?.sups ?? {}
+  } catch {
+    return {}
+  }
+}
+async function saveSupStatus(supabase, sups) {
+  await supabase.from('app_config').upsert({ key: 'sup_status', value: { sups } })
+}
+const TTL = 10 * 3600000
+const availLabels = sups => Object.entries(sups)
+  .filter(([, v]) => v?.available && Date.now() - (v.ts || 0) < TTL)
+  .map(([label]) => label)
+
 const sanitizeCtx = c => ({
   zip:    c?.zip ? String(c.zip).slice(0, 5) : null,
   branch: c?.branch ? String(c.branch).slice(0, 30) : null,
@@ -45,7 +62,7 @@ export default async function handler(req, res) {
   try { supabase = getSupabase() }
   catch (e) { return res.status(500).json({ error: e.message }) }
 
-  const { action, code, username, token, id, note, context } = req.body ?? {}
+  const { action, code, username, token, id, note, context, available } = req.body ?? {}
   let requests = await getReqs(supabase)
 
   // ── Agent actions (validated by session token) ─────────────────────────────
@@ -88,14 +105,28 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true })
   }
 
+  // ── Public: how many supervisors are marked available right now ────────────
+  if (action === 'avail_count') {
+    const sups = await getSupStatus(supabase)
+    return res.status(200).json({ n: availLabels(sups).length })
+  }
+
   // ── Supervisor actions (require a valid admin code) ────────────────────────
   const session = await verifyCode(supabase, code)
   if (!session) return res.status(401).json({ error: 'Invalid code' })
 
+  if (action === 'avail') {
+    const sups = await getSupStatus(supabase)
+    sups[session.label] = { available: !!available, ts: Date.now() }
+    await saveSupStatus(supabase, sups)
+    return res.status(200).json({ ok: true, sups: availLabels(sups) })
+  }
+
   if (action === 'list') {
     const open   = requests.filter(r => r.status === 'open').sort((a, b) => a.ts - b.ts)
     const recent = requests.filter(r => r.status !== 'open').sort((a, b) => (b.resolvedAt||b.ts) - (a.resolvedAt||a.ts)).slice(0, 8)
-    return res.status(200).json({ open, recent })
+    const sups   = availLabels(await getSupStatus(supabase))
+    return res.status(200).json({ open, recent, sups })
   }
 
   if (action === 'claim') {
