@@ -1,119 +1,75 @@
-# Trouble-Call Dispatch
+# Tech Dispatch
 
-A purpose-built web app for pest control call center agents to quickly look up technicians by service area, skill set, or name — and connect with them in seconds.
+A purpose-built web app for pest control call center agents: look up the right technician by service area, call type, skill set, or name — and connect in seconds. Includes a full CS service-code cheat sheet.
 
-Built from scratch with no templates or off-the-shelf UI kits. Every screen and feature was designed specifically for this workflow.
-
----
-
-## Live App
-
-Deployed on Vercel. Open any browser on any device — no install, no account required for agents.
+Built from scratch with no templates or off-the-shelf UI kits. Professional light theme, blue brand accent.
 
 ---
 
 ## How It Works
 
-1. Enter a customer ZIP code, select a branch, or search by technician name / PestPac username
-2. Select one or more service types to filter results
-3. Matched technicians appear sorted by status — tap to call or copy the PestPac username
+1. Pick the call type — **Trouble Call** (new starts, floaters, callbacks) or **Production** (standard route techs)
+2. Pick services — Res GHP, Commercial GHP, Lawn, Termite, or any of 12 specialty types
+3. Enter a ZIP, choose a branch, or search by name / PestPac username — any order works
+4. Tap to call, or copy the PestPac username
 
 ---
 
-## Features
-
-### Lookup
+## Lookup Features
 
 | Feature | Description |
 |---|---|
-| ZIP code search | Enter a 5-digit ZIP to find all technicians covering that area |
-| Branch search | Select a branch to browse all assigned technicians |
-| Name / PestPac search | Find any technician instantly by name or PestPac username |
-| 16 service type filters | Filter by any combination of service types |
-| Saved filter shortcuts | Save up to 5 ZIP + service type combos as one-tap shortcuts |
-| Result sort options | Sort by status, A→Z, Z→A, branch, or newest |
-| Supervisor guard | Supervisors only appear when the Supervisor type is explicitly selected |
+| Call-type lens | Trouble Call vs Production as the first choice; opposites auto-clear each other. Never filters supervisors |
+| Smart ZIP search | Techs **confirmed** for the ZIP appear first; other techs from the serving branch sit behind a "NOT confirmed for this ZIP" warning button — reference only |
+| Branch & name search | Browse a whole branch, or find anyone by name / PestPac username |
+| 16 service types | Featured core services + specialty grid; supervisors tagged by department (Supervisor + Lawn → lawn supervisor) |
+| Supervisor guard | Supervisors only appear when explicitly selected |
+| No-coverage escalation | Empty results show the branch's supervisors as tap-to-call contacts, labeled by department, specialty matches highlighted |
+| Saved shortcuts | Up to 5 one-tap filter combos, persistent per browser |
+| Jump pill | Live "N confirmed ↓" count beside the type grid scrolls straight to results |
+| Order-independent input | Types first or location first — results compute when both exist |
 
-### Technician Cards
+## Technician Cards
 
-Each result card shows:
-- **Status badge** — color-coded availability indicator
-- **Phone** — tap to call on mobile, copy button for desktop
-- **PestPac username** — one-tap copy button
-- **Service type badges** — matched types highlighted in color
-- **ZIP coverage** — matched ZIP shown, "+N more" for additional areas
-- **Branch label**
-- **Warning flag** — red banner for techs requiring special attention before scheduling
+Status badge · tap-to-call phone · PestPac copy button · matched service types · ZIP coverage · branch · orange warning banner for techs needing notes review.
 
-### Technician Statuses
+**Statuses:** Best Fit · Manual Schedule · In Training · PTO · Do Not Schedule · (none)
 
-| Status | Meaning |
-|---|---|
-| **Best Fit** | Confirmed top match for this call — sort priority 1 |
-| **Manual Schedule** | Requires coordination before booking |
-| **In Training** | Verify availability before scheduling |
-| **PTO** | Not available |
-| **Do Not Schedule** | Do not assign — check notes |
-| *(none)* | Status not set |
+## CS Cheat Sheet (Codes page)
 
-### Desktop Features
+~75 service codes across GHP/TurnerShield, TurnerGuard, Lawn/TurnerGreen, SMART, Service Calls, Follow-Ups, Termite Warranties, Commercial, Mosquito, and Impact — each with frequency, common/uncommon marker, and coverage explanation. Coverage talking points per category (✓ included / ✗ not covered). Search by code, pest, or service; tap any code to copy.
 
-- **Pop-out window** — Opens a compact floating window via the ⧉ button. Keep the lookup visible while working in other tabs.
-- **Keyboard shortcuts** — `Ctrl+K` / `⌘K` jumps to lookup. `Esc` closes any open modal.
-- **Offline mode** — Service worker caches the tech list. Lookup works during outages with a visible offline banner.
+## Admin Panel
+
+Manager or master access code required.
+
+- **Technicians** — full CRUD, quick status dropdown per row, **bulk status updates** via checkbox selection, branch filter + name search, duplicate detection (phone & PestPac), JSON export/import
+- **Reports** — Coverage Gap report per branch (0 / 1 / 2+ techs per service type) and Usage Analytics (last 500 searches: top ZIPs, top services, weekly counts)
+- **Backups** — auto-backup on every save, last 10 kept, one-tap restore
+- **Access Codes** *(master)* — manage named manager codes
+
+## Desktop Extras
+
+Pop-out compact window (⧉) · `Ctrl/⌘+K` jumps to lookup · `Esc` closes modals · Offline mode serves the cached roster with a visible banner.
 
 ---
 
-### Admin Panel
+## Branches (15)
 
-Requires a manager or master access code. Accessible via **Manage Techs** in the navigation.
+Jax N · Jax E · Jax W · Jax S · St. Augustine · Daytona · Gainesville · Ocala · Orlando · Melbourne · Port St Lucie · WPB-FTL · Sarasota · Tampa · Ft. Myers/Naples — plus a regional Wildlife team.
 
-#### Technicians Tab
-- Add, edit, and delete technicians
-- Quick status toggle directly in the table — no modal required
-- Filter by branch or search by name
-- Duplicate detection — warns if a phone number or PestPac username already exists
-- Export roster as JSON · Import JSON to bulk-load technicians
-
-#### Reports Tab
-- **Coverage Gap Report** — For each branch, shows which service types have 0 techs (gap), 1 tech (at-risk), or 2+ (covered). Sorted by most gaps first. Excludes Do Not Schedule techs.
-- **Usage Analytics** — Tracks the last 500 searches. Shows total lookups, this week's count, average result count, top 5 ZIPs, and top 5 most-searched service types.
-
-#### Backups Tab
-- Auto-backup on every save — last 10 states stored, one-tap restore
-- Download any backup as JSON
-
-#### Access Codes Tab *(master only)*
-- Change the master access code
-- Add, rename, or delete named manager codes
-
----
+Current roster: **383 technicians** imported from the operational Excel workbooks, with PestPac usernames, ZIP territories, statuses, and supervisor department tags.
 
 ## Service Types
 
-GHP · Lawn · Termite · Mosquito · Commercial · Bed Bugs · Exclusion · Wildlife · TAP · Sentricon · SMART · Pre Treat · Post Treat · Field Inspector · Trouble Call · Supervisor
-
----
-
-## Branches
-
-Jax N · Jax E · Jax W · Jax S · St. Augustine · Melbourne · Ocala · Sarasota · Ft. Myers/Naples · Tampa · Orlando · WPB-FTL · Daytona
+GHP · Commercial · Lawn · Termite · Mosquito · Bed Bugs · Exclusion · Wildlife · TAP · Sentricon · SMART · Pre Treat · Post Treat · Field Inspector · Trouble Call · Supervisor
+*(Production is a lookup-only lens: every tech without the Trouble Call tag.)*
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 18 + Vite |
-| Styling | Plain CSS (dark theme) |
-| Fonts | Barlow Condensed · DM Mono · Barlow |
-| API | Vercel Serverless Functions |
-| Database | Supabase (PostgreSQL) |
-| Hosting | Vercel |
-| Offline | Service Worker (Cache API) |
-
----
+React 18 + Vite · plain CSS (light theme) · Vercel serverless API · Supabase (PostgreSQL) · Service Worker offline cache · Barlow Condensed / DM Mono / Barlow.
 
 ## Environment Variables
 
@@ -122,11 +78,9 @@ SUPABASE_URL=your_project_url
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
 
----
-
 ## Deployment
 
-Auto-deploys on every push to `main` via Vercel.
+Auto-deploys on push to `main` via Vercel.
 
 ```bash
 npm install && npm run dev    # local dev
