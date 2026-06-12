@@ -210,6 +210,9 @@ html{scroll-behavior:smooth;}
 .help-item:last-child{border-bottom:none;}
 .fab-help{position:fixed;right:18px;bottom:18px;z-index:150;background:#dc2626;color:#fff;border:none;border-radius:28px;padding:13px 20px;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:.06em;cursor:pointer;box-shadow:0 6px 18px rgba(220,38,38,.35);display:flex;align-items:center;gap:8px;transition:background .15s;}
 .fab-help:hover{background:#b91c1c;}
+.alert-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px;}
+.alert-box{background:#fff;border-radius:14px;padding:22px 24px;width:100%;max-width:390px;border:3px solid #dc2626;animation:alertFlash .9s ease-in-out infinite;}
+@keyframes alertFlash{0%,100%{border-color:#dc2626;box-shadow:0 0 0 0 rgba(220,38,38,.5);}50%{border-color:#fecaca;box-shadow:0 0 0 16px rgba(220,38,38,0);}}
 .fab-chip{position:fixed;right:18px;bottom:18px;z-index:150;background:#fff;border:1.5px solid #bfdbfe;border-radius:12px;padding:11px 14px;box-shadow:0 8px 24px rgba(0,0,0,.14);width:280px;max-width:calc(100vw - 24px);}
 @media(max-width:480px){.fab-help{right:12px;bottom:12px;padding:11px 16px;font-size:14px;}.fab-chip{right:12px;bottom:12px;}}
 
@@ -263,8 +266,11 @@ html{scroll-behavior:smooth;}
 .guide-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
 .guide-row-desc{font-size:13px;color:#475569;line-height:1.5;}
 .cheat-search{position:sticky;top:58px;z-index:50;background:#f8fafc;padding:8px 0 10px;}
-.cheat-chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;-ms-overflow-style:none;scrollbar-width:none;}
-.cheat-chips::-webkit-scrollbar{display:none;}
+.cheat-chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent;}
+.cheat-chips::-webkit-scrollbar{height:6px;}
+.cheat-chips::-webkit-scrollbar-track{background:transparent;}
+.cheat-chips::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
+.cheat-chips::-webkit-scrollbar-thumb:hover{background:#94a3b8;}
 .cheat-code{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.04em;
   background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:5px;padding:3px 8px;
   cursor:pointer;white-space:nowrap;transition:all .15s;}
@@ -1488,6 +1494,12 @@ function HelpRequestModal({ agent, onClose, onRaised }) {
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [err,  setErr]  = useState("");
+  const [supsN, setSupsN] = useState(null);
+  useEffect(()=>{
+    fetch('/api/help', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'avail_count' }) })
+      .then(r=>r.json()).then(d=>setSupsN(typeof d.n==="number"?d.n:null)).catch(()=>{});
+  }, []);
   const ctx = (typeof window!=="undefined" && window.__dispatchCtx) || {};
   const ctxLabel = [ctx.branch || ctx.zip, (ctx.types||[]).slice(0,3).join(" + ")].filter(Boolean).join(" · ");
   const send = async () => {
@@ -1505,8 +1517,13 @@ function HelpRequestModal({ agent, onClose, onRaised }) {
       <div className="modal modal-sm">
         <div className="modal-title">🆘 Request a Supervisor</div>
         <p style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:14}}>
-          Every supervisor signed into Tech Dispatch gets an instant alert with your name{ctxLabel?" and your current search":""}.
+          Available supervisors get an instant ringing alert with your name{ctxLabel?" and your current search":""}.
         </p>
+        {supsN!==null && (
+          supsN>0
+            ? <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#15803d",marginBottom:12,letterSpacing:".05em"}}>● {supsN} supervisor{supsN>1?"s":""} available now</div>
+            : <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#92400e",background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:6,padding:"6px 10px",marginBottom:12,letterSpacing:".04em"}}>○ No supervisors marked available — your request will still be posted to all of them</div>
+        )}
         {ctxLabel && (
           <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#1e40af",background:"#eff6ff",
             border:"1px solid #bfdbfe",borderRadius:6,padding:"7px 11px",marginBottom:12,letterSpacing:".04em"}}>
@@ -2474,7 +2491,7 @@ function CheatSheetPage() {
             style={{background:"none",border:"none",color:"#64748b",cursor:"pointer",
               fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:".1em",textTransform:"uppercase",padding:0}}>Clear</button>}
         </div>
-        <div className="cheat-chips">
+        <div className="cheat-chips" onWheel={e=>{ if(Math.abs(e.deltaY)>Math.abs(e.deltaX)) e.currentTarget.scrollLeft += e.deltaY; }}>
           <button className={`sort-btn${cat==="all"?" sort-btn-active":""}`} onClick={()=>setCat("all")}>All</button>
           {CHEAT_DATA.map(s=>(
             <button key={s.id} className={`sort-btn${cat===s.id?" sort-btn-active":""}`}
@@ -2865,14 +2882,23 @@ export default function App() {
   const [saveStatus, setSaveStatus] = useState(null); // null | "saving" | "ok" | "err"
   const [isOffline,  setIsOffline]  = useState(typeof navigator!=="undefined"&&!navigator.onLine);
   // ── Agent session + supervisor help-desk ───────────────────────────────────
-  const [agentSession,   setAgentSession]   = useState(()=>{ try { return JSON.parse(localStorage.getItem('dispatch_agent')||'null'); } catch { return null; } });
+  const [agentSession,   setAgentSession]   = useState(()=>{
+    try {
+      const s = JSON.parse(localStorage.getItem('dispatch_agent')||'null');
+      const last = parseInt(localStorage.getItem('dispatch_agent_last')||'0', 10);
+      if (s && Date.now() - last > 600000) { localStorage.removeItem('dispatch_agent'); return null; }
+      return s;
+    } catch { return null; }
+  });
   const [showAgentLogin, setShowAgentLogin] = useState(false);
   const [showHelpModal,  setShowHelpModal]  = useState(false);
   const [myRequest,      setMyRequest]      = useState(null);
-  const [helpReqs,       setHelpReqs]       = useState({ open:[], recent:[] });
+  const [helpReqs,       setHelpReqs]       = useState({ open:[], recent:[], sups:[] });
   const [showHelpPanel,  setShowHelpPanel]  = useState(false);
+  const [alertReq, setAlertReq] = useState(null);
   const prevOpenRef = useRef([]);
   const titleRef    = useRef(null);
+  const audioRef    = useRef(null);
 
   // ── Load technicians from API on mount ─────────────────────────────────────
   const loadTechs = useCallback(async () => {
@@ -2921,25 +2947,43 @@ export default function App() {
     try {
       const d = await fetch('/api/help', { method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ action:'list', code: authCode }) }).then(r=>r.json());
-      if (d.open) setHelpReqs({ open: d.open, recent: d.recent || [] });
+      if (d.open) setHelpReqs({ open: d.open, recent: d.recent || [], sups: d.sups || [] });
     } catch {}
   }, [authCode]);
   useEffect(()=>{
-    if (!authCode) { setHelpReqs({ open:[], recent:[] }); setShowHelpPanel(false); return; }
+    if (!authCode) { setHelpReqs({ open:[], recent:[], sups:[] }); setShowHelpPanel(false); return; }
     refreshHelp();
     const id = setInterval(refreshHelp, 15000);
     return ()=>clearInterval(id);
   }, [authCode, refreshHelp]);
 
-  // ── New-request alert: sound + browser notification + title flash ──────────
+  // ── Alert audio: one beep every 5s for 60s (12 plays), stoppable ───────────
+  const stopAlertAudio = useCallback(()=>{
+    if (audioRef.current) { clearInterval(audioRef.current); audioRef.current = null; }
+  }, []);
+  const startAlertAudio = useCallback(()=>{
+    stopAlertAudio();
+    beep();
+    let plays = 1;
+    audioRef.current = setInterval(()=>{
+      beep();
+      if (++plays >= 12) stopAlertAudio();
+    }, 5000);
+  }, [stopAlertAudio]);
+  useEffect(()=>()=>stopAlertAudio(), [stopAlertAudio]);
+  const dismissAlert = useCallback(()=>{ stopAlertAudio(); setAlertReq(null); }, [stopAlertAudio]);
+
+  // ── New-request alert — only for supervisors marked AVAILABLE ──────────────
   useEffect(()=>{
     const ids = helpReqs.open.map(r=>r.id);
     const fresh = ids.filter(id=>!prevOpenRef.current.includes(id));
-    if (fresh.length > 0 && authCode) {
-      beep();
+    const isAvail = (helpReqs.sups||[]).includes(authLabel);
+    if (fresh.length > 0 && authCode && isAvail) {
+      const r = helpReqs.open.find(x=>x.id===fresh[0]);
+      setAlertReq(r || null);
+      startAlertAudio();
       try {
         if (typeof Notification !== "undefined" && Notification.permission === "granted") {
-          const r = helpReqs.open.find(x=>x.id===fresh[0]);
           new Notification("🆘 Supervisor requested", {
             body: (r?.agentName || "An agent") + " needs help" + (r?.context?.branch ? " · " + r.context.branch : "") });
         }
@@ -2952,7 +2996,31 @@ export default function App() {
       }, 900);
     }
     prevOpenRef.current = ids;
-  }, [helpReqs.open, authCode]);
+  }, [helpReqs.open, helpReqs.sups, authLabel, authCode, startAlertAudio]);
+
+  const toggleAvail = async () => {
+    const next = !(helpReqs.sups||[]).includes(authLabel);
+    try { await fetch('/api/help', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'avail', code: authCode, available: next }) }); } catch {}
+    refreshHelp();
+  };
+
+  // ── Agent inactivity auto-logout: 10 minutes ───────────────────────────────
+  useEffect(()=>{
+    if (!agentSession) return;
+    const bump = ()=>{ try { localStorage.setItem('dispatch_agent_last', String(Date.now())); } catch {} };
+    bump();
+    const evs = ['pointerdown','keydown'];
+    evs.forEach(e=>window.addEventListener(e, bump));
+    const id = setInterval(()=>{
+      const last = parseInt(localStorage.getItem('dispatch_agent_last')||'0', 10);
+      if (Date.now() - last > 600000) {
+        setAgentSession(null); setMyRequest(null);
+        try { localStorage.removeItem('dispatch_agent'); } catch {}
+      }
+    }, 30000);
+    return ()=>{ evs.forEach(e=>window.removeEventListener(e, bump)); clearInterval(id); };
+  }, [agentSession]);
 
   const agentSignOut = () => {
     setAgentSession(null); setMyRequest(null);
@@ -3132,9 +3200,19 @@ export default function App() {
               {!authLevel&&<span style={{marginRight:5,fontSize:11,opacity:.7}}>🔒</span>}Manage Techs
             </button>
             {authCode && (
+              <button className="nav-pill" style={{flexShrink:0,
+                  color:(helpReqs.sups||[]).includes(authLabel)?"#15803d":"#94a3b8",
+                  borderColor:(helpReqs.sups||[]).includes(authLabel)?"rgba(21,128,61,.4)":"#e2e8f0",
+                  background:(helpReqs.sups||[]).includes(authLabel)?"rgba(21,128,61,.07)":"transparent"}}
+                title="Toggle availability — help-request alerts only ring supervisors marked Available"
+                onClick={()=>{ toggleAvail(); try { if (typeof Notification!=="undefined" && Notification.permission==="default") Notification.requestPermission(); } catch {} }}>
+                {(helpReqs.sups||[]).includes(authLabel) ? "● Available" : "○ Away"}
+              </button>
+            )}
+            {authCode && (
               <div style={{position:"relative",flexShrink:0}}>
                 <button className="nav-pill bell-btn" title="Help requests"
-                  onClick={()=>{ setShowHelpPanel(v=>!v); try { if (typeof Notification!=="undefined" && Notification.permission==="default") Notification.requestPermission(); } catch {} }}>
+                  onClick={()=>{ setShowHelpPanel(v=>!v); dismissAlert(); try { if (typeof Notification!=="undefined" && Notification.permission==="default") Notification.requestPermission(); } catch {} }}>
                   🔔{helpReqs.open.length>0 && <span className="bell-badge">{helpReqs.open.length}</span>}
                 </button>
                 {showHelpPanel && (
@@ -3217,6 +3295,30 @@ export default function App() {
                 </div>
               </div>
             : <button className="fab-help" onClick={()=> agentSession ? setShowHelpModal(true) : setShowAgentLogin(true)}>🆘 Supervisor</button>
+        )}
+        {alertReq && (
+          <div className="alert-overlay">
+            <div className="alert-box">
+              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+                <span style={{fontSize:30,lineHeight:1}}>🆘</span>
+                <div>
+                  <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:24,fontWeight:900,color:"#dc2626",lineHeight:1}}>SUPERVISOR NEEDED</div>
+                  <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#94a3b8",letterSpacing:".08em",marginTop:3}}>{timeAgo(alertReq.ts)}</div>
+                </div>
+              </div>
+              <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:20,fontWeight:700,color:"#0f172a",marginBottom:4}}>{alertReq.agentName}</div>
+              {(alertReq.context?.zip || alertReq.context?.branch || (alertReq.context?.types||[]).length>0) && (
+                <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#1e40af",background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:6,padding:"6px 10px",marginBottom:8,letterSpacing:".04em"}}>
+                  {[alertReq.context.branch || alertReq.context.zip, (alertReq.context.types||[]).slice(0,3).join(" + ")].filter(Boolean).join(" · ")}
+                </div>
+              )}
+              {alertReq.note && <div style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:12}}>"{alertReq.note}"</div>}
+              <div style={{display:"flex",gap:10,marginTop:14}}>
+                <button className="btn-cancel" style={{flex:1}} onClick={dismissAlert}>Dismiss</button>
+                <button className="btn-save" style={{flex:2}} onClick={()=>{ claimReq(alertReq.id); dismissAlert(); setShowHelpPanel(true); }}>✋ Claim — I'm Going</button>
+              </div>
+            </div>
+          </div>
         )}
         {showLogin && <LoginModal onLogin={handleLogin} onClose={()=>setShowLogin(false)}/>}
         {showAgentLogin && <AgentLoginModal onClose={()=>setShowAgentLogin(false)}
