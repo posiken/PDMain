@@ -1432,16 +1432,26 @@ function ReportsTab({ techs }) {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const checkTypes = TECH_TYPES.filter(t => t !== 'Supervisor');
+  // Regional techs (no branch — e.g. the Wildlife team) count toward every branch
+  const regional = techs.filter(t => !t.branch && t.status !== 'do-not-schedule');
+  const regionalN = type => regional.filter(t => (t.types||[]).includes(type)).length;
   const coverage = BRANCHES
     .filter(b => techs.some(t => t.branch === b))
     .map(branch => {
       const bTechs = techs.filter(t => t.branch === branch && t.status !== 'do-not-schedule');
-      const types  = checkTypes.map(type => ({ type, n: bTechs.filter(t => (t.types||[]).includes(type)).length }));
+      const types  = checkTypes.map(type => ({
+        type,
+        n: bTechs.filter(t => (t.types||[]).includes(type)).length + regionalN(type)
+      }));
       const gaps   = types.filter(t => t.n === 0).length;
       const risks  = types.filter(t => t.n === 1).length;
       return { branch, count: bTechs.length, types, gaps, risks };
     })
     .sort((a, b) => b.gaps - a.gaps || b.risks - a.risks);
+  const branchCards = coverage.filter(c => c.gaps > 0 || c.risks > 0);
+  const fullCov     = coverage.filter(c => c.gaps === 0 && c.risks === 0);
+  const totGaps     = coverage.reduce((s,c)=>s+c.gaps, 0);
+  const totRisks    = coverage.reduce((s,c)=>s+c.risks, 0);
 
   void refreshKey;
   const events   = (() => { try { return JSON.parse(localStorage.getItem('dispatch_analytics')||'[]'); } catch { return []; } })();
@@ -1473,37 +1483,75 @@ function ReportsTab({ techs }) {
 
       {section==='coverage' && (
         <div>
-          <p style={{fontSize:11,color:'#475569',fontFamily:"'DM Mono',monospace",marginBottom:14,lineHeight:1.8,letterSpacing:'.03em'}}>
-            Excludes <span style={{color:'#ef4444'}}>Do Not Schedule</span> techs.&ensp;
-            <span style={{color:'#ef4444'}}>●</span> no coverage&ensp;
-            <span style={{color:'#b45309'}}>●</span> 1 tech&ensp;
-            <span style={{color:'#22c55e'}}>●</span> 2+ techs
-          </p>
           {coverage.length === 0
             ? <div className="empty-state"><div className="empty-icon">📍</div><div className="empty-title">No Branch Data</div><div className="empty-text">Add technicians with branches to see coverage.</div></div>
-            : coverage.map(({branch, count, types, gaps, risks}) => (
-              <div key={branch} style={{background:'#ffffff',border:'1px solid #e2e8f0',borderRadius:10,padding:'14px 16px',marginBottom:8,boxShadow:'0 1px 3px rgba(0,0,0,.04)'}}>
-                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
-                  <div>
-                    <span style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:17,fontWeight:700}}>{branch}</span>
-                    <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#475569',marginLeft:8}}>{count} tech{count!==1?'s':''}</span>
+            : <>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginBottom:14}}>
+                {[{v:totGaps,l:'Coverage Gaps',c:totGaps>0?'#dc2626':'#15803d'},
+                  {v:totRisks,l:'At Risk (1 tech)',c:totRisks>0?'#92400e':'#15803d'},
+                  {v:`${fullCov.length}/${coverage.length}`,l:'Branches Fully Covered',c:'#15803d'}].map(({v,l,c})=>(
+                  <div key={l} style={{background:'#ffffff',border:'1px solid #e2e8f0',borderRadius:9,padding:'12px',textAlign:'center'}}>
+                    <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:30,fontWeight:900,color:c,lineHeight:1}}>{v}</div>
+                    <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginTop:4}}>{l}</div>
                   </div>
-                  {gaps>0   && <span style={{background:'rgba(239,68,68,.1)',border:'1px solid rgba(239,68,68,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#ef4444',fontFamily:"'DM Mono',monospace"}}>{gaps} gap{gaps!==1?'s':''}</span>}
-                  {gaps===0 && risks>0   && <span style={{background:'rgba(251,191,36,.1)',border:'1px solid rgba(251,191,36,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#92400e',fontFamily:"'DM Mono',monospace"}}>{risks} at risk</span>}
-                  {gaps===0 && risks===0 && <span style={{background:'rgba(34,197,94,.1)',border:'1px solid rgba(34,197,94,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#22c55e',fontFamily:"'DM Mono',monospace"}}>Full coverage</span>}
-                </div>
-                <div style={{display:'flex',flexWrap:'wrap',gap:4}}>
-                  {types.map(({type,n}) => {
-                    const col = n===0
-                      ? {t:'#dc2626',bg:'rgba(220,38,38,.1)', bd:'rgba(220,38,38,.3)'}
-                      : n===1
-                      ? {t:'#92400e',bg:'rgba(180,83,9,.08)',  bd:'rgba(180,83,9,.25)'}
-                      : {t:'#166534',bg:'rgba(22,101,52,.08)', bd:'rgba(22,101,52,.2)' };
-                    return <span key={type} style={{padding:'2px 7px',borderRadius:4,fontSize:9,fontFamily:"'DM Mono',monospace",fontWeight:700,letterSpacing:'.04em',background:col.bg,border:`1px solid ${col.bd}`,color:col.t}}>{type.toUpperCase()}</span>;
-                  })}
-                </div>
+                ))}
               </div>
-            ))
+              <p style={{fontSize:10,color:'#94a3b8',fontFamily:"'DM Mono',monospace",marginBottom:14,lineHeight:1.7,letterSpacing:'.03em'}}>
+                Excludes Do Not Schedule techs · Regional team (no branch) counts toward every branch · Branches sorted by most gaps
+              </p>
+              {branchCards.map(({branch, count, types, gaps, risks}) => {
+                const gapT  = types.filter(t=>t.n===0).map(t=>t.type).sort();
+                const riskT = types.filter(t=>t.n===1).map(t=>t.type).sort();
+                const covN  = types.length - gapT.length - riskT.length;
+                const chip = (type, col) => (
+                  <span key={type} style={{padding:'2px 7px',borderRadius:4,fontSize:9,fontFamily:"'DM Mono',monospace",
+                    fontWeight:700,letterSpacing:'.04em',background:col.bg,border:`1px solid ${col.bd}`,color:col.t}}>
+                    {type.toUpperCase()}
+                  </span>
+                );
+                const RED = {t:'#dc2626',bg:'rgba(220,38,38,.08)',bd:'rgba(220,38,38,.3)'};
+                const AMB = {t:'#92400e',bg:'rgba(180,83,9,.07)', bd:'rgba(180,83,9,.25)'};
+                return (
+                  <div key={branch} style={{background:'#ffffff',border:'1px solid #e2e8f0',borderRadius:10,padding:'14px 16px',marginBottom:8,boxShadow:'0 1px 3px rgba(0,0,0,.04)'}}>
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:11,gap:8,flexWrap:'wrap'}}>
+                      <div>
+                        <span style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:17,fontWeight:700}}>{branch}</span>
+                        <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#475569',marginLeft:8}}>{count} tech{count!==1?'s':''}</span>
+                      </div>
+                      <div style={{display:'flex',gap:5}}>
+                        {gaps>0  && <span style={{background:'rgba(220,38,38,.08)',border:'1px solid rgba(220,38,38,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#dc2626',fontFamily:"'DM Mono',monospace",fontWeight:700}}>{gaps} gap{gaps!==1?'s':''}</span>}
+                        {risks>0 && <span style={{background:'rgba(180,83,9,.07)',border:'1px solid rgba(180,83,9,.22)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#92400e',fontFamily:"'DM Mono',monospace",fontWeight:700}}>{risks} at risk</span>}
+                      </div>
+                    </div>
+                    {gapT.length>0 && (
+                      <div style={{display:'flex',alignItems:'flex-start',gap:9,marginBottom:riskT.length||covN?9:0}}>
+                        <span style={{fontFamily:"'DM Mono',monospace",fontSize:8,fontWeight:700,letterSpacing:'.1em',color:'#dc2626',flexShrink:0,paddingTop:3,width:78}}>NO COVERAGE</span>
+                        <div style={{display:'flex',flexWrap:'wrap',gap:4}}>{gapT.map(t=>chip(t,RED))}</div>
+                      </div>
+                    )}
+                    {riskT.length>0 && (
+                      <div style={{display:'flex',alignItems:'flex-start',gap:9,marginBottom:covN?9:0}}>
+                        <span style={{fontFamily:"'DM Mono',monospace",fontSize:8,fontWeight:700,letterSpacing:'.1em',color:'#92400e',flexShrink:0,paddingTop:3,width:78}}>1 TECH ONLY</span>
+                        <div style={{display:'flex',flexWrap:'wrap',gap:4}}>{riskT.map(t=>chip(t,AMB))}</div>
+                      </div>
+                    )}
+                    {covN>0 && (
+                      <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#15803d',letterSpacing:'.04em'}}>
+                        ✓ {covN} type{covN!==1?'s':''} covered
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              {fullCov.length>0 && (
+                <div style={{background:'rgba(21,128,61,.05)',border:'1px solid rgba(21,128,61,.2)',borderRadius:10,padding:'13px 16px',marginTop:4}}>
+                  <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,fontWeight:700,letterSpacing:'.1em',color:'#15803d',textTransform:'uppercase'}}>✓ Full Coverage&ensp;</span>
+                  <span style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:15,fontWeight:700,color:'#166534'}}>
+                    {fullCov.map(c=>c.branch).join('  ·  ')}
+                  </span>
+                </div>
+              )}
+            </>
           }
         </div>
       )}
