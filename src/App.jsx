@@ -28,6 +28,8 @@ const TYPE_CFG     = {
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 const uid = () => "t" + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
 const mid = () => "m" + Date.now().toString(36);
+const timeAgo = ts => { const s=Math.max(1,Math.floor((Date.now()-ts)/1000)); if(s<60)return s+"s ago"; const m=Math.floor(s/60); if(m<60)return m+"m ago"; const h=Math.floor(m/60); if(h<24)return h+"h ago"; return Math.floor(h/24)+"d ago"; };
+const beep = () => { try { const C=window.AudioContext||window.webkitAudioContext; const ctx=new C(); const o=ctx.createOscillator(), g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.type="sine"; o.frequency.value=880; g.gain.setValueAtTime(.0001,ctx.currentTime); g.gain.exponentialRampToValueAtTime(.2,ctx.currentTime+.03); g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.6); o.start(); o.stop(ctx.currentTime+.65); } catch {} };
 const ini = n  => n.trim().split(/\s+/).map(w=>w[0]||"").join("").toUpperCase().slice(0,2)||"??";
 const formatPhone = v => {
   const d = v.replace(/\D/g,"").slice(0,10);
@@ -200,6 +202,16 @@ html{scroll-behavior:smooth;}
 .btn-restore{padding:5px 13px;background:transparent;border:1px solid #e2e8f0;border-radius:5px;color:#64748b;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .18s;}
 .btn-restore:hover{border-color:#2563eb;color:#2563eb;}
 .btn-popout{font-size:16px!important;padding:6px 10px!important;}
+.bell-btn{position:relative;}
+.bell-badge{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;border-radius:8px;background:#dc2626;color:#fff;font-family:'DM Mono',monospace;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;animation:bellPulse 1.5s ease-in-out infinite;}
+@keyframes bellPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
+.help-panel{position:absolute;top:44px;right:0;width:330px;max-width:calc(100vw - 24px);background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.16);z-index:300;overflow:hidden;max-height:70vh;overflow-y:auto;}
+.help-item{padding:11px 14px;border-bottom:1px solid #f1f5f9;}
+.help-item:last-child{border-bottom:none;}
+.fab-help{position:fixed;right:18px;bottom:18px;z-index:150;background:#dc2626;color:#fff;border:none;border-radius:28px;padding:13px 20px;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:.06em;cursor:pointer;box-shadow:0 6px 18px rgba(220,38,38,.35);display:flex;align-items:center;gap:8px;transition:background .15s;}
+.fab-help:hover{background:#b91c1c;}
+.fab-chip{position:fixed;right:18px;bottom:18px;z-index:150;background:#fff;border:1.5px solid #bfdbfe;border-radius:12px;padding:11px 14px;box-shadow:0 8px 24px rgba(0,0,0,.14);width:280px;max-width:calc(100vw - 24px);}
+@media(max-width:480px){.fab-help{right:12px;bottom:12px;padding:11px 16px;font-size:14px;}.fab-chip{right:12px;bottom:12px;}}
 
 .overlay{position:fixed;inset:0;background:rgba(15,23,42,.4);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;}
 .modal{background:#ffffff;border-radius:12px;padding:26px 28px;width:100%;max-width:560px;box-shadow:0 20px 60px rgba(0,0,0,.12);border:1px solid #e2e8f0;}
@@ -557,11 +569,13 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
     setSelTypes(sc.types||[]); setPestpacSearch('');
   };
   const logAnalytic = (method, query, types, count) => {
+    const ev = { ts: Date.now(), method, query, types: [...types], count };
     try {
-      const ev = {ts:Date.now(),method,query,types:[...types],count};
-      const prev = JSON.parse(localStorage.getItem('dispatch_analytics')||'[]');
-      localStorage.setItem('dispatch_analytics', JSON.stringify([...prev,ev].slice(-500)));
+      const all = JSON.parse(localStorage.getItem('dispatch_analytics')||'[]');
+      localStorage.setItem('dispatch_analytics', JSON.stringify([ev, ...all].slice(0, 500)));
     } catch {}
+    fetch('/api/analytics', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'log', event: ev }) }).catch(()=>{});
   };
   const resultsRef  = useRef(null);
   const zipReady    = zipInput.length === 5;
@@ -647,6 +661,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
     }
   }, [selTypes, zipInput, selBranch, pestpacSearch, techs]);
   useEffect(()=>{ setShowAlso(false); }, [zipInput, selBranch, selTypes, pestpacSearch]);
+  useEffect(()=>{ try { window.__dispatchCtx = { zip: zipInput.length===5?zipInput:null, branch: selBranch||null, types:[...selTypes] }; } catch {} }, [zipInput, selBranch, selTypes]);
 
   return (
     <>
@@ -1425,11 +1440,205 @@ function BackupsTab({ authCode, onRestoreComplete }) {
   );
 }
 
+// ─── AGENT LOGIN / HELP REQUEST / AGENTS ADMIN ───────────────────────────────
+function AgentLoginModal({ onClose, onLoggedIn }) {
+  const [username, setUsername] = useState("");
+  const [pin,      setPin]      = useState("");
+  const [err,      setErr]      = useState("");
+  const [busy,     setBusy]     = useState(false);
+  const submit = async () => {
+    if (!username.trim() || !pin) { setErr("Enter your username and PIN"); return; }
+    setBusy(true); setErr("");
+    try {
+      const d = await fetch('/api/users', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'login', username: username.trim(), pin }) }).then(r=>r.json());
+      if (d.ok) onLoggedIn({ name: d.user.name, username: d.user.username, token: d.token });
+      else setErr(d.error || "Invalid username or PIN");
+    } catch { setErr("Could not reach the server"); }
+    setBusy(false);
+  };
+  return (
+    <div className="overlay" onClick={e=>{ if(e.target===e.currentTarget) onClose(); }}>
+      <div className="modal modal-sm">
+        <div className="modal-title">👤 Agent Sign In</div>
+        <div className="field">
+          <label className="field-label">Username</label>
+          <input className="field-input" value={username} autoFocus autoCapitalize="none"
+            onChange={e=>setUsername(e.target.value)} placeholder="e.g. jsmith"/>
+        </div>
+        <div className="field">
+          <label className="field-label">PIN</label>
+          <input className="field-input" type="password" inputMode="numeric" value={pin}
+            onChange={e=>setPin(e.target.value)} onKeyDown={e=>{ if(e.key==="Enter") submit(); }} placeholder="••••"/>
+        </div>
+        {err && <div className="err-box">{err}</div>}
+        <div className="modal-footer">
+          <button className="btn-cancel" onClick={onClose}>Cancel</button>
+          <button className="btn-save" disabled={busy} onClick={submit}>{busy?"Signing in…":"Sign In"}</button>
+        </div>
+        <div style={{marginTop:12,fontSize:11,color:"#94a3b8",lineHeight:1.5}}>
+          No account? Ask a manager to add you under Manage Techs → 👥 Agents.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HelpRequestModal({ agent, onClose, onRaised }) {
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err,  setErr]  = useState("");
+  const ctx = (typeof window!=="undefined" && window.__dispatchCtx) || {};
+  const ctxLabel = [ctx.branch || ctx.zip, (ctx.types||[]).slice(0,3).join(" + ")].filter(Boolean).join(" · ");
+  const send = async () => {
+    setBusy(true); setErr("");
+    try {
+      const d = await fetch('/api/help', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'raise', username: agent.username, token: agent.token, note: note.trim(), context: ctx }) }).then(r=>r.json());
+      if (d.request) onRaised(d.request);
+      else setErr(d.error || "Could not send — try again");
+    } catch { setErr("Could not send — check your connection"); }
+    setBusy(false);
+  };
+  return (
+    <div className="overlay" onClick={e=>{ if(e.target===e.currentTarget) onClose(); }}>
+      <div className="modal modal-sm">
+        <div className="modal-title">🆘 Request a Supervisor</div>
+        <p style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:14}}>
+          Every supervisor signed into Tech Dispatch gets an instant alert with your name{ctxLabel?" and your current search":""}.
+        </p>
+        {ctxLabel && (
+          <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#1e40af",background:"#eff6ff",
+            border:"1px solid #bfdbfe",borderRadius:6,padding:"7px 11px",marginBottom:12,letterSpacing:".04em"}}>
+            CONTEXT · {ctxLabel}
+          </div>
+        )}
+        <div className="field">
+          <label className="field-label">What do you need? (optional)</label>
+          <textarea className="field-textarea" rows={3} maxLength={200} value={note}
+            onChange={e=>setNote(e.target.value)}
+            placeholder="e.g. Customer escalation on the line — need approval for a same-day TC"/>
+        </div>
+        {err && <div className="err-box">{err}</div>}
+        <div className="modal-footer">
+          <button className="btn-cancel" onClick={onClose}>Cancel</button>
+          <button className="btn-save" disabled={busy} onClick={send}>{busy?"Sending…":"Send Request"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AgentsTab({ authCode }) {
+  const [users,      setUsers]      = useState(null);
+  const [err,        setErr]        = useState("");
+  const [fname,      setFname]      = useState("");
+  const [funame,     setFuname]     = useState("");
+  const [fpin,       setFpin]       = useState("");
+  const [busy,       setBusy]       = useState(false);
+  const [confirmDel, setConfirmDel] = useState(null);
+  const call = body => fetch('/api/users', { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ code: authCode, ...body }) }).then(r=>r.json()).catch(()=>({}));
+  useEffect(()=>{ (async()=>{
+    const d = await call({ action:'list' });
+    if (d.users) setUsers(d.users); else { setUsers([]); setErr(d.error || "Could not load agents"); }
+  })(); // eslint-disable-next-line
+  }, []);
+  const add = async () => {
+    if (!fname.trim() || !funame.trim() || !fpin.trim()) { setErr("Name, username and PIN are all required"); return; }
+    setBusy(true); setErr("");
+    const d = await call({ action:'add', user:{ name:fname.trim(), username:funame.trim(), pin:fpin.trim() } });
+    if (d.users) { setUsers(d.users); setFname(""); setFuname(""); setFpin(""); }
+    else setErr(d.error || "Could not add agent");
+    setBusy(false);
+  };
+  const toggle = async u => { const d = await call({ action:'update', user:{ id:u.id, active:!u.active } }); if (d.users) setUsers(d.users); };
+  const resetPin = async u => {
+    const pin = window.prompt("New PIN for " + u.name + " (4–8 digits):");
+    if (!pin) return;
+    const d = await call({ action:'update', user:{ id:u.id, pin } });
+    if (d.users) { setUsers(d.users); window.alert("PIN updated — " + u.name + " will need to sign in again."); }
+  };
+  const del = async u => {
+    if (confirmDel !== u.id) { setConfirmDel(u.id); setTimeout(()=>setConfirmDel(null), 2500); return; }
+    const d = await call({ action:'delete', user:{ id:u.id } });
+    if (d.users) setUsers(d.users);
+    setConfirmDel(null);
+  };
+  return (
+    <div>
+      <p style={{fontSize:13,color:"#475569",lineHeight:1.7,marginBottom:16}}>
+        Agent accounts let customer service reps sign in (👤 in the top bar) and use the 🆘 Supervisor button.
+        Requests appear instantly on every signed-in supervisor's 🔔 bell.
+      </p>
+      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:8}}>
+        <input className="field-input" style={{flex:"2 1 140px"}} placeholder="Full name" value={fname} onChange={e=>setFname(e.target.value)}/>
+        <input className="field-input" style={{flex:"1 1 110px"}} placeholder="username" autoCapitalize="none" value={funame} onChange={e=>setFuname(e.target.value)}/>
+        <input className="field-input" style={{flex:"1 1 90px"}}  placeholder="PIN" inputMode="numeric" value={fpin} onChange={e=>setFpin(e.target.value)}/>
+        <button className="btn-add" disabled={busy} onClick={add}>{busy?"Adding…":"+ Add Agent"}</button>
+      </div>
+      {err && <div className="err-box">{err}</div>}
+      {users===null && <div style={{textAlign:"center",padding:"30px 0",color:"#64748b",fontFamily:"'DM Mono',monospace",fontSize:12}}>Loading agents…</div>}
+      {users && users.length===0 && !err && (
+        <div className="empty-state"><div className="empty-icon">👥</div><div className="empty-title">No Agents Yet</div>
+        <div className="empty-text">Add your first customer service agent above — they sign in with the username and PIN you choose.</div></div>
+      )}
+      {users && users.length>0 && (
+        <div className="table-wrap">
+          <table className="tech-table">
+            <thead><tr><th>Name</th><th>Username</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              {users.map(u=>(
+                <tr key={u.id}>
+                  <td style={{fontWeight:600,color:"#0f172a"}}>{u.name}</td>
+                  <td style={{fontFamily:"'DM Mono',monospace",fontSize:12}}>{u.username}</td>
+                  <td>
+                    <button className="btn-edit" style={{color:u.active?"#15803d":"#94a3b8",borderColor:u.active?"rgba(21,128,61,.35)":"#e2e8f0"}}
+                      onClick={()=>toggle(u)}>{u.active?"● Active":"○ Disabled"}</button>
+                  </td>
+                  <td style={{textAlign:"right",whiteSpace:"nowrap"}}>
+                    <button className="btn-edit" style={{marginRight:6}} onClick={()=>resetPin(u)}>Reset PIN</button>
+                    <button className={confirmDel===u.id?"btn-del-confirm":"btn-del"} onClick={()=>del(u)}>
+                      {confirmDel===u.id?"Confirm?":"Delete"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── ADMIN VIEW ───────────────────────────────────────────────────────────────
 // ─── REPORTS TAB ─────────────────────────────────────────────────────────────
-function ReportsTab({ techs }) {
-  const [section,    setSection]    = useState('coverage');
-  const [refreshKey, setRefreshKey] = useState(0);
+function ReportsTab({ techs, authCode }) {
+  const [section,  setSection]  = useState('coverage');
+  const [an,       setAn]       = useState({ status:'loading', events:[] });
+  const [clearArm, setClearArm] = useState(false);
+  const loadAnalytics = useCallback(async () => {
+    try {
+      const d = await fetch('/api/analytics').then(r=>r.json());
+      setAn({ status:'live', events: d.events||[] });
+    } catch {
+      let local = []; try { local = JSON.parse(localStorage.getItem('dispatch_analytics')||'[]'); } catch {}
+      setAn({ status:'local', events: local });
+    }
+  }, []);
+  useEffect(()=>{
+    loadAnalytics();
+    const id = setInterval(loadAnalytics, 60000);
+    return ()=>clearInterval(id);
+  }, [loadAnalytics]);
+  const clearAnalytics = async () => {
+    if (!clearArm) { setClearArm(true); setTimeout(()=>setClearArm(false), 2500); return; }
+    try { await fetch('/api/analytics',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'clear',code:authCode})}); } catch {}
+    try { localStorage.removeItem('dispatch_analytics'); } catch {}
+    setClearArm(false); loadAnalytics();
+  };
 
   const checkTypes = TECH_TYPES.filter(t => t !== 'Supervisor');
   // Regional techs (no branch — e.g. the Wildlife team) count toward every branch
@@ -1453,8 +1662,7 @@ function ReportsTab({ techs }) {
   const totGaps     = coverage.reduce((s,c)=>s+c.gaps, 0);
   const totRisks    = coverage.reduce((s,c)=>s+c.risks, 0);
 
-  void refreshKey;
-  const events   = (() => { try { return JSON.parse(localStorage.getItem('dispatch_analytics')||'[]'); } catch { return []; } })();
+  const events   = an.events;
   const weekAgo  = Date.now() - 7 * 86400000;
   const recent   = events.filter(e => e.ts > weekAgo);
   const avgRes   = events.length ? Math.round(events.reduce((s, e) => s + e.count, 0) / events.length) : 0;
@@ -1465,6 +1673,36 @@ function ReportsTab({ techs }) {
   events.forEach(e => (e.types||[]).forEach(t => { typeAcc[t] = (typeAcc[t]||0)+1; }));
   const topTypes = Object.entries(typeAcc).sort((a,b) => b[1]-a[1]).slice(0, 5);
   const methods  = events.reduce((a, e) => ({...a, [e.method]: (a[e.method]||0)+1}), {});
+  const day0     = (()=>{ const d=new Date(); d.setHours(0,0,0,0); return d.getTime(); })();
+  const todayN   = events.filter(e => e.ts >= day0).length;
+  const zeroN    = events.filter(e => e.count === 0).length;
+  const zeroRate = events.length ? Math.round(zeroN / events.length * 100) : 0;
+  const topBranches = Object.entries(events.filter(e=>e.method==='branch')
+    .reduce((a,e)=>({...a,[e.query]:(a[e.query]||0)+1}),{}))
+    .sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const zeroTop  = Object.entries(events.filter(e=>e.count===0)
+    .reduce((a,e)=>{ const k=`${e.query} · ${(e.types||[]).slice(0,2).join('+')||'—'}`; return {...a,[k]:(a[k]||0)+1}; },{}))
+    .sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const days = [...Array(7)].map((_,i)=>{
+    const t = day0 - (6-i)*86400000;
+    return { l:['SU','MO','TU','WE','TH','FR','SA'][new Date(t).getDay()],
+             n: events.filter(e=>e.ts>=t && e.ts<t+86400000).length };
+  });
+  const maxDay = Math.max(1, ...days.map(d=>d.n));
+  const barList = (items, color='#2563eb', bg='rgba(37,99,235,.12)') =>
+    items.length===0 ? <div style={{color:'#94a3b8',fontSize:11}}>—</div>
+    : items.map(([label,n],i)=>(
+        <div key={label} style={{display:'flex',alignItems:'center',gap:6,marginBottom:5}}>
+          <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color,width:12,textAlign:'right',flexShrink:0}}>{i+1}</span>
+          <div style={{flex:1,background:'#f1f5f9',borderRadius:3,height:17,position:'relative',overflow:'hidden'}}>
+            <div style={{position:'absolute',inset:0,background:bg,width:`${Math.round(n/items[0][1]*100)}%`}}/>
+            <div style={{position:'absolute',inset:'0 6px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#334155',textTransform:'uppercase',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis',maxWidth:96}}>{label}</span>
+              <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#334155',flexShrink:0}}>{n}</span>
+            </div>
+          </div>
+        </div>
+      ));
 
   const tabStyle = (id) => ({
     padding:'7px 14px', borderRadius:7, cursor:'pointer', transition:'all .15s',
@@ -1558,37 +1796,45 @@ function ReportsTab({ techs }) {
 
       {section==='analytics' && (
         <div>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
+            {an.status==='live' && <span style={{display:'flex',alignItems:'center',gap:6,fontFamily:"'DM Mono',monospace",fontSize:9,fontWeight:700,letterSpacing:'.12em',color:'#15803d',background:'rgba(21,128,61,.07)',border:'1px solid rgba(21,128,61,.25)',borderRadius:20,padding:'3px 10px'}}><span style={{width:6,height:6,borderRadius:'50%',background:'#15803d'}}/>LIVE · ALL DEVICES</span>}
+            {an.status==='local' && <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,fontWeight:700,letterSpacing:'.12em',color:'#92400e',background:'rgba(180,83,9,.07)',border:'1px solid rgba(180,83,9,.25)',borderRadius:20,padding:'3px 10px'}}>OFFLINE · THIS BROWSER ONLY</span>}
+            {an.status==='loading' && <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:'.12em',color:'#94a3b8'}}>LOADING…</span>}
+            <button onClick={loadAnalytics} title="Refresh now"
+              style={{marginLeft:'auto',background:'transparent',border:'1px solid #e2e8f0',borderRadius:5,padding:'4px 10px',color:'#64748b',fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:'.06em',cursor:'pointer',textTransform:'uppercase'}}>↻ Refresh</button>
+          </div>
           {events.length === 0
-            ? <div className="empty-state"><div className="empty-icon">📊</div><div className="empty-title">No Data Yet</div><div className="empty-text">Search analytics appear here after lookups are performed from this browser.</div></div>
+            ? <div className="empty-state"><div className="empty-icon">📊</div><div className="empty-title">No Data Yet</div><div className="empty-text">Search analytics appear here once agents start performing lookups — shared live across every device.</div></div>
             : <>
-              <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginBottom:18}}>
-                {[{v:events.length,l:'Total'},{v:recent.length,l:'This Week'},{v:avgRes,l:'Avg Results'}].map(({v,l})=>(
-                  <div key={l} style={{background:'#ffffff',border:'1px solid #e2e8f0',borderRadius:9,padding:'12px',textAlign:'center'}}>
-                    <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:30,fontWeight:900,color:'#2563eb',lineHeight:1}}>{v}</div>
-                    <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginTop:4}}>{l}</div>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(96px,1fr))',gap:8,marginBottom:14}}>
+                {[{v:events.length,l:'Total',c:'#2563eb'},
+                  {v:todayN,l:'Today',c:'#2563eb'},
+                  {v:recent.length,l:'This Week',c:'#2563eb'},
+                  {v:avgRes,l:'Avg Results',c:'#2563eb'},
+                  {v:`${zeroRate}%`,l:'Zero-Result',c:zeroRate>15?'#dc2626':'#15803d'}].map(({v,l,c})=>(
+                  <div key={l} style={{background:'#ffffff',border:'1px solid #e2e8f0',borderRadius:9,padding:'12px 8px',textAlign:'center'}}>
+                    <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:28,fontWeight:900,color:c,lineHeight:1}}>{v}</div>
+                    <div style={{fontFamily:"'DM Mono',monospace",fontSize:8,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginTop:4}}>{l}</div>
                   </div>
                 ))}
               </div>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:16}}>
-                {[{title:'Top ZIPs',items:topZips},{title:'Top Types',items:topTypes}].map(({title,items})=>(
-                  <div key={title}>
-                    <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>{title}</div>
-                    {items.length===0 ? <div style={{color:'#475569',fontSize:11}}>—</div>
-                      : items.map(([label,n],i) => (
-                        <div key={label} style={{display:'flex',alignItems:'center',gap:6,marginBottom:5}}>
-                          <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#2563eb',width:12,textAlign:'right',flexShrink:0}}>{i+1}</span>
-                          <div style={{flex:1,background:'#f1f5f9',borderRadius:3,height:17,position:'relative',overflow:'hidden'}}>
-                            <div style={{position:'absolute',inset:0,background:'rgba(37,99,235,.12)',width:`${Math.round(n/items[0][1]*100)}%`}}/>
-                            <div style={{position:'absolute',inset:'0 6px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                              <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#334155',textTransform:'uppercase',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis',maxWidth:68}}>{label}</span>
-                              <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#334155',flexShrink:0}}>{n}</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    }
-                  </div>
-                ))}
+              <div style={{background:'#ffffff',border:'1px solid #e2e8f0',borderRadius:9,padding:'14px 16px 10px',marginBottom:14}}>
+                <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:10}}>Last 7 Days</div>
+                <div style={{display:'flex',alignItems:'flex-end',gap:6,height:64}}>
+                  {days.map((d,i)=>(
+                    <div key={i} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:4,height:'100%',justifyContent:'flex-end'}}>
+                      <span style={{fontFamily:"'DM Mono',monospace",fontSize:8,color:'#64748b'}}>{d.n||''}</span>
+                      <div style={{width:'100%',maxWidth:34,borderRadius:'3px 3px 0 0',background:i===6?'#2563eb':'rgba(37,99,235,.3)',height:`${Math.max(3,Math.round(d.n/maxDay*42))}px`}}/>
+                      <span style={{fontFamily:"'DM Mono',monospace",fontSize:8,color:'#94a3b8'}}>{d.l}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:14}}>
+                <div><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>Top ZIPs</div>{barList(topZips)}</div>
+                <div><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>Top Service Types</div>{barList(topTypes)}</div>
+                <div><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>Top Branches</div>{barList(topBranches)}</div>
+                <div><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#dc2626',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>Zero-Result Searches</div>{barList(zeroTop,'#dc2626','rgba(220,38,38,.1)')}</div>
               </div>
               <div style={{marginBottom:16}}>
                 <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>By Method</div>
@@ -1601,13 +1847,13 @@ function ReportsTab({ techs }) {
                   ))}
                 </div>
               </div>
-              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',borderTop:'1px solid #151e30',paddingTop:12}}>
-                <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#2d4463',letterSpacing:'.04em'}}>This browser only · {events.length}/500 stored</span>
-                <button onClick={()=>{ try{localStorage.removeItem('dispatch_analytics');}catch{} setRefreshKey(k=>k+1); }}
-                  style={{background:'transparent',border:'1px solid #e2e8f0',borderRadius:5,padding:'4px 10px',color:'#64748b',fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:'.06em',cursor:'pointer',textTransform:'uppercase',transition:'all .15s'}}
-                  onMouseEnter={e=>{e.currentTarget.style.borderColor='#ef4444';e.currentTarget.style.color='#ef4444';}}
-                  onMouseLeave={e=>{e.currentTarget.style.borderColor='#1e2e43';e.currentTarget.style.color='#64748b';}}>
-                  Clear Data
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',borderTop:'1px solid #e2e8f0',paddingTop:12}}>
+                <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#94a3b8',letterSpacing:'.04em'}}>
+                  {an.status==='live' ? `Shared log · ${events.length}/1000 stored · refreshes every 60s` : `Local fallback · ${events.length}/500 stored`}
+                </span>
+                <button onClick={clearAnalytics}
+                  style={{background:clearArm?'rgba(220,38,38,.08)':'transparent',border:`1px solid ${clearArm?'rgba(220,38,38,.4)':'#e2e8f0'}`,borderRadius:5,padding:'4px 10px',color:clearArm?'#dc2626':'#64748b',fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:'.06em',cursor:'pointer',textTransform:'uppercase'}}>
+                  {clearArm ? 'Confirm Clear?' : 'Clear Data'}
                 </button>
               </div>
             </>
@@ -1698,6 +1944,7 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
         <button className={`admin-tab${tab==="techs"?" tab-active":""}`} onClick={()=>{setTab("techs");setSearchQuery("");setFilterBranch("");}}>Technicians</button>
         <button className={`admin-tab${tab==="reports"?" tab-active":""}`} onClick={()=>setTab("reports")}>📊 Reports</button>
         <button className={`admin-tab${tab==="backups"?" tab-active":""}`} onClick={()=>setTab("backups")}>💾 Backups</button>
+        <button className={`admin-tab${tab==="agents"?" tab-active":""}`} onClick={()=>setTab("agents")}>👥 Agents</button>
         {authLevel==="master" && <button className={`admin-tab${tab==="codes"?" tab-active":""}`} onClick={()=>setTab("codes")}>🔐 Codes</button>}
       </div>
 
@@ -1836,7 +2083,8 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
         </>
       )}
 
-      {tab==="reports" && <ReportsTab techs={techs}/>}
+      {tab==="reports" && <ReportsTab techs={techs} authCode={authCode}/>}
+      {tab==="agents" && <AgentsTab authCode={authCode}/>}
 
       {tab==="backups" && (
         <BackupsTab authCode={authCode} onRestoreComplete={onRestoreComplete}/>
@@ -2616,6 +2864,15 @@ export default function App() {
   const [showLogin,  setShowLogin]  = useState(false);
   const [saveStatus, setSaveStatus] = useState(null); // null | "saving" | "ok" | "err"
   const [isOffline,  setIsOffline]  = useState(typeof navigator!=="undefined"&&!navigator.onLine);
+  // ── Agent session + supervisor help-desk ───────────────────────────────────
+  const [agentSession,   setAgentSession]   = useState(()=>{ try { return JSON.parse(localStorage.getItem('dispatch_agent')||'null'); } catch { return null; } });
+  const [showAgentLogin, setShowAgentLogin] = useState(false);
+  const [showHelpModal,  setShowHelpModal]  = useState(false);
+  const [myRequest,      setMyRequest]      = useState(null);
+  const [helpReqs,       setHelpReqs]       = useState({ open:[], recent:[] });
+  const [showHelpPanel,  setShowHelpPanel]  = useState(false);
+  const prevOpenRef = useRef([]);
+  const titleRef    = useRef(null);
 
   // ── Load technicians from API on mount ─────────────────────────────────────
   const loadTechs = useCallback(async () => {
@@ -2630,6 +2887,93 @@ export default function App() {
   }, []);
 
   useEffect(() => { loadTechs(); }, [loadTechs]);
+
+  // ── Agent session: verify stored token on mount ────────────────────────────
+  useEffect(()=>{
+    if (!agentSession) return;
+    fetch('/api/users', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'verify', username: agentSession.username, token: agentSession.token }) })
+      .then(r=>r.json())
+      .then(d=>{ if (!d.ok) { setAgentSession(null); try { localStorage.removeItem('dispatch_agent'); } catch {} } })
+      .catch(()=>{});
+    // eslint-disable-next-line
+  }, []);
+
+  // ── Agent: poll my open request (10s while one is open) ────────────────────
+  const refreshMine = useCallback(async ()=>{
+    if (!agentSession) return;
+    try {
+      const d = await fetch('/api/help', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'mine', username: agentSession.username, token: agentSession.token }) }).then(r=>r.json());
+      setMyRequest(d.request || null);
+    } catch {}
+  }, [agentSession]);
+  useEffect(()=>{ if (!agentSession) { setMyRequest(null); return; } refreshMine(); }, [agentSession, refreshMine]);
+  useEffect(()=>{
+    if (!agentSession || !myRequest) return;
+    const id = setInterval(refreshMine, 10000);
+    return ()=>clearInterval(id);
+  }, [agentSession, myRequest, refreshMine]);
+
+  // ── Supervisor: poll open requests (15s while signed in) ───────────────────
+  const refreshHelp = useCallback(async ()=>{
+    if (!authCode) return;
+    try {
+      const d = await fetch('/api/help', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'list', code: authCode }) }).then(r=>r.json());
+      if (d.open) setHelpReqs({ open: d.open, recent: d.recent || [] });
+    } catch {}
+  }, [authCode]);
+  useEffect(()=>{
+    if (!authCode) { setHelpReqs({ open:[], recent:[] }); setShowHelpPanel(false); return; }
+    refreshHelp();
+    const id = setInterval(refreshHelp, 15000);
+    return ()=>clearInterval(id);
+  }, [authCode, refreshHelp]);
+
+  // ── New-request alert: sound + browser notification + title flash ──────────
+  useEffect(()=>{
+    const ids = helpReqs.open.map(r=>r.id);
+    const fresh = ids.filter(id=>!prevOpenRef.current.includes(id));
+    if (fresh.length > 0 && authCode) {
+      beep();
+      try {
+        if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+          const r = helpReqs.open.find(x=>x.id===fresh[0]);
+          new Notification("🆘 Supervisor requested", {
+            body: (r?.agentName || "An agent") + " needs help" + (r?.context?.branch ? " · " + r.context.branch : "") });
+        }
+      } catch {}
+      let flashes = 0; const orig = "Tech Dispatch";
+      clearInterval(titleRef.current);
+      titleRef.current = setInterval(()=>{
+        document.title = document.title === orig ? "🆘 HELP REQUESTED" : orig;
+        if (++flashes > 9) { clearInterval(titleRef.current); document.title = orig; }
+      }, 900);
+    }
+    prevOpenRef.current = ids;
+  }, [helpReqs.open, authCode]);
+
+  const agentSignOut = () => {
+    setAgentSession(null); setMyRequest(null);
+    try { localStorage.removeItem('dispatch_agent'); } catch {}
+  };
+  const cancelMyRequest = async () => {
+    if (!agentSession || !myRequest) return;
+    try { await fetch('/api/help', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'cancel', id: myRequest.id, username: agentSession.username, token: agentSession.token }) }); } catch {}
+    setMyRequest(null);
+  };
+  const claimReq = async id => {
+    try { await fetch('/api/help', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'claim', id, code: authCode }) }); } catch {}
+    refreshHelp();
+  };
+  const resolveReq = async id => {
+    try { await fetch('/api/help', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'resolve', id, code: authCode }) }); } catch {}
+    refreshHelp();
+  };
 
   // ── Persist technicians to API (optimistic) ────────────────────────────────
   const persistTechs = useCallback(async (next, code, reason) => {
@@ -2787,6 +3131,54 @@ export default function App() {
             <button className={`nav-pill${view==="admin"?" nav-active":""}`} onClick={handleAdminClick}>
               {!authLevel&&<span style={{marginRight:5,fontSize:11,opacity:.7}}>🔒</span>}Manage Techs
             </button>
+            {authCode && (
+              <div style={{position:"relative",flexShrink:0}}>
+                <button className="nav-pill bell-btn" title="Help requests"
+                  onClick={()=>{ setShowHelpPanel(v=>!v); try { if (typeof Notification!=="undefined" && Notification.permission==="default") Notification.requestPermission(); } catch {} }}>
+                  🔔{helpReqs.open.length>0 && <span className="bell-badge">{helpReqs.open.length}</span>}
+                </button>
+                {showHelpPanel && (
+                  <div className="help-panel">
+                    <div style={{padding:"10px 14px",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                      <span style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:15}}>Help Requests</span>
+                      <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#94a3b8"}}>{helpReqs.open.length} open</span>
+                    </div>
+                    {helpReqs.open.length===0 && <div style={{padding:"18px 14px",fontSize:12,color:"#94a3b8",textAlign:"center"}}>No open requests 🎉</div>}
+                    {helpReqs.open.map(r=>(
+                      <div key={r.id} className="help-item">
+                        <div style={{display:"flex",justifyContent:"space-between",gap:8,marginBottom:3}}>
+                          <span style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:15,color:"#0f172a"}}>{r.agentName}</span>
+                          <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#dc2626",flexShrink:0}}>{timeAgo(r.ts)}</span>
+                        </div>
+                        {(r.context?.zip || r.context?.branch || (r.context?.types||[]).length>0) && (
+                          <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#64748b",marginBottom:3,letterSpacing:".04em"}}>
+                            {[r.context.branch || r.context.zip, (r.context.types||[]).slice(0,3).join(" + ")].filter(Boolean).join(" · ")}
+                          </div>
+                        )}
+                        {r.note && <div style={{fontSize:12,color:"#475569",marginBottom:6,lineHeight:1.5}}>"{r.note}"</div>}
+                        <div style={{display:"flex",gap:6,alignItems:"center"}}>
+                          {r.claimedBy
+                            ? <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#1e40af"}}>✋ Claimed by {r.claimedBy}</span>
+                            : <button className="btn-edit" style={{fontSize:11,padding:"3px 10px"}} onClick={()=>claimReq(r.id)}>✋ Claim</button>}
+                          <button className="btn-edit" style={{fontSize:11,padding:"3px 10px",marginLeft:"auto"}} onClick={()=>resolveReq(r.id)}>✓ Resolve</button>
+                        </div>
+                      </div>
+                    ))}
+                    {helpReqs.recent.length>0 && <div style={{padding:"7px 14px",background:"#f8fafc",fontFamily:"'DM Mono',monospace",fontSize:8,letterSpacing:".1em",color:"#94a3b8",textTransform:"uppercase"}}>Recent</div>}
+                    {helpReqs.recent.slice(0,4).map(r=>(
+                      <div key={r.id} className="help-item" style={{opacity:.55}}>
+                        <span style={{fontSize:12,color:"#475569"}}>{r.agentName}</span>
+                        <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#94a3b8",marginLeft:8}}>{r.status==="cancelled"?"cancelled":"resolved"} · {timeAgo(r.resolvedAt||r.ts)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            <button className="nav-pill" style={{flexShrink:0}} title={agentSession?("Signed in as "+agentSession.name+" — tap to sign out"):"Agent sign in"}
+              onClick={()=> agentSession ? (window.confirm("Sign out "+agentSession.name+"?") && agentSignOut()) : setShowAgentLogin(true)}>
+              {agentSession ? "👤 "+agentSession.name.split(" ")[0] : "👤"}
+            </button>
             <button className="nav-pill btn-popout" onClick={openPopout} title="Open in mini window">⧉</button>
           </nav>
         </header>
@@ -2807,7 +3199,31 @@ export default function App() {
               onDelete={handleDelete} onImport={handleImport} saveStatus={saveStatus}/>}
 
         {modal     && <TechModal  mode={modal.mode} tech={modal.tech} allTechs={techs} onSave={handleSaveTech} onClose={()=>setModal(null)}/>}
+        {view!=="admin" && !showHelpModal && !showAgentLogin && (
+          myRequest
+            ? <div className="fab-chip">
+                <div style={{display:"flex",alignItems:"center",gap:9}}>
+                  <span style={{fontSize:17,flexShrink:0}}>🆘</span>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:14,color:"#0f172a",lineHeight:1.2}}>
+                      {myRequest.claimedBy ? myRequest.claimedBy+" is on the way" : "Waiting for a supervisor…"}
+                    </div>
+                    <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#94a3b8",marginTop:2}}>
+                      {myRequest.claimedBy?"✋ Claimed":"Sent"} · {timeAgo(myRequest.ts)}
+                    </div>
+                  </div>
+                  <button onClick={cancelMyRequest} title="Cancel request"
+                    style={{background:"none",border:"none",color:"#94a3b8",fontSize:14,cursor:"pointer",flexShrink:0,padding:2}}>✕</button>
+                </div>
+              </div>
+            : <button className="fab-help" onClick={()=> agentSession ? setShowHelpModal(true) : setShowAgentLogin(true)}>🆘 Supervisor</button>
+        )}
         {showLogin && <LoginModal onLogin={handleLogin} onClose={()=>setShowLogin(false)}/>}
+        {showAgentLogin && <AgentLoginModal onClose={()=>setShowAgentLogin(false)}
+          onLoggedIn={s=>{ setAgentSession(s); try { localStorage.setItem('dispatch_agent', JSON.stringify(s)); } catch {} setShowAgentLogin(false); }}/>}
+        {showHelpModal && agentSession && <HelpRequestModal agent={agentSession}
+          onClose={()=>setShowHelpModal(false)}
+          onRaised={r=>{ setMyRequest(r); setShowHelpModal(false); }}/>}
         <Footer/>
       </div>
     </>
