@@ -162,8 +162,10 @@ html{scroll-behavior:smooth;}
 .btn-add:hover{background:#2563eb;}
 .btn-outline{padding:7px 14px;background:transparent;border:1px solid #e2e8f0;border-radius:6px;color:#64748b;font-family:'Barlow',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:6px;}
 .btn-outline:hover{border-color:#2563eb;color:#2563eb;}
-.admin-tabs{display:flex;gap:2px;margin-bottom:24px;border-bottom:1px solid #e2e8f0;}
-.admin-tab{padding:10px 18px;background:transparent;border:none;border-bottom:2px solid transparent;color:#64748b;font-family:'Barlow',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .18s;margin-bottom:-1px;}
+.admin-tabs{display:flex;gap:2px;margin-bottom:24px;border-bottom:1px solid #e2e8f0;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent;}
+.admin-tabs::-webkit-scrollbar{height:5px;}
+.admin-tabs::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
+.admin-tab{padding:10px 18px;background:transparent;border:none;border-bottom:2px solid transparent;color:#64748b;font-family:'Barlow',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .18s;margin-bottom:-1px;white-space:nowrap;flex-shrink:0;}
 .admin-tab:hover{color:#334155;}
 .tab-active{color:#2563eb!important;border-bottom-color:#2563eb!important;}
 .import-banner{background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;padding:16px 20px;margin-bottom:20px;animation:slideIn .25s ease both;}
@@ -208,6 +210,14 @@ html{scroll-behavior:smooth;}
 .help-panel{position:absolute;top:44px;right:0;width:330px;max-width:calc(100vw - 24px);background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.16);z-index:300;overflow:hidden;max-height:70vh;overflow-y:auto;}
 .help-item{padding:11px 14px;border-bottom:1px solid #f1f5f9;}
 .help-item:last-child{border-bottom:none;}
+.nav-backdrop{position:fixed;inset:0;z-index:290;background:transparent;}
+.nav-panel{position:absolute;top:44px;right:0;width:215px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.16);z-index:300;overflow:hidden;padding:6px;}
+.nav-item{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:transparent;border:none;border-radius:7px;color:#475569;font-family:'Barlow',sans-serif;font-size:14px;font-weight:500;cursor:pointer;text-align:left;transition:background .12s;}
+.nav-item:hover{background:#f1f5f9;}
+.nav-item.nav-item-active{background:#eff6ff;color:#1e40af;font-weight:600;}
+.nav-item-icon{width:20px;text-align:center;flex-shrink:0;font-size:14px;}
+.nav-divider{height:1px;background:#e2e8f0;margin:5px 8px;}
+@media(max-width:520px){.menu-label{display:none;}}
 .fab-help{position:fixed;right:18px;bottom:18px;z-index:150;background:#dc2626;color:#fff;border:none;border-radius:28px;padding:13px 20px;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:.06em;cursor:pointer;box-shadow:0 6px 18px rgba(220,38,38,.35);display:flex;align-items:center;gap:8px;transition:background .15s;}
 .fab-help:hover{background:#b91c1c;}
 .alert-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px;}
@@ -2895,6 +2905,7 @@ export default function App() {
   const [myRequest,      setMyRequest]      = useState(null);
   const [helpReqs,       setHelpReqs]       = useState({ open:[], recent:[], sups:[] });
   const [showHelpPanel,  setShowHelpPanel]  = useState(false);
+  const [navOpen,        setNavOpen]        = useState(false);
   const [alertReq, setAlertReq] = useState(null);
   const prevOpenRef = useRef([]);
   const titleRef    = useRef(null);
@@ -3187,18 +3198,7 @@ export default function App() {
             title="Back to Lookup">
             <div className="brand-name">TECH<span>DISPATCH</span></div>
           </button>
-          <nav className="top-nav">
-            <button className={`nav-pill${view==="search"?" nav-active":""}`}
-              onClick={()=>{setView("search");setResult(null);setZipInput("");}}>Lookup</button>
-            <button className={`nav-pill${view==="cheats"?" nav-active":""}`}
-              onClick={()=>setView("cheats")}>Codes</button>
-            <button className={`nav-pill${view==="guide"?" nav-active":""}`}
-              onClick={()=>setView("guide")}>Help</button>
-            <button className={`nav-pill${view==="changelog"?" nav-active":""}`}
-              onClick={()=>setView("changelog")}>Log</button>
-            <button className={`nav-pill${view==="admin"?" nav-active":""}`} onClick={handleAdminClick}>
-              {!authLevel&&<span style={{marginRight:5,fontSize:11,opacity:.7}}>🔒</span>}Manage Techs
-            </button>
+          <nav className="top-nav" style={{alignItems:"center"}}>
             {authCode && (
               <button className="nav-pill" style={{flexShrink:0,
                   color:(helpReqs.sups||[]).includes(authLabel)?"#15803d":"#94a3b8",
@@ -3253,11 +3253,42 @@ export default function App() {
                 )}
               </div>
             )}
-            <button className="nav-pill" style={{flexShrink:0}} title={agentSession?("Signed in as "+agentSession.name+" — tap to sign out"):"Agent sign in"}
+            <button className="nav-pill" style={{flexShrink:0,maxWidth:120,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}
+              title={agentSession?("Signed in as "+agentSession.name+" — tap to sign out"):"Agent sign in"}
               onClick={()=> agentSession ? (window.confirm("Sign out "+agentSession.name+"?") && agentSignOut()) : setShowAgentLogin(true)}>
               {agentSession ? "👤 "+agentSession.name.split(" ")[0] : "👤"}
             </button>
-            <button className="nav-pill btn-popout" onClick={openPopout} title="Open in mini window">⧉</button>
+            <div style={{position:"relative",flexShrink:0}}>
+              <button className={`nav-pill${navOpen?" nav-active":""}`} onClick={()=>setNavOpen(v=>!v)} title="Menu">
+                ☰<span className="menu-label">&nbsp;{({search:"Lookup",cheats:"Codes",guide:"Help",changelog:"Log",admin:"Manage Techs"})[view]||"Menu"}</span>
+              </button>
+              {navOpen && (
+                <>
+                  <div className="nav-backdrop" onClick={()=>setNavOpen(false)}/>
+                  <div className="nav-panel">
+                    {[
+                      { id:"search",    icon:"🔍", label:"Lookup" },
+                      { id:"cheats",    icon:"🧾", label:"Codes" },
+                      { id:"guide",     icon:"❓", label:"Help" },
+                      { id:"changelog", icon:"📜", label:"Log" },
+                    ].map(({id,icon,label})=>(
+                      <button key={id} className={`nav-item${view===id?" nav-item-active":""}`}
+                        onClick={()=>{ setNavOpen(false); if(id==="search"){setView("search");setResult(null);setZipInput("");} else setView(id); }}>
+                        <span className="nav-item-icon">{icon}</span>{label}
+                      </button>
+                    ))}
+                    <button className={`nav-item${view==="admin"?" nav-item-active":""}`}
+                      onClick={()=>{ setNavOpen(false); handleAdminClick(); }}>
+                      <span className="nav-item-icon">{authLevel?"🔧":"🔒"}</span>Manage Techs
+                    </button>
+                    <div className="nav-divider"/>
+                    <button className="nav-item" onClick={()=>{ setNavOpen(false); openPopout(); }}>
+                      <span className="nav-item-icon">⧉</span>Pop-Out Window
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </nav>
         </header>
         {isOffline && (
