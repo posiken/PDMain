@@ -2592,7 +2592,7 @@ function GuidePage() {
       <div className="guide-card">
         <div className="guide-card-title">🧾 Service Code Cheat Sheet</div>
         <div style={{fontSize:13,color:"#475569",lineHeight:1.8}}>
-          The <strong>Codes</strong> page in the navigation is a full CS reference: ~75 service codes organized by category (GHP, TurnerGuard, Lawn, SMART, service calls, and more) with coverage talking points — what's included ✓ and what's not ✗. Search by code, pest, or service, and tap any code to copy it straight into PestPac.
+          The <strong>Cheat Sheet</strong> page in the navigation is a full CS reference: ~75 service codes organized by category (GHP, TurnerGuard, Lawn, SMART, service calls, and more) with coverage talking points — what's included ✓ and what's not ✗. Search by code, pest, or service, and tap any code to copy it straight into PestPac.
         </div>
       </div>
 
@@ -2909,6 +2909,7 @@ export default function App() {
   const prevOpenRef = useRef([]);
   const titleRef    = useRef(null);
   const audioRef    = useRef(null);
+  const prevAvailRef = useRef(false);
 
   // ── Load technicians from API on mount ─────────────────────────────────────
   const loadTechs = useCallback(async () => {
@@ -2947,7 +2948,7 @@ export default function App() {
   useEffect(()=>{ if (!agentSession) { setMyRequest(null); return; } refreshMine(); }, [agentSession, refreshMine]);
   useEffect(()=>{
     if (!agentSession || !myRequest) return;
-    const id = setInterval(refreshMine, 10000);
+    const id = setInterval(refreshMine, 6000);
     return ()=>clearInterval(id);
   }, [agentSession, myRequest, refreshMine]);
 
@@ -2960,12 +2961,23 @@ export default function App() {
       if (d.open) setHelpReqs({ open: d.open, recent: d.recent || [], sups: d.sups || [] });
     } catch {}
   }, [authCode]);
+  const isAvailNow = (helpReqs.sups||[]).includes(authLabel);
   useEffect(()=>{
     if (!authCode) { setHelpReqs({ open:[], recent:[], sups:[] }); setShowHelpPanel(false); return; }
     refreshHelp();
-    const id = setInterval(refreshHelp, 15000);
-    return ()=>clearInterval(id);
-  }, [authCode, refreshHelp]);
+    let id;
+    const start = () => {
+      clearInterval(id);
+      const hidden = typeof document !== "undefined" && document.hidden;
+      // Available + tab visible → near-instant (4s). Hidden → 10s. Away → 30s.
+      const ms = isAvailNow ? (hidden ? 10000 : 4000) : 30000;
+      id = setInterval(refreshHelp, ms);
+    };
+    start();
+    const onVis = () => { if (!document.hidden) refreshHelp(); start(); };
+    document.addEventListener("visibilitychange", onVis);
+    return ()=>{ clearInterval(id); document.removeEventListener("visibilitychange", onVis); };
+  }, [authCode, refreshHelp, isAvailNow]);
 
   // ── Alert audio: one beep every 5s for 60s (12 plays), stoppable ───────────
   const stopAlertAudio = useCallback(()=>{
@@ -2988,8 +3000,13 @@ export default function App() {
     const ids = helpReqs.open.map(r=>r.id);
     const fresh = ids.filter(id=>!prevOpenRef.current.includes(id));
     const isAvail = (helpReqs.sups||[]).includes(authLabel);
-    if (fresh.length > 0 && authCode && isAvail) {
-      const r = helpReqs.open.find(x=>x.id===fresh[0]);
+    const becameAvail = isAvail && !prevAvailRef.current;
+    const target = (fresh.length > 0)
+      ? helpReqs.open.find(x=>x.id===fresh[0])
+      : (becameAvail ? helpReqs.open.find(x=>!x.claimedBy) : null);
+    prevAvailRef.current = isAvail;
+    if (target && authCode && isAvail) {
+      const r = target;
       setAlertReq(r || null);
       startAlertAudio();
       try {
@@ -3010,6 +3027,9 @@ export default function App() {
 
   const toggleAvail = async () => {
     const next = !(helpReqs.sups||[]).includes(authLabel);
+    setHelpReqs(prev=>({ ...prev, sups: next
+      ? [...new Set([...(prev.sups||[]), authLabel])]
+      : (prev.sups||[]).filter(l=>l!==authLabel) }));
     try { await fetch('/api/help', { method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ action:'avail', code: authCode, available: next }) }); } catch {}
     refreshHelp();
@@ -3259,7 +3279,7 @@ export default function App() {
             </button>
             <div style={{position:"relative",flexShrink:0}}>
               <button className={`nav-pill${navOpen?" nav-active":""}`} onClick={()=>setNavOpen(v=>!v)} title="Menu">
-                ☰<span className="menu-label">&nbsp;{({search:"Lookup",cheats:"Codes",guide:"Help",changelog:"Log",admin:"Manage Techs"})[view]||"Menu"}</span>
+                ☰<span className="menu-label">&nbsp;{({search:"Lookup",cheats:"Cheat Sheet",guide:"Help",changelog:"Log",admin:"Manage Techs"})[view]||"Menu"}</span>
               </button>
               {navOpen && (
                 <>
@@ -3267,7 +3287,7 @@ export default function App() {
                   <div className="nav-panel">
                     {[
                       { id:"search",    icon:"🔍", label:"Lookup" },
-                      { id:"cheats",    icon:"🧾", label:"Codes" },
+                      { id:"cheats",    icon:"🧾", label:"Cheat Sheet" },
                       { id:"guide",     icon:"❓", label:"Help" },
                       { id:"changelog", icon:"📜", label:"Log" },
                     ].map(({id,icon,label})=>(
