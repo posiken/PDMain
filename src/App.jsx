@@ -2905,6 +2905,10 @@ export default function App() {
   const [helpReqs,       setHelpReqs]       = useState({ open:[], recent:[], sups:[] });
   const [showHelpPanel,  setShowHelpPanel]  = useState(false);
   const [navOpen,        setNavOpen]        = useState(false);
+  const [installPrompt,  setInstallPrompt]  = useState(null);
+  const [showInstall,    setShowInstall]    = useState(false);
+  const isStandalone = typeof window!=="undefined" &&
+    (window.matchMedia?.('(display-mode: standalone)').matches || window.navigator.standalone === true);
   const [alertReq, setAlertReq] = useState(null);
   const prevOpenRef = useRef([]);
   const titleRef    = useRef(null);
@@ -2924,6 +2928,30 @@ export default function App() {
   }, []);
 
   useEffect(() => { loadTechs(); }, [loadTechs]);
+
+  // ── PWA install prompt capture ─────────────────────────────────────────────
+  useEffect(()=>{
+    const onPrompt = e => {
+      e.preventDefault();
+      setInstallPrompt(e);
+      try { if (!localStorage.getItem('dispatch_install_dismissed')) setShowInstall(true); } catch { setShowInstall(true); }
+    };
+    const onInstalled = () => { setInstallPrompt(null); setShowInstall(false); };
+    window.addEventListener('beforeinstallprompt', onPrompt);
+    window.addEventListener('appinstalled', onInstalled);
+    return ()=>{ window.removeEventListener('beforeinstallprompt', onPrompt); window.removeEventListener('appinstalled', onInstalled); };
+  }, []);
+  const doInstall = async () => {
+    if (!installPrompt) return;
+    setShowInstall(false);
+    installPrompt.prompt();
+    try { await installPrompt.userChoice; } catch {}
+    setInstallPrompt(null);
+  };
+  const dismissInstall = () => {
+    setShowInstall(false);
+    try { localStorage.setItem('dispatch_install_dismissed','1'); } catch {}
+  };
 
   // ── Agent session: verify stored token on mount ────────────────────────────
   useEffect(()=>{
@@ -3301,6 +3329,11 @@ export default function App() {
                       <span className="nav-item-icon">{authLevel?"🔧":"🔒"}</span>Manage Techs
                     </button>
                     <div className="nav-divider"/>
+                    {installPrompt && !isStandalone && (
+                      <button className="nav-item" onClick={()=>{ setNavOpen(false); doInstall(); }}>
+                        <span className="nav-item-icon">⬇️</span>Install App
+                      </button>
+                    )}
                     <button className="nav-item" onClick={()=>{ setNavOpen(false); openPopout(); }}>
                       <span className="nav-item-icon">⧉</span>Pop-Out Window
                     </button>
@@ -3368,6 +3401,22 @@ export default function App() {
                 <button className="btn-save" style={{flex:2}} onClick={()=>{ claimReq(alertReq.id); dismissAlert(); setShowHelpPanel(true); }}>✋ Claim — I'm Going</button>
               </div>
             </div>
+          </div>
+        )}
+        {showInstall && installPrompt && !isStandalone && (
+          <div style={{position:"fixed",left:12,right:12,bottom:12,zIndex:160,maxWidth:440,margin:"0 auto",
+            background:"#fff",border:"1px solid #e2e8f0",borderRadius:12,boxShadow:"0 10px 30px rgba(0,0,0,.16)",
+            padding:"13px 15px",display:"flex",alignItems:"center",gap:12}}>
+            <div style={{width:38,height:38,borderRadius:9,background:"#2563eb",color:"#fff",flexShrink:0,
+              display:"flex",alignItems:"center",justifyContent:"center",
+              fontFamily:"'Barlow Condensed',sans-serif",fontWeight:800,fontSize:17}}>TD</div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:15,color:"#0f172a",lineHeight:1.1}}>Install Tech Dispatch</div>
+              <div style={{fontSize:11.5,color:"#64748b",marginTop:2}}>Add to your home screen for one-tap access &amp; offline use.</div>
+            </div>
+            <button onClick={dismissInstall} style={{background:"none",border:"none",color:"#94a3b8",fontSize:13,cursor:"pointer",
+              fontFamily:"'DM Mono',monospace",letterSpacing:".04em",flexShrink:0}}>Not now</button>
+            <button className="btn-save" style={{flexShrink:0,padding:"8px 14px"}} onClick={doInstall}>Install</button>
           </div>
         )}
         {showLogin && <LoginModal onLogin={handleLogin} onClose={()=>setShowLogin(false)}/>}
