@@ -294,6 +294,17 @@ html{scroll-behavior:smooth;}
 .cheat-desc{font-size:12.5px;color:#475569;line-height:1.6;margin-top:4px;}
 .cheat-inc{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#475569;line-height:1.65;margin-bottom:6px;}
 .cheat-inc span:first-child{flex-shrink:0;font-weight:700;}
+.prep-card{display:flex;align-items:center;gap:13px;padding:13px 15px;background:#fff;border:1px solid #e2e8f0;border-radius:9px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.prep-icon{width:40px;height:40px;border-radius:8px;background:#fef2f2;border:1px solid #fecaca;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.prep-name{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:#0f172a;line-height:1.1;}
+.prep-sub{font-size:11.5px;color:#64748b;margin-top:2px;line-height:1.4;}
+.prep-actions{display:flex;gap:6px;flex-shrink:0;}
+.prep-btn{font-family:'DM Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:6px 11px;border-radius:6px;cursor:pointer;border:1px solid #e2e8f0;background:transparent;color:#475569;transition:all .15s;text-decoration:none;display:inline-flex;align-items:center;}
+.prep-btn:hover{border-color:#2563eb;color:#2563eb;}
+.prep-btn-primary{background:#2563eb;border-color:#2563eb;color:#fff;}
+.prep-btn-primary:hover{background:#1d4ed8;color:#fff;}
+.pdf-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:350;display:flex;flex-direction:column;padding:14px;}
+.pdf-frame{flex:1;width:100%;border:none;border-radius:10px;background:#fff;}
 
 .entry-card{background:#ffffff;border:1px solid #e2e8f0;border-radius:9px;padding:18px 20px;margin-bottom:10px;}
 .entry-date{font-family:'DM Mono',monospace;font-size:10px;color:#94a3b8;letter-spacing:.08em;margin-bottom:5px;}
@@ -1492,7 +1503,7 @@ function AgentLoginModal({ onClose, onLoggedIn }) {
           <button className="btn-save" disabled={busy} onClick={submit}>{busy?"Signing in…":"Sign In"}</button>
         </div>
         <div style={{marginTop:12,fontSize:11,color:"#94a3b8",lineHeight:1.5}}>
-          No account? Ask a manager to add you under Manage Techs → 👥 Agents.
+          No account? Ask a manager to add you under Admin Tools → 👥 Agents.
         </div>
       </div>
     </div>
@@ -2468,10 +2479,49 @@ function CheatCode({ code }) {
   );
 }
 
+const PREP_SHEETS = [
+  { id:"bedbug-chemical", icon:"🛏️", name:"Bed Bug — Chemical Prep", file:"/prep/bedbug-chemical.pdf",
+    sub:"Strip bedding, bag & launder clothing on high heat, vacuum, remove wall art. Customer-signed prep sheet.",
+    kw:"bed bug bedbug chemical liquid treatment preparation bedding launder nuvan" },
+  { id:"bedbug-heat", icon:"🔥", name:"Bed Bug — Heat Treatment Prep", file:"/prep/bedbug-heat.pdf",
+    sub:"Thermal remediation. Remove pets, firearms, plants, meltables, pressurized & wax items, electronics. 3-page signed sheet ($500 non-compliance fee).",
+    kw:"bed bug bedbug heat thermal remediation temperature firearms electronics waterbed $500 non-compliance" },
+  { id:"cockroach", icon:"🪳", name:"Cockroach Prep", file:"/prep/cockroach.pdf",
+    sub:"Sanitation before treatment: deep-clean kitchen & baths, empty cabinets, remove pets, cover fish tanks. Re-treated every 7 days until clear.",
+    kw:"cockroach roach sanitation kitchen cabinets clean follow-up 7 days" },
+  { id:"fleas", icon:"🐈", name:"Flea Prep", file:"/prep/fleas.pdf",
+    sub:"Vacate 4 hours, vacuum & mop, wash pet bedding, treat pets at the vet same day. Follow-up in 10–14 days; don't shampoo carpets for a month.",
+    kw:"flea fleas vacate vacuum pet bedding veterinarian follow-up 10 14 days carpet" },
+  { id:"head-lice", icon:"🧴", name:"Head Lice FAQ & Treatment", file:"/prep/head-lice.pdf",
+    sub:"Facts + 4-step plan: pediculocide, olive-oil smother, clean environment, comb nits twice daily for two weeks. Customer education guide.",
+    kw:"head lice nits pediculocide olive oil comb nit picking shampoo scalp" },
+  { id:"disinfection", icon:"🧼", name:"Disinfection Service", file:"/prep/disinfection.pdf",
+    sub:"What to expect from ULV disinfectant misting (EPA-listed for SARS-CoV-2). Remove food, cover electronics, 2-hour re-entry.",
+    kw:"disinfection disinfectant covid sars sanitize ulv mister virus food electronics" },
+];
+
+function PrepViewer({ sheet, onClose }) {
+  return (
+    <div className="pdf-overlay" onClick={e=>{ if(e.target===e.currentTarget) onClose(); }}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,padding:"2px 4px 12px"}}>
+        <div style={{color:"#fff",fontFamily:"'Barlow Condensed',sans-serif",fontSize:18,fontWeight:700,minWidth:0,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{sheet.icon} {sheet.name}</div>
+        <div style={{display:"flex",gap:8,flexShrink:0}}>
+          <a className="prep-btn prep-btn-primary" href={sheet.file} download style={{background:"#fff",color:"#1e40af",borderColor:"#fff"}}>⬇ Download</a>
+          <button className="prep-btn" onClick={onClose} style={{background:"transparent",color:"#fff",borderColor:"rgba(255,255,255,.5)"}}>✕ Close</button>
+        </div>
+      </div>
+      <iframe className="pdf-frame" src={sheet.file} title={sheet.name}/>
+    </div>
+  );
+}
+
 function CheatSheetPage() {
   const [q,   setQ]   = useState("");
   const [cat, setCat] = useState("all");
+  const [pdf, setPdf] = useState(null);
   const query = q.trim().toLowerCase();
+  const preps = PREP_SHEETS.filter(p => !query || (p.name+" "+p.sub+" "+p.kw).toLowerCase().includes(query));
+  const showPreps = (cat==="all" || cat==="prep");
 
   const visible = CHEAT_DATA.map(sec => {
     if (!query) return (cat==="all"||cat===sec.id) ? sec : null;
@@ -2502,6 +2552,7 @@ function CheatSheetPage() {
         </div>
         <div className="cheat-chips" onWheel={e=>{ if(Math.abs(e.deltaY)>Math.abs(e.deltaX)) e.currentTarget.scrollLeft += e.deltaY; }}>
           <button className={`sort-btn${cat==="all"?" sort-btn-active":""}`} onClick={()=>setCat("all")}>All</button>
+          <button className={`sort-btn${cat==="prep"?" sort-btn-active":""}`} onClick={()=>{setCat("prep");setQ("");}}>📄 Prep Sheets</button>
           {CHEAT_DATA.map(s=>(
             <button key={s.id} className={`sort-btn${cat===s.id?" sort-btn-active":""}`}
               onClick={()=>{setCat(s.id);setQ("");}}>{s.emoji} {s.label}</button>
@@ -2515,7 +2566,7 @@ function CheatSheetPage() {
           {visible.reduce((n,s)=>n+s.codes.length,0)} codes · {visible.length} categor{visible.length===1?"y":"ies"}
         </div>
       )}
-      {visible.length===0 && (
+      {visible.length===0 && !(showPreps && preps.length>0) && (
         <div className="empty-state">
           <div className="empty-icon">🔍</div>
           <div className="empty-title">Nothing Found</div>
@@ -2523,7 +2574,28 @@ function CheatSheetPage() {
         </div>
       )}
 
-      {visible.map(sec=>(
+      {showPreps && preps.length>0 && (
+        <div className="guide-card">
+          <div className="guide-card-title">📄 Customer Prep Sheets</div>
+          <p style={{fontSize:12.5,color:"#64748b",lineHeight:1.6,marginBottom:12}}>
+            Official Turner prep & FAQ sheets to read to a customer or email them. Tap Preview to read, or Download the PDF.
+          </p>
+          {preps.map(p=>(
+            <div key={p.id} className="prep-card">
+              <div className="prep-icon">{p.icon}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div className="prep-name">{p.name}</div>
+                <div className="prep-sub">{p.sub}</div>
+              </div>
+              <div className="prep-actions">
+                <button className="prep-btn prep-btn-primary" onClick={()=>setPdf(p)}>Preview</button>
+                <a className="prep-btn" href={p.file} download>⬇</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {cat!=="prep" && visible.map(sec=>(
         <div key={sec.id} className="guide-card">
           <div className="guide-card-title">{sec.emoji} {sec.label}</div>
           {!sec._pointsDim && sec.points.map(([mark,text],i)=>(
@@ -2553,6 +2625,7 @@ function CheatSheetPage() {
       <div style={{textAlign:"center",fontFamily:"'DM Mono',monospace",fontSize:10,color:"#cbd5e1",letterSpacing:".08em",marginTop:8}}>
         ● = common code · Sources: Service Code Outline v1 + Turner Service Coverage
       </div>
+      {pdf && <PrepViewer sheet={pdf} onClose={()=>setPdf(null)}/>}
     </div>
   );
 }
@@ -2668,7 +2741,7 @@ function GuidePage() {
       <div className="guide-card">
         <div className="guide-card-title">🔐 Admin Panel</div>
         <div style={{fontSize:13,color:"#475569",lineHeight:1.9}}>
-          Access via <strong>Manage Techs</strong> in the navigation. Requires a manager or master access code.
+          Access via <strong>Admin Tools</strong> in the navigation. Requires a manager or master access code.
         </div>
         <div style={{fontSize:13,color:"#475569",lineHeight:1.9,marginTop:8}}>
           <div><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>TECHNICIANS</span>Add, edit, or delete technicians · Quick status toggle in the table · Select multiple techs for bulk status updates · Filter by branch or search by name · Export and import roster as JSON</div>
@@ -3307,7 +3380,7 @@ export default function App() {
             </button>
             <div style={{position:"relative",flexShrink:0}}>
               <button className={`nav-pill${navOpen?" nav-active":""}`} onClick={()=>setNavOpen(v=>!v)} title="Menu">
-                ☰<span className="menu-label">&nbsp;{({search:"Lookup",cheats:"Cheat Sheet",guide:"Help",changelog:"Log",admin:"Manage Techs"})[view]||"Menu"}</span>
+                ☰<span className="menu-label">&nbsp;{({search:"Lookup",cheats:"Cheat Sheet",guide:"Help",changelog:"Log",admin:"Admin Tools"})[view]||"Menu"}</span>
               </button>
               {navOpen && (
                 <>
@@ -3326,7 +3399,7 @@ export default function App() {
                     ))}
                     <button className={`nav-item${view==="admin"?" nav-item-active":""}`}
                       onClick={()=>{ setNavOpen(false); handleAdminClick(); }}>
-                      <span className="nav-item-icon">{authLevel?"🔧":"🔒"}</span>Manage Techs
+                      <span className="nav-item-icon">{authLevel?"🔧":"🔒"}</span>Admin Tools
                     </button>
                     <div className="nav-divider"/>
                     {installPrompt && !isStandalone && (
