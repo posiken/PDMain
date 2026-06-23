@@ -11,10 +11,10 @@ const TYPE_CFG     = {
   Termite:           { color:"#fb923c", bg:"rgba(251,146,60,.13)",  bd:"rgba(251,146,60,.32)"  },
   Supervisor:        { color:"#c084fc", bg:"rgba(192,132,252,.13)", bd:"rgba(192,132,252,.32)" },
   "Trouble Call":    { color:"#f87171", bg:"rgba(248,113,113,.13)", bd:"rgba(248,113,113,.32)" },
-  Production:        { color:"#475569", bg:"rgba(71,85,105,.1)",    bd:"rgba(71,85,105,.3)"    },
+  Production:        { color:"#cbd5e1", bg:"rgba(71,85,105,.1)",    bd:"rgba(71,85,105,.3)"    },
   Commercial:        { color:"#22d3ee", bg:"rgba(34,211,238,.13)",  bd:"rgba(34,211,238,.32)"  },
   Mosquito:          { color:"#a3e635", bg:"rgba(163,230,53,.13)",  bd:"rgba(163,230,53,.32)"  },
-  Exclusion:         { color:"#b45309", bg:"rgba(251,191,36,.13)",  bd:"rgba(251,191,36,.32)"  },
+  Exclusion:         { color:"#f59e0b", bg:"rgba(251,191,36,.13)",  bd:"rgba(251,191,36,.32)"  },
   Wildlife:          { color:"#e879f9", bg:"rgba(232,121,249,.13)", bd:"rgba(232,121,249,.32)" },
   TAP:               { color:"#f472b6", bg:"rgba(244,114,182,.13)", bd:"rgba(244,114,182,.32)" },
   "Pre Treat":       { color:"#818cf8", bg:"rgba(129,140,248,.13)", bd:"rgba(129,140,248,.32)" },
@@ -22,7 +22,7 @@ const TYPE_CFG     = {
   SMART:             { color:"#f0abfc", bg:"rgba(240,171,252,.13)", bd:"rgba(240,171,252,.32)" },
   Sentricon:         { color:"#67e8f9", bg:"rgba(103,232,249,.13)", bd:"rgba(103,232,249,.32)" },
   "Bed Bugs":        { color:"#fb7185", bg:"rgba(251,113,133,.13)", bd:"rgba(251,113,133,.32)" },
-  "Field Inspector": { color:"#475569", bg:"rgba(148,163,184,.13)", bd:"rgba(148,163,184,.32)" },
+  "Field Inspector": { color:"#cbd5e1", bg:"rgba(148,163,184,.13)", bd:"rgba(148,163,184,.32)" },
 };
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
@@ -64,290 +64,288 @@ const CSS = `
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;}
 
-.app{min-height:100vh;background:#f8fafc;color:#0f172a;font-family:'Barlow',sans-serif;}
+.app{min-height:100vh;background:#0b1120;color:#f1f5f9;font-family:'Barlow',sans-serif;}
 
-.top-bar{display:flex;align-items:center;justify-content:space-between;padding:13px 24px;
-  border-bottom:1px solid #e2e8f0;background:#ffffff;position:sticky;top:0;z-index:99;
-  box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.top-bar{display:flex;align-items:center;justify-content:space-between;padding:13px 24px;border-bottom:1px solid #2b3a55;background:#0f1729;position:sticky;top:0;z-index:99;box-shadow:0 1px 3px rgba(0,0,0,.4);}
 .brand{display:flex;align-items:center;gap:10px;background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.brand:hover .brand-name{color:#2563eb;}
-.brand:hover .brand-name span{color:#1e40af;}
-.brand-name{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.05em;color:#0f172a;line-height:1.15;text-align:left;transition:color .18s;}
-.brand-name span{color:#2563eb;display:block;}
-.nav-pill{padding:7px 15px;border-radius:6px;border:1px solid #e2e8f0;background:transparent;color:#64748b;
+.brand:hover .brand-name{color:#3b82f6;}
+.brand:hover .brand-name span{color:#93c5fd;}
+.brand-name{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.05em;color:#f1f5f9;line-height:1.15;text-align:left;transition:color .18s;}
+.brand-name span{color:#3b82f6;display:block;}
+.nav-pill{padding:7px 15px;border-radius:6px;border:1px solid #2b3a55;background:transparent;color:#94a3b8;
   font-family:'Barlow',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;flex-shrink:0;}
-.nav-pill:hover{border-color:#2563eb;color:#2563eb;}
-.nav-active{background:#eff6ff;border-color:#bfdbfe!important;color:#1e40af!important;}
+.nav-pill:hover{border-color:#3b82f6;color:#3b82f6;}
+.nav-active{background:#16243f;border-color:#2c456e!important;color:#93c5fd!important;}
 
 .search-hero{max-width:600px;margin:60px auto 0;padding:0 20px;text-align:center;}
-.hero-eyebrow{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#2563eb;margin-bottom:12px;}
-.hero-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(44px,8vw,68px);font-weight:900;line-height:.95;margin-bottom:12px;letter-spacing:-.02em;color:#0f172a;}
-.hero-sub{color:#64748b;font-size:15px;margin-bottom:28px;line-height:1.6;}
-.search-bar{display:flex;border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;background:#ffffff;transition:border-color .2s,box-shadow .2s;}
-.search-bar:focus-within{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
-.zip-input{flex:1;padding:16px 20px;font-family:'DM Mono',monospace;font-size:28px;font-weight:500;letter-spacing:.15em;background:transparent;border:none;outline:none;color:#0f172a;}
-.zip-input::placeholder{color:#cbd5e1;}
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#3b82f6;margin-bottom:12px;}
+.hero-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(44px,8vw,68px);font-weight:900;line-height:.95;margin-bottom:12px;letter-spacing:-.02em;color:#f1f5f9;}
+.hero-sub{color:#94a3b8;font-size:15px;margin-bottom:28px;line-height:1.6;}
+.search-bar{display:flex;border:1.5px solid #2b3a55;border-radius:10px;overflow:hidden;background:#161e2e;transition:border-color .2s,box-shadow .2s;}
+.search-bar:focus-within{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.zip-input{flex:1;padding:16px 20px;font-family:'DM Mono',monospace;font-size:28px;font-weight:500;letter-spacing:.15em;background:transparent;border:none;outline:none;color:#f1f5f9;}
+.zip-input::placeholder{color:#475569;}
 .type-section{margin-top:14px;}
-.type-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;text-align:left;}
+.type-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:#7c8aa0;margin-bottom:10px;text-align:left;}
 .type-grid{display:grid;gap:10px;}
 .type-grid-4{grid-template-columns:repeat(4,minmax(0,1fr));}
 .type-grid-2{grid-template-columns:repeat(2,minmax(0,1fr));}
 @media(max-width:480px){.type-grid-4{grid-template-columns:repeat(2,minmax(0,1fr));}}
-.type-btn{padding:16px 8px;border-radius:9px;border:1.5px solid #e2e8f0;background:#ffffff;color:#64748b;
+.type-btn{padding:16px 8px;border-radius:9px;border:1.5px solid #2b3a55;background:#161e2e;color:#94a3b8;
   cursor:pointer;transition:none;display:flex;flex-direction:column;align-items:center;gap:5px;
   outline:none;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;min-width:0;overflow:hidden;}
-.type-btn:hover:not(:disabled){border-color:#2563eb;color:#1e40af;}
-.type-btn:active:not(:disabled){background:#ffffff;border-color:#e2e8f0;color:#64748b;transform:none;}
+.type-btn:hover:not(:disabled){border-color:#3b82f6;color:#93c5fd;}
+.type-btn:active:not(:disabled){background:#161e2e;border-color:#2b3a55;color:#94a3b8;transform:none;}
 .type-btn:focus{outline:none;}
-.type-btn:focus:not(:focus-visible){border-color:#e2e8f0;box-shadow:none;}
+.type-btn:focus:not(:focus-visible){border-color:#2b3a55;box-shadow:none;}
 .type-btn:disabled{opacity:.4;cursor:not-allowed;}
 .type-btn-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;}
-.type-chk{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;line-height:1;color:#1e40af;margin-right:5px;}
+.type-chk{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;line-height:1;color:#93c5fd;margin-right:5px;}
 .type-btn-sub{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;text-align:center;}
 .type-btn-feat{padding:14px 8px;}
 .type-btn.ghp-active,.type-btn.lawn-active,.type-btn.tmte-active,.type-btn.spvr-active,.type-btn.tc-active,
 .type-btn.comm-active,.type-btn.mosq-active,.type-btn.excl-active,.type-btn.wild-active,.type-btn.tap-active,
 .type-btn.pret-active,.type-btn.post-active,.type-btn.smrt-active,.type-btn.sent-active,
-.type-btn.bbug-active,.type-btn.finsp-active{border-color:#2563eb;background:#eff6ff;color:#1e40af;}
+.type-btn.bbug-active,.type-btn.finsp-active{border-color:#3b82f6;background:#16243f;color:#93c5fd;}
 .type-btn.ghp-active:active,.type-btn.lawn-active:active,.type-btn.tmte-active:active,.type-btn.spvr-active:active,
 .type-btn.tc-active:active,.type-btn.comm-active:active,.type-btn.mosq-active:active,.type-btn.excl-active:active,
 .type-btn.wild-active:active,.type-btn.tap-active:active,.type-btn.pret-active:active,.type-btn.post-active:active,
-.type-btn.smrt-active:active,.type-btn.sent-active:active,.type-btn.bbug-active:active,.type-btn.finsp-active:active{border-color:#2563eb;background:#eff6ff;color:#1e40af;}
+.type-btn.smrt-active:active,.type-btn.sent-active:active,.type-btn.bbug-active:active,.type-btn.finsp-active:active{border-color:#3b82f6;background:#16243f;color:#93c5fd;}
 
 .results-wrap{max-width:600px;margin:24px auto 0;padding:0 20px 60px;}
-.results-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e2e8f0;}
-.results-label{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;}
+.results-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #2b3a55;}
+.results-label{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7c8aa0;}
 
-.tech-card{background:#ffffff;border:1px solid #e2e8f0;border-radius:9px;padding:18px;margin-bottom:9px;
+.tech-card{background:#161e2e;border:1px solid #2b3a55;border-radius:9px;padding:18px;margin-bottom:9px;
   display:flex;gap:14px;animation:slideIn .3s ease both;transition:border-color .2s,box-shadow .2s,transform .15s;}
-.tech-card:hover{border-color:#bfdbfe;box-shadow:0 4px 12px rgba(0,0,0,.07);transform:translateY(-1px);}
+.tech-card:hover{border-color:#2c456e;box-shadow:0 4px 12px rgba(0,0,0,.07);transform:translateY(-1px);}
 .tech-warn-banner{background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:7px 12px;
   flex:0 0 100%;display:flex;align-items:center;gap:8px;
   font-family:'DM Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;
   text-transform:uppercase;color:#c2410c;}
 @keyframes slideIn{from{opacity:0;transform:translateY(9px);}to{opacity:1;transform:translateY(0);}}
-.tech-avatar{width:44px;height:44px;border-radius:50%;background:#eff6ff;border:2px solid #bfdbfe;
-  display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#1e40af;flex-shrink:0;}
-.tech-name{font-family:'Barlow Condensed',sans-serif;font-size:21px;font-weight:700;color:#0f172a;}
+.tech-avatar{width:44px;height:44px;border-radius:50%;background:#16243f;border:2px solid #2c456e;
+  display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#93c5fd;flex-shrink:0;}
+.tech-name{font-family:'Barlow Condensed',sans-serif;font-size:21px;font-weight:700;color:#f1f5f9;}
 .tech-phone{display:block;font-family:'DM Mono',monospace;font-size:14px;font-weight:600;color:#334155;text-decoration:none;margin-bottom:7px;letter-spacing:.03em;}
-.tech-phone:hover{color:#2563eb;}
-.tech-notes{font-size:13px;color:#64748b;margin-bottom:8px;}
+.tech-phone:hover{color:#3b82f6;}
+.tech-notes{font-size:13px;color:#94a3b8;margin-bottom:8px;}
 .tag-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px;}
 .zip-tags{display:flex;flex-wrap:wrap;gap:5px;}
-.zip-tag{font-family:'DM Mono',monospace;font-size:11px;padding:2px 8px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;color:#64748b;}
-.zip-hl{background:#eff6ff;border-color:#bfdbfe;color:#1e40af;font-weight:500;}
-.zip-more{font-family:'DM Mono',monospace;font-size:11px;padding:2px 8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;color:#1e40af;font-weight:500;}
+.zip-tag{font-family:'DM Mono',monospace;font-size:11px;padding:2px 8px;background:#1e293b;border:1px solid #2b3a55;border-radius:4px;color:#94a3b8;}
+.zip-hl{background:#16243f;border-color:#2c456e;color:#93c5fd;font-weight:500;}
+.zip-more{font-family:'DM Mono',monospace;font-size:11px;padding:2px 8px;background:#16243f;border:1px solid #2c456e;border-radius:4px;color:#93c5fd;font-weight:500;}
 .empty-state{text-align:center;padding:52px 20px;}
 .empty-icon{font-size:42px;margin-bottom:13px;}
-.empty-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;margin-bottom:7px;color:#0f172a;}
-.empty-text{color:#64748b;font-size:14px;line-height:1.6;max-width:300px;margin:0 auto;}
+.empty-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;margin-bottom:7px;color:#f1f5f9;}
+.empty-text{color:#94a3b8;font-size:14px;line-height:1.6;max-width:300px;margin:0 auto;}
 
-.disclaimer{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:13px 15px;margin-top:16px;display:flex;gap:10px;align-items:flex-start;text-align:left;}
+.disclaimer{background:#16243f;border:1px solid #2c456e;border-radius:8px;padding:13px 15px;margin-top:16px;display:flex;gap:10px;align-items:flex-start;text-align:left;}
 .disclaimer-icon{font-size:15px;flex-shrink:0;margin-top:1px;opacity:.8;}
 .disclaimer-text{font-size:12px;color:#78350f;line-height:1.65;}
-.disclaimer-text strong{color:#1e40af;font-weight:600;}
+.disclaimer-text strong{color:#93c5fd;font-weight:600;}
 
 .admin-view{max-width:980px;margin:0 auto;padding:32px 20px 60px;}
 .admin-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
 .admin-head-left{display:flex;flex-direction:column;gap:5px;}
-.admin-title{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:900;color:#0f172a;}
-.admin-meta{font-family:'DM Mono',monospace;font-size:11px;color:#94a3b8;letter-spacing:.08em;}
-.admin-meta span{color:#2563eb;}
+.admin-title{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:900;color:#f1f5f9;}
+.admin-meta{font-family:'DM Mono',monospace;font-size:11px;color:#7c8aa0;letter-spacing:.08em;}
+.admin-meta span{color:#3b82f6;}
 .admin-head-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.session-badge{display:flex;align-items:center;gap:7px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:20px;padding:5px 12px;font-family:'DM Mono',monospace;font-size:11px;color:#64748b;letter-spacing:.06em;}
+.session-badge{display:flex;align-items:center;gap:7px;background:#0f1729;border:1px solid #2b3a55;border-radius:20px;padding:5px 12px;font-family:'DM Mono',monospace;font-size:11px;color:#94a3b8;letter-spacing:.06em;}
 .session-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-.btn-signout{padding:6px 13px;background:transparent;border:1px solid #e2e8f0;border-radius:6px;color:#64748b;font-size:12px;cursor:pointer;transition:all .18s;font-family:'Barlow',sans-serif;}
+.btn-signout{padding:6px 13px;background:transparent;border:1px solid #2b3a55;border-radius:6px;color:#94a3b8;font-size:12px;cursor:pointer;transition:all .18s;font-family:'Barlow',sans-serif;}
 .btn-signout:hover{border-color:rgba(239,68,68,.4);color:#ef4444;}
-.btn-add{padding:9px 18px;background:#2563eb;border:none;border-radius:6px;color:#ffffff;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:background .18s;}
-.btn-add:hover{background:#2563eb;}
-.btn-outline{padding:7px 14px;background:transparent;border:1px solid #e2e8f0;border-radius:6px;color:#64748b;font-family:'Barlow',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:6px;}
-.btn-outline:hover{border-color:#2563eb;color:#2563eb;}
-.admin-tabs{display:flex;gap:2px;margin-bottom:24px;border-bottom:1px solid #e2e8f0;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent;}
+.btn-add{padding:9px 18px;background:#3b82f6;border:none;border-radius:6px;color:#161e2e;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:background .18s;}
+.btn-add:hover{background:#3b82f6;}
+.btn-outline{padding:7px 14px;background:transparent;border:1px solid #2b3a55;border-radius:6px;color:#94a3b8;font-family:'Barlow',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:6px;}
+.btn-outline:hover{border-color:#3b82f6;color:#3b82f6;}
+.admin-tabs{display:flex;gap:2px;margin-bottom:24px;border-bottom:1px solid #2b3a55;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#475569 transparent;}
 .admin-tabs::-webkit-scrollbar{height:5px;}
-.admin-tabs::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
-.admin-tab{padding:10px 18px;background:transparent;border:none;border-bottom:2px solid transparent;color:#64748b;font-family:'Barlow',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .18s;margin-bottom:-1px;white-space:nowrap;flex-shrink:0;}
+.admin-tabs::-webkit-scrollbar-thumb{background:#475569;border-radius:3px;}
+.admin-tab{padding:10px 18px;background:transparent;border:none;border-bottom:2px solid transparent;color:#94a3b8;font-family:'Barlow',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .18s;margin-bottom:-1px;white-space:nowrap;flex-shrink:0;}
 .admin-tab:hover{color:#334155;}
-.tab-active{color:#2563eb!important;border-bottom-color:#2563eb!important;}
-.import-banner{background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;padding:16px 20px;margin-bottom:20px;animation:slideIn .25s ease both;}
-.import-banner-title{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;margin-bottom:4px;color:#0f172a;}
-.import-banner-sub{font-size:13px;color:#64748b;margin-bottom:14px;line-height:1.5;}
+.tab-active{color:#3b82f6!important;border-bottom-color:#3b82f6!important;}
+.import-banner{background:#16243f;border:1px solid #2c456e;border-radius:9px;padding:16px 20px;margin-bottom:20px;animation:slideIn .25s ease both;}
+.import-banner-title{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;margin-bottom:4px;color:#f1f5f9;}
+.import-banner-sub{font-size:13px;color:#94a3b8;margin-bottom:14px;line-height:1.5;}
 .import-banner-actions{display:flex;gap:8px;}
 .save-toast{display:flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.06em;padding:5px 12px;border-radius:6px;border:1px solid transparent;transition:all .3s;}
-.save-saving{color:#1e40af;border-color:rgba(37,99,235,.2);background:rgba(37,99,235,.08);}
-.save-ok    {color:#15803d;border-color:rgba(21,128,61,.3); background:rgba(21,128,61,.08);}
-.save-err   {color:#dc2626;border-color:rgba(220,38,38,.3); background:rgba(220,38,38,.08);}
+.save-saving{color:#93c5fd;border-color:rgba(37,99,235,.2);background:rgba(37,99,235,.08);}
+.save-ok    {color:#4ade80;border-color:rgba(21,128,61,.3); background:rgba(21,128,61,.08);}
+.save-err   {color:#f87171;border-color:rgba(220,38,38,.3); background:rgba(220,38,38,.08);}
 .bulk-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;margin-bottom:10px;
-  background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;animation:slideIn .2s ease both;}
-.bulk-count{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:#1e40af;letter-spacing:.06em;}
-.bulk-cancel{margin-left:auto;background:none;border:none;color:#64748b;cursor:pointer;
+  background:#16243f;border:1px solid #2c456e;border-radius:8px;animation:slideIn .2s ease both;}
+.bulk-count{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:#93c5fd;letter-spacing:.06em;}
+.bulk-cancel{margin-left:auto;background:none;border:none;color:#94a3b8;cursor:pointer;
   font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;}
-.bulk-cancel:hover{color:#dc2626;}
-.row-check{width:15px;height:15px;accent-color:#2563eb;cursor:pointer;}
+.bulk-cancel:hover{color:#f87171;}
+.row-check{width:15px;height:15px;accent-color:#3b82f6;cursor:pointer;}
 
-.table-wrap{border:1px solid #e2e8f0;border-radius:9px;overflow:hidden;}
+.table-wrap{border:1px solid #2b3a55;border-radius:9px;overflow:hidden;}
 .tech-table{width:100%;border-collapse:collapse;}
-.tech-table th{background:#f8fafc;padding:10px 14px;text-align:left;font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#94a3b8;border-bottom:1px solid #e2e8f0;}
-.tech-table td{padding:12px 14px;border-bottom:1px solid #f1f5f9;vertical-align:middle;color:#334155;}
+.tech-table th{background:#0f1729;padding:10px 14px;text-align:left;font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#7c8aa0;border-bottom:1px solid #2b3a55;}
+.tech-table td{padding:12px 14px;border-bottom:1px solid #1e293b;vertical-align:middle;color:#334155;}
 .tech-table tr:last-child td{border-bottom:none;}
-.tech-table tbody tr:hover td{background:#fafafa;}
-.row-avatar{width:30px;height:30px;border-radius:50%;background:#eff6ff;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#1e40af;}
-.btn-edit{padding:5px 12px;background:transparent;border:1px solid #e2e8f0;border-radius:5px;color:#64748b;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .18s;}
-.btn-edit:hover{border-color:#2563eb;color:#2563eb;}
+.tech-table tbody tr:hover td{background:#1a2336;}
+.row-avatar{width:30px;height:30px;border-radius:50%;background:#16243f;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#93c5fd;}
+.btn-edit{padding:5px 12px;background:transparent;border:1px solid #2b3a55;border-radius:5px;color:#94a3b8;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .18s;}
+.btn-edit:hover{border-color:#3b82f6;color:#3b82f6;}
 .btn-del{padding:5px 12px;background:transparent;border:1px solid rgba(239,68,68,.25);border-radius:5px;color:#ef4444;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .18s;}
 .btn-del:hover{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.5);}
-.btn-del-confirm{padding:5px 12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.35);border-radius:5px;color:#dc2626;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;}
-.btn-cancel{padding:9px 16px;background:transparent;border:1px solid #e2e8f0;border-radius:6px;color:#64748b;font-family:'Barlow',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .18s;}
-.btn-cancel:hover{border-color:#94a3b8;color:#334155;}
-.btn-save{padding:9px 20px;background:#2563eb;border:none;border-radius:6px;color:#ffffff;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:background .18s;}
-.btn-save:hover{background:#2563eb;}
-.btn-save:disabled{background:#e2e8f0;color:#94a3b8;cursor:not-allowed;}
-.btn-restore{padding:5px 13px;background:transparent;border:1px solid #e2e8f0;border-radius:5px;color:#64748b;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .18s;}
-.btn-restore:hover{border-color:#2563eb;color:#2563eb;}
+.btn-del-confirm{padding:5px 12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.35);border-radius:5px;color:#f87171;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;}
+.btn-cancel{padding:9px 16px;background:transparent;border:1px solid #2b3a55;border-radius:6px;color:#94a3b8;font-family:'Barlow',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .18s;}
+.btn-cancel:hover{border-color:#7c8aa0;color:#334155;}
+.btn-save{padding:9px 20px;background:#3b82f6;border:none;border-radius:6px;color:#161e2e;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:background .18s;}
+.btn-save:hover{background:#3b82f6;}
+.btn-save:disabled{background:#2b3a55;color:#7c8aa0;cursor:not-allowed;}
+.btn-restore{padding:5px 13px;background:transparent;border:1px solid #2b3a55;border-radius:5px;color:#94a3b8;font-size:12px;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .18s;}
+.btn-restore:hover{border-color:#3b82f6;color:#3b82f6;}
 .btn-popout{font-size:16px!important;padding:6px 10px!important;}
 .bell-btn{position:relative;}
-.bell-badge{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;border-radius:8px;background:#dc2626;color:#fff;font-family:'DM Mono',monospace;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;animation:bellPulse 1.5s ease-in-out infinite;}
+.bell-badge{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;border-radius:8px;background:#f87171;color:#161e2e;font-family:'DM Mono',monospace;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;animation:bellPulse 1.5s ease-in-out infinite;}
 @keyframes bellPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
-.help-panel{position:absolute;top:44px;right:0;width:330px;max-width:calc(100vw - 24px);background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.16);z-index:300;overflow:hidden;max-height:70vh;overflow-y:auto;}
-.help-item{padding:11px 14px;border-bottom:1px solid #f1f5f9;}
+.help-panel{position:absolute;top:44px;right:0;width:330px;max-width:calc(100vw - 24px);background:#161e2e;border:1px solid #2b3a55;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.16);z-index:300;overflow:hidden;max-height:70vh;overflow-y:auto;}
+.help-item{padding:11px 14px;border-bottom:1px solid #1e293b;}
 .help-item:last-child{border-bottom:none;}
 .nav-backdrop{position:fixed;inset:0;z-index:290;background:transparent;}
-.nav-panel{position:absolute;top:44px;right:0;width:215px;max-width:calc(100vw - 16px);background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.16);z-index:300;overflow:hidden;padding:6px;}
-.nav-item{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:transparent;border:none;border-radius:7px;color:#475569;font-family:'Barlow',sans-serif;font-size:14px;font-weight:500;cursor:pointer;text-align:left;transition:background .12s;}
-.nav-item:hover{background:#f1f5f9;}
-.nav-item.nav-item-active{background:#eff6ff;color:#1e40af;font-weight:600;}
+.nav-panel{position:absolute;top:44px;right:0;width:215px;max-width:calc(100vw - 16px);background:#161e2e;border:1px solid #2b3a55;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.16);z-index:300;overflow:hidden;padding:6px;}
+.nav-item{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:transparent;border:none;border-radius:7px;color:#cbd5e1;font-family:'Barlow',sans-serif;font-size:14px;font-weight:500;cursor:pointer;text-align:left;transition:background .12s;}
+.nav-item:hover{background:#1e293b;}
+.nav-item.nav-item-active{background:#16243f;color:#93c5fd;font-weight:600;}
 .nav-item-icon{width:20px;text-align:center;flex-shrink:0;font-size:14px;}
-.nav-divider{height:1px;background:#e2e8f0;margin:5px 8px;}
+.nav-divider{height:1px;background:#2b3a55;margin:5px 8px;}
 @media(max-width:520px){.menu-label{display:none;}}
-.fab-help{position:fixed;right:18px;bottom:18px;z-index:150;background:#dc2626;color:#fff;border:none;border-radius:28px;padding:13px 20px;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:.06em;cursor:pointer;box-shadow:0 6px 18px rgba(220,38,38,.35);display:flex;align-items:center;gap:8px;transition:background .15s;}
-.fab-help:hover{background:#b91c1c;}
-.alert-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px;}
-.alert-box{background:#fff;border-radius:14px;padding:22px 24px;width:100%;max-width:390px;border:3px solid #dc2626;animation:alertFlash .9s ease-in-out infinite;}
-@keyframes alertFlash{0%,100%{border-color:#dc2626;box-shadow:0 0 0 0 rgba(220,38,38,.5);}50%{border-color:#fecaca;box-shadow:0 0 0 16px rgba(220,38,38,0);}}
-.fab-chip{position:fixed;right:18px;bottom:18px;z-index:150;background:#fff;border:1.5px solid #bfdbfe;border-radius:12px;padding:11px 14px;box-shadow:0 8px 24px rgba(0,0,0,.14);width:280px;max-width:calc(100vw - 24px);}
+.fab-help{position:fixed;right:18px;bottom:18px;z-index:150;background:#f87171;color:#161e2e;border:none;border-radius:28px;padding:13px 20px;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:.06em;cursor:pointer;box-shadow:0 6px 18px rgba(220,38,38,.35);display:flex;align-items:center;gap:8px;transition:background .15s;}
+.fab-help:hover{background:#ef4444;}
+.alert-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px;}
+.alert-box{background:#161e2e;border-radius:14px;padding:22px 24px;width:100%;max-width:390px;border:3px solid #f87171;animation:alertFlash .9s ease-in-out infinite;}
+@keyframes alertFlash{0%,100%{border-color:#f87171;box-shadow:0 0 0 0 rgba(220,38,38,.5);}50%{border-color:#fecaca;box-shadow:0 0 0 16px rgba(220,38,38,0);}}
+.fab-chip{position:fixed;right:18px;bottom:18px;z-index:150;background:#161e2e;border:1.5px solid #2c456e;border-radius:12px;padding:11px 14px;box-shadow:0 8px 24px rgba(0,0,0,.14);width:280px;max-width:calc(100vw - 24px);}
 @media(max-width:480px){.fab-help{right:12px;bottom:12px;padding:11px 16px;font-size:14px;}.fab-chip{right:12px;bottom:12px;}}
 
-.overlay{position:fixed;inset:0;background:rgba(15,23,42,.4);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;}
-.modal{background:#ffffff;border-radius:12px;padding:26px 28px;width:100%;max-width:560px;box-shadow:0 20px 60px rgba(0,0,0,.12);border:1px solid #e2e8f0;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;}
+.modal{background:#161e2e;border-radius:12px;padding:26px 28px;width:100%;max-width:560px;box-shadow:0 20px 60px rgba(0,0,0,.12);border:1px solid #2b3a55;}
 .modal-sm{max-width:400px;}
-.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;margin-bottom:18px;letter-spacing:.02em;color:#0f172a;}
-.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:24px;padding-top:16px;border-top:1px solid #e2e8f0;}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;margin-bottom:18px;letter-spacing:.02em;color:#f1f5f9;}
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:24px;padding-top:16px;border-top:1px solid #2b3a55;}
 .field{margin-bottom:16px;}
-.field-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#64748b;margin-bottom:7px;display:block;}
-.field-input{width:100%;padding:11px 14px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;color:#0f172a;font-family:'Barlow',sans-serif;font-size:15px;font-weight:400;outline:none;transition:border-color .2s,box-shadow .2s;}
-.field-input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
-.field-textarea{width:100%;padding:11px 14px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;color:#0f172a;font-family:'Barlow',sans-serif;font-size:15px;resize:vertical;outline:none;transition:border-color .2s,box-shadow .2s;}
-.field-textarea:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
-.err-box{background:#fee2e2;border:1px solid #fca5a5;border-radius:6px;padding:10px 14px;font-size:13px;color:#dc2626;margin-bottom:14px;}
-.field-warn{font-family:'DM Mono',monospace;font-size:10px;color:#2563eb;letter-spacing:.04em;margin-top:-6px;margin-bottom:8px;}
+.field-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:7px;display:block;}
+.field-input{width:100%;padding:11px 14px;background:#0f1729;border:1.5px solid #2b3a55;border-radius:8px;color:#f1f5f9;font-family:'Barlow',sans-serif;font-size:15px;font-weight:400;outline:none;transition:border-color .2s,box-shadow .2s;}
+.field-input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.field-textarea{width:100%;padding:11px 14px;background:#0f1729;border:1.5px solid #2b3a55;border-radius:8px;color:#f1f5f9;font-family:'Barlow',sans-serif;font-size:15px;resize:vertical;outline:none;transition:border-color .2s,box-shadow .2s;}
+.field-textarea:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.err-box{background:#fee2e2;border:1px solid #fca5a5;border-radius:6px;padding:10px 14px;font-size:13px;color:#f87171;margin-bottom:14px;}
+.field-warn{font-family:'DM Mono',monospace;font-size:10px;color:#3b82f6;letter-spacing:.04em;margin-top:-6px;margin-bottom:8px;}
 .type-toggle-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:4px;}
-.type-toggle{padding:8px 4px;border-radius:6px;border:1.5px solid #e2e8f0;background:#f8fafc;color:#64748b;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-align:center;cursor:pointer;transition:none;text-transform:uppercase;}
-.type-toggle:hover{border-color:#2563eb;color:#1e40af;}
-.warn-toggle{display:flex;align-items:center;gap:8px;font-size:13px;color:#64748b;cursor:pointer;}
-.warn-toggle input{accent-color:#2563eb;}
+.type-toggle{padding:8px 4px;border-radius:6px;border:1.5px solid #2b3a55;background:#0f1729;color:#94a3b8;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-align:center;cursor:pointer;transition:none;text-transform:uppercase;}
+.type-toggle:hover{border-color:#3b82f6;color:#93c5fd;}
+.warn-toggle{display:flex;align-items:center;gap:8px;font-size:13px;color:#94a3b8;cursor:pointer;}
+.warn-toggle input{accent-color:#3b82f6;}
 .zip-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;min-height:32px;}
-.zip-token{display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:11px;padding:3px 9px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;color:#334155;}
-.zip-token-del{background:none;border:none;color:#94a3b8;cursor:pointer;font-size:13px;padding:0;line-height:1;}
+.zip-token{display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:11px;padding:3px 9px;background:#1e293b;border:1px solid #2b3a55;border-radius:4px;color:#334155;}
+.zip-token-del{background:none;border:none;color:#7c8aa0;cursor:pointer;font-size:13px;padding:0;line-height:1;}
 .zip-token-del:hover{color:#ef4444;}
 .zip-add-row{display:flex;gap:8px;}
 
-.backup-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:8px;}
-.backup-meta{font-family:'DM Mono',monospace;font-size:11px;color:#64748b;letter-spacing:.05em;}
+.backup-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#0f1729;border:1px solid #2b3a55;border-radius:8px;margin-bottom:8px;}
+.backup-meta{font-family:'DM Mono',monospace;font-size:11px;color:#94a3b8;letter-spacing:.05em;}
 .backup-meta strong{color:#334155;display:block;margin-bottom:2px;}
 
-.copy-btn{padding:3px 9px;background:transparent;border:1px solid #e2e8f0;border-radius:4px;color:#94a3b8;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .18s;}
-.copy-btn:hover{border-color:#2563eb;color:#2563eb;}
-.copy-btn-ok{border-color:rgba(21,128,61,.4)!important;color:#15803d!important;background:rgba(21,128,61,.08)!important;}
+.copy-btn{padding:3px 9px;background:transparent;border:1px solid #2b3a55;border-radius:4px;color:#7c8aa0;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .18s;}
+.copy-btn:hover{border-color:#3b82f6;color:#3b82f6;}
+.copy-btn-ok{border-color:rgba(21,128,61,.4)!important;color:#4ade80!important;background:rgba(21,128,61,.08)!important;}
 
 .shortcut-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px;}
-.shortcut-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:20px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;color:#1e40af;letter-spacing:.04em;transition:background .15s;white-space:nowrap;-webkit-tap-highlight-color:transparent;}
-.shortcut-pill:hover{background:#dbeafe;}
-.shortcut-pill-del{background:none;border:none;color:#94a3b8;cursor:pointer;font-size:13px;padding:0 0 0 2px;line-height:1;}
+.shortcut-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;background:#16243f;border:1px solid #2c456e;border-radius:20px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;color:#93c5fd;letter-spacing:.04em;transition:background .15s;white-space:nowrap;-webkit-tap-highlight-color:transparent;}
+.shortcut-pill:hover{background:#1e3a5f;}
+.shortcut-pill-del{background:none;border:none;color:#7c8aa0;cursor:pointer;font-size:13px;padding:0 0 0 2px;line-height:1;}
 .shortcut-pill-del:hover{color:#ef4444;}
-.shortcut-save{padding:4px 10px;background:transparent;border:1px dashed #bfdbfe;border-radius:20px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;color:#94a3b8;letter-spacing:.04em;transition:all .15s;white-space:nowrap;}
-.shortcut-save:hover{border-color:#2563eb;color:#2563eb;}
+.shortcut-save{padding:4px 10px;background:transparent;border:1px dashed #2c456e;border-radius:20px;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;color:#7c8aa0;letter-spacing:.04em;transition:all .15s;white-space:nowrap;}
+.shortcut-save:hover{border-color:#3b82f6;color:#3b82f6;}
 
-.offline-banner{background:#eff6ff;border-bottom:1px solid #bfdbfe;padding:6px 24px;font-family:'DM Mono',monospace;font-size:10px;color:#1e40af;letter-spacing:.08em;text-align:center;text-transform:uppercase;}
+.offline-banner{background:#16243f;border-bottom:1px solid #2c456e;padding:6px 24px;font-family:'DM Mono',monospace;font-size:10px;color:#93c5fd;letter-spacing:.08em;text-align:center;text-transform:uppercase;}
 
-.guide-card{background:#ffffff;border:1px solid #e2e8f0;border-radius:9px;padding:20px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
-.guide-card-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;margin-bottom:14px;letter-spacing:.02em;color:#0f172a;}
+.guide-card{background:#161e2e;border:1px solid #2b3a55;border-radius:9px;padding:20px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.guide-card-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;margin-bottom:14px;letter-spacing:.02em;color:#f1f5f9;}
 .guide-step{display:flex;gap:12px;margin-bottom:10px;align-items:flex-start;}
-.guide-step-num{font-family:'DM Mono',monospace;font-size:11px;color:#2563eb;background:#eff6ff;border:1px solid #bfdbfe;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
-.guide-step-body{font-size:13px;color:#475569;line-height:1.7;padding-top:2px;}
+.guide-step-num{font-family:'DM Mono',monospace;font-size:11px;color:#3b82f6;background:#16243f;border:1px solid #2c456e;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.guide-step-body{font-size:13px;color:#cbd5e1;line-height:1.7;padding-top:2px;}
 .guide-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
-.guide-row-desc{font-size:13px;color:#475569;line-height:1.5;}
-.cheat-search{position:sticky;top:58px;z-index:50;background:#f8fafc;padding:8px 0 10px;}
-.cheat-chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent;}
+.guide-row-desc{font-size:13px;color:#cbd5e1;line-height:1.5;}
+.cheat-search{position:sticky;top:58px;z-index:50;background:#0b1120;padding:8px 0 10px;}
+.cheat-chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:thin;scrollbar-color:#475569 transparent;}
 .cheat-chips::-webkit-scrollbar{height:6px;}
 .cheat-chips::-webkit-scrollbar-track{background:transparent;}
-.cheat-chips::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
-.cheat-chips::-webkit-scrollbar-thumb:hover{background:#94a3b8;}
+.cheat-chips::-webkit-scrollbar-thumb{background:#475569;border-radius:3px;}
+.cheat-chips::-webkit-scrollbar-thumb:hover{background:#7c8aa0;}
 .cheat-code{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.04em;
-  background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:5px;padding:3px 8px;
+  background:#16243f;border:1px solid #2c456e;color:#93c5fd;border-radius:5px;padding:3px 8px;
   cursor:pointer;white-space:nowrap;transition:all .15s;}
-.cheat-code:hover{background:#dbeafe;}
-.cheat-code.copied{background:rgba(21,128,61,.1);border-color:rgba(21,128,61,.4);color:#15803d;}
-.cheat-row{padding:11px 0;border-bottom:1px solid #f1f5f9;}
+.cheat-code:hover{background:#1e3a5f;}
+.cheat-code.copied{background:rgba(21,128,61,.1);border-color:rgba(21,128,61,.4);color:#4ade80;}
+.cheat-row{padding:11px 0;border-bottom:1px solid #1e293b;}
 .cheat-row:last-child{border-bottom:none;}
-.cheat-freq{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;color:#64748b;
-  background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:2px 7px;white-space:nowrap;}
+.cheat-freq{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;color:#94a3b8;
+  background:#1e293b;border:1px solid #2b3a55;border-radius:4px;padding:2px 7px;white-space:nowrap;}
 .cheat-name{font-size:12px;font-weight:600;color:#334155;letter-spacing:.02em;}
-.cheat-desc{font-size:12.5px;color:#475569;line-height:1.6;margin-top:4px;}
-.cheat-inc{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#475569;line-height:1.65;margin-bottom:6px;}
+.cheat-desc{font-size:12.5px;color:#cbd5e1;line-height:1.6;margin-top:4px;}
+.cheat-inc{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#cbd5e1;line-height:1.65;margin-bottom:6px;}
 .cheat-inc span:first-child{flex-shrink:0;font-weight:700;}
-.prep-card{display:flex;align-items:center;gap:13px;padding:13px 15px;background:#fff;border:1px solid #e2e8f0;border-radius:9px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.prep-card{display:flex;align-items:center;gap:13px;padding:13px 15px;background:#161e2e;border:1px solid #2b3a55;border-radius:9px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
 .prep-icon{width:40px;height:40px;border-radius:8px;background:#fef2f2;border:1px solid #fecaca;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
-.prep-name{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:#0f172a;line-height:1.1;}
-.prep-sub{font-size:11.5px;color:#64748b;margin-top:2px;line-height:1.4;}
+.prep-name{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:#f1f5f9;line-height:1.1;}
+.prep-sub{font-size:11.5px;color:#94a3b8;margin-top:2px;line-height:1.4;}
 .prep-actions{display:flex;gap:6px;flex-shrink:0;}
-.prep-btn{font-family:'DM Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:6px 11px;border-radius:6px;cursor:pointer;border:1px solid #e2e8f0;background:transparent;color:#475569;transition:all .15s;text-decoration:none;display:inline-flex;align-items:center;}
-.prep-btn:hover{border-color:#2563eb;color:#2563eb;}
-.prep-btn-primary{background:#2563eb;border-color:#2563eb;color:#fff;}
-.prep-btn-primary:hover{background:#1d4ed8;color:#fff;}
-.pdf-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:350;display:flex;flex-direction:column;padding:14px;}
-.pdf-frame{flex:1;width:100%;border:none;border-radius:10px;background:#fff;}
+.prep-btn{font-family:'DM Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:6px 11px;border-radius:6px;cursor:pointer;border:1px solid #2b3a55;background:transparent;color:#cbd5e1;transition:all .15s;text-decoration:none;display:inline-flex;align-items:center;}
+.prep-btn:hover{border-color:#3b82f6;color:#3b82f6;}
+.prep-btn-primary{background:#3b82f6;border-color:#3b82f6;color:#161e2e;}
+.prep-btn-primary:hover{background:#2563eb;color:#161e2e;}
+.pdf-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:350;display:flex;flex-direction:column;padding:14px;}
+.pdf-frame{flex:1;width:100%;border:none;border-radius:10px;background:#161e2e;}
 
-.entry-card{background:#ffffff;border:1px solid #e2e8f0;border-radius:9px;padding:18px 20px;margin-bottom:10px;}
-.entry-date{font-family:'DM Mono',monospace;font-size:10px;color:#94a3b8;letter-spacing:.08em;margin-bottom:5px;}
-.entry-title{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;margin-bottom:8px;color:#0f172a;}
-.entry-body{font-size:13px;color:#475569;line-height:1.7;white-space:pre-wrap;}
+.entry-card{background:#161e2e;border:1px solid #2b3a55;border-radius:9px;padding:18px 20px;margin-bottom:10px;}
+.entry-date{font-family:'DM Mono',monospace;font-size:10px;color:#7c8aa0;letter-spacing:.08em;margin-bottom:5px;}
+.entry-title{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;margin-bottom:8px;color:#f1f5f9;}
+.entry-body{font-size:13px;color:#cbd5e1;line-height:1.7;white-space:pre-wrap;}
 .entry-actions{display:flex;gap:8px;margin-top:12px;}
 
 .sort-bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
-.sort-btn{padding:5px 12px;background:transparent;border:1px solid #e2e8f0;border-radius:20px;color:#94a3b8;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .15s;}
-.sort-btn:hover{border-color:#2563eb;color:#2563eb;}
-.sort-btn-active{background:#eff6ff;border-color:#bfdbfe!important;color:#1e40af!important;}
+.sort-btn{padding:5px 12px;background:transparent;border:1px solid #2b3a55;border-radius:20px;color:#7c8aa0;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .15s;}
+.sort-btn:hover{border-color:#3b82f6;color:#3b82f6;}
+.sort-btn-active{background:#16243f;border-color:#2c456e!important;color:#93c5fd!important;}
 
 .top-nav{display:flex;gap:6px;align-items:center;min-width:0;}
 
-.type-group-divider{height:1px;background:linear-gradient(to right,transparent,#e2e8f0 20%,#e2e8f0 80%,transparent);margin:9px 0;}
-.lookup-or{display:flex;align-items:center;gap:12px;margin:12px 0 10px;color:#94a3b8;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;}
+.type-group-divider{height:1px;background:linear-gradient(to right,transparent,#2b3a55 20%,#2b3a55 80%,transparent);margin:9px 0;}
+.lookup-or{display:flex;align-items:center;gap:12px;margin:12px 0 10px;color:#7c8aa0;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;}
 .lookup-or::before,.lookup-or::after{content:'';flex:1;height:1px;}
-.lookup-or::before{background:linear-gradient(to right,transparent,#e2e8f0);}
-.lookup-or::after{background:linear-gradient(to left,transparent,#e2e8f0);}
-.branch-select{width:100%;padding:16px 18px;background:#ffffff;border:2px solid #e2e8f0;border-radius:10px;color:#64748b;font-family:'Barlow',sans-serif;font-size:17px;font-weight:500;outline:none;cursor:pointer;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none;}
-.branch-select:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
-.branch-select.branch-active{border-color:#2563eb;color:#1e40af;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
-.pp-row{display:flex;align-items:center;gap:10px;padding:11px 16px;background:#ffffff;border:2px solid #e2e8f0;border-radius:10px;transition:border-color .2s,box-shadow .2s;}
-.pp-row:focus-within{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
-.pp-row.pp-active{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
-.pp-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;color:#2563eb;letter-spacing:.12em;flex-shrink:0;}
-.pp-input{flex:1;background:transparent;border:none;outline:none;font-family:'DM Mono',monospace;font-size:15px;font-weight:500;color:#0f172a;letter-spacing:.06em;}
-.pp-input::placeholder{color:#cbd5e1;}
+.lookup-or::before{background:linear-gradient(to right,transparent,#2b3a55);}
+.lookup-or::after{background:linear-gradient(to left,transparent,#2b3a55);}
+.branch-select{width:100%;padding:16px 18px;background:#161e2e;border:2px solid #2b3a55;border-radius:10px;color:#94a3b8;font-family:'Barlow',sans-serif;font-size:17px;font-weight:500;outline:none;cursor:pointer;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none;}
+.branch-select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.branch-select.branch-active{border-color:#3b82f6;color:#93c5fd;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.pp-row{display:flex;align-items:center;gap:10px;padding:11px 16px;background:#161e2e;border:2px solid #2b3a55;border-radius:10px;transition:border-color .2s,box-shadow .2s;}
+.pp-row:focus-within{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.pp-row.pp-active{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.pp-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;color:#3b82f6;letter-spacing:.12em;flex-shrink:0;}
+.pp-input{flex:1;background:transparent;border:none;outline:none;font-family:'DM Mono',monospace;font-size:15px;font-weight:500;color:#f1f5f9;letter-spacing:.06em;}
+.pp-input::placeholder{color:#475569;}
 
-.app-footer{border-top:1px solid #e2e8f0;padding:32px 24px 28px;background:#f8fafc;margin-top:0;}
+.app-footer{border-top:1px solid #2b3a55;padding:32px 24px 28px;background:#0b1120;margin-top:0;}
 .footer-inner{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
-.footer-divider{width:1px;height:28px;background:#e2e8f0;flex-shrink:0;}
-.footer-copy{font-family:'DM Mono',monospace;font-size:10px;color:#94a3b8;letter-spacing:.08em;flex:1;min-width:200px;}
+.footer-divider{width:1px;height:28px;background:#2b3a55;flex-shrink:0;}
+.footer-copy{font-family:'DM Mono',monospace;font-size:10px;color:#7c8aa0;letter-spacing:.08em;flex:1;min-width:200px;}
 .footer-contact{display:flex;flex-direction:column;}
-.footer-contact-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#cbd5e1;margin-bottom:11px;}
-.footer-contact-name{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#94a3b8;margin-bottom:7px;}
-.footer-link{display:block;font-family:'DM Mono',monospace;font-size:12px;color:#64748b;text-decoration:none;margin-bottom:4px;transition:color .18s;letter-spacing:.04em;}
-.footer-link:hover{color:#2563eb;}
+.footer-contact-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#475569;margin-bottom:11px;}
+.footer-contact-name{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#7c8aa0;margin-bottom:7px;}
+.footer-link{display:block;font-family:'DM Mono',monospace;font-size:12px;color:#94a3b8;text-decoration:none;margin-bottom:4px;transition:color .18s;letter-spacing:.04em;}
+.footer-link:hover{color:#3b82f6;}
 
 ::-webkit-scrollbar{width:5px;}
-::-webkit-scrollbar-track{background:#f8fafc;}
-::-webkit-scrollbar-thumb{background:#e2e8f0;border-radius:3px;}
-::-webkit-scrollbar-thumb:hover{background:#cbd5e1;}
+::-webkit-scrollbar-track{background:#0b1120;}
+::-webkit-scrollbar-thumb{background:#2b3a55;border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:#475569;}
 
 @media(max-width:768px){
   .search-hero{margin-top:40px;}
@@ -421,16 +419,16 @@ function StatusBadge({ status, until }) {
     // Current statuses
     "best-fit":        { label:"Best Fit",       bg:"rgba(16,185,129,.15)",  color:"#10b981", bd:"rgba(16,185,129,.3)"   },
     "trouble-call":    { label:"Trouble Call",    bg:"rgba(34,197,94,.13)",   color:"#22c55e", bd:"rgba(34,197,94,.28)"   },
-    "in-training":     { label:"In Training",     bg:"rgba(14,116,144,.1)",   color:"#0e7490", bd:"rgba(45,212,191,.28)"  },
-    "pto":             { label:"PTO",              bg:"rgba(251,191,36,.15)",  color:"#92400e", bd:"rgba(251,191,36,.3)"   },
-    "call-out":        { label:"CALL OUT",         bg:"rgba(217,119,6,.13)",   color:"#b45309", bd:"rgba(217,119,6,.35)"   },
+    "in-training":     { label:"In Training",     bg:"rgba(14,116,144,.1)",   color:"#22d3ee", bd:"rgba(45,212,191,.28)"  },
+    "pto":             { label:"PTO",              bg:"rgba(251,191,36,.15)",  color:"#fbbf24", bd:"rgba(251,191,36,.3)"   },
+    "call-out":        { label:"CALL OUT",         bg:"rgba(217,119,6,.13)",   color:"#f59e0b", bd:"rgba(217,119,6,.35)"   },
     "manual-schedule":  { label:"Manual Schedule",  bg:"rgba(129,140,248,.15)", color:"#818cf8", bd:"rgba(129,140,248,.35)"  },
     "do-not-schedule": { label:"DO NOT SCHEDULE", bg:"rgba(239,68,68,.18)",   color:"#ef4444", bd:"rgba(239,68,68,.4)"    },
     // Legacy aliases (existing techs in DB)
     "available":       { label:"Trouble Call",    bg:"rgba(34,197,94,.13)",   color:"#22c55e", bd:"rgba(34,197,94,.28)"   },
-    "on-call":         { label:"PTO",             bg:"rgba(251,191,36,.13)",  color:"#92400e", bd:"rgba(251,191,36,.28)"  },
+    "on-call":         { label:"PTO",             bg:"rgba(251,191,36,.13)",  color:"#fbbf24", bd:"rgba(251,191,36,.28)"  },
     "off-duty":        { label:"DO NOT SCHEDULE", bg:"rgba(239,68,68,.18)",   color:"#ef4444", bd:"rgba(239,68,68,.4)"    },
-  }[status] || { label:status, bg:"transparent", color:"#475569", bd:"#263047" };
+  }[status] || { label:status, bg:"transparent", color:"#cbd5e1", bd:"#263047" };
   const showUntil = until && EXPIRING_STATUSES.includes(status);
   return (
     <span style={{padding:"2px 9px",borderRadius:20,fontSize:10,fontFamily:"'DM Mono',monospace",
@@ -445,8 +443,8 @@ function TypeBadge({ type, highlight }) {
   return (
     <span style={{padding:"2px 9px",borderRadius:4,fontSize:10,fontFamily:"'DM Mono',monospace",
       letterSpacing:"0.08em",textTransform:"uppercase",fontWeight:600,transition:"all .18s",
-      background:highlight?c.bg:"#f8fafc",color:highlight?c.color:"#475569",
-      border:highlight?`1px solid ${c.bd}`:"1px solid #cbd5e1"}}>{type}</span>
+      background:highlight?c.bg:"#0b1120",color:highlight?c.color:"#cbd5e1",
+      border:highlight?`1px solid ${c.bd}`:"1px solid #475569"}}>{type}</span>
   );
 }
 
@@ -489,7 +487,7 @@ function TechCard({ tech, highlightZip, highlightTypes, index }) {
           <div className="tech-name">{tech.name}</div>
           <StatusBadge status={effectiveStatus(tech)} until={tech.statusUntil}/>
           {tech.branch && (
-            <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#64748b",letterSpacing:".06em"}}>{tech.branch}</span>
+            <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#94a3b8",letterSpacing:".06em"}}>{tech.branch}</span>
           )}
         </div>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:7}}>
@@ -500,7 +498,7 @@ function TechCard({ tech, highlightZip, highlightTypes, index }) {
         </div>
         {tech.pestpacUsername && (
           <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:7}}>
-            <span style={{fontFamily:"'DM Mono',monospace",fontSize:11,color:"#64748b",letterSpacing:".04em"}}>
+            <span style={{fontFamily:"'DM Mono',monospace",fontSize:11,color:"#94a3b8",letterSpacing:".04em"}}>
               PestPac:&nbsp;<span style={{color:"#b0bec5",fontWeight:500}}>{tech.pestpacUsername}</span>
             </span>
             <button className={`copy-btn${copiedUsername?" copy-btn-ok":""}`} onClick={handleCopyUsername}>
@@ -558,13 +556,13 @@ const SORT_OPTS_ADMIN = [
 function SortBar({ sortBy, setSortBy, opts }) {
   return (
     <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",margin:"8px 0 12px"}}>
-      <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#64748b",letterSpacing:".1em",textTransform:"uppercase",flexShrink:0,marginRight:2}}>Sort:</span>
+      <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#94a3b8",letterSpacing:".1em",textTransform:"uppercase",flexShrink:0,marginRight:2}}>Sort:</span>
       {opts.map(o=>(
         <button key={o.value} onClick={()=>setSortBy(o.value)} style={{
           padding:"4px 10px",borderRadius:5,cursor:"pointer",
-          border:`1px solid ${sortBy===o.value?"#2563eb":"#1a2a3d"}`,
+          border:`1px solid ${sortBy===o.value?"#3b82f6":"#1a2a3d"}`,
           background:sortBy===o.value?"rgba(37,99,235,.1)":"transparent",
-          color:sortBy===o.value?"#2563eb":"#64748b",
+          color:sortBy===o.value?"#3b82f6":"#94a3b8",
           fontFamily:"'DM Mono',monospace",fontSize:10,letterSpacing:".05em",
           transition:"border-color .15s,color .15s,background .15s",whiteSpace:"nowrap",
         }}>{o.label}</button>
@@ -729,11 +727,11 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
         </div>
         {!zipInput && !selBranch && !pestpacSearch && recentZips.length>0 && (
           <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center",marginTop:8}}>
-            <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:".12em",textTransform:"uppercase",color:"#cbd5e1"}}>Recent</span>
+            <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:".12em",textTransform:"uppercase",color:"#475569"}}>Recent</span>
             {recentZips.map(z=>(
               <button key={z} onClick={()=>setZipInput(z)}
                 style={{fontFamily:"'DM Mono',monospace",fontSize:11,fontWeight:500,padding:"3px 10px",
-                  background:"#f1f5f9",border:"1px solid #e2e8f0",borderRadius:20,color:"#475569",
+                  background:"#1e293b",border:"1px solid #2b3a55",borderRadius:20,color:"#cbd5e1",
                   cursor:"pointer",letterSpacing:".06em"}}>{z}</button>
             ))}
           </div>
@@ -764,7 +762,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
             }}/>
           {pestpacSearch && (
             <button onClick={()=>setPestpacSearch("")}
-              style={{background:"none",border:"none",color:"#64748b",cursor:"pointer",
+              style={{background:"none",border:"none",color:"#94a3b8",cursor:"pointer",
                 fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:".1em",
                 textTransform:"uppercase",padding:0,flexShrink:0}}>
               Clear
@@ -790,8 +788,8 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
             <span>Select service type{selTypes.length>1?" (multiple)":""}</span>
             {result && !result.pestpac && (result.matches.length + (result.also?.matches.length||0))>0 && (
               <button onClick={()=>resultsRef.current?.scrollIntoView({behavior:"smooth"})}
-                style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:20,padding:"3px 11px",
-                  fontFamily:"'DM Mono',monospace",fontSize:10,fontWeight:700,color:"#1e40af",
+                style={{background:"#16243f",border:"1px solid #2c456e",borderRadius:20,padding:"3px 11px",
+                  fontFamily:"'DM Mono',monospace",fontSize:10,fontWeight:700,color:"#93c5fd",
                   cursor:"pointer",letterSpacing:".05em",whiteSpace:"nowrap"}}>
                 {result.zip && result.also
                   ? (result.matches.length>0 ? `${result.matches.length} confirmed ↓` : `${result.also.matches.length} in branch ↓`)
@@ -800,7 +798,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
             )}
             {selTypes.length>0 && (
               <button onClick={()=>setSelTypes([])}
-                style={{background:"none",border:"none",color:"#64748b",fontFamily:"'DM Mono',monospace",
+                style={{background:"none",border:"none",color:"#94a3b8",fontFamily:"'DM Mono',monospace",
                   fontSize:9,letterSpacing:".1em",textTransform:"uppercase",cursor:"pointer",padding:0}}>
                 Clear
               </button>
@@ -810,7 +808,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           <div className="type-grid type-grid-2" style={{marginBottom:2}}>
             {["Trouble Call","Production"].map(type=>(
               <button key={type} className="type-btn type-btn-feat"
-                style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
+                style={selTypes.includes(type)?{borderColor:"#3b82f6",background:"#16243f",color:"#93c5fd"}:{}}
                 onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">
                   {selTypes.includes(type) && <span className="type-chk">✓</span>}
@@ -825,7 +823,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           <div className="type-grid type-grid-2">
             {["GHP","Commercial","Lawn","Termite"].map(type=>(
               <button key={type} className="type-btn type-btn-feat"
-                style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
+                style={selTypes.includes(type)?{borderColor:"#3b82f6",background:"#16243f",color:"#93c5fd"}:{}}
                 onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">
                   {selTypes.includes(type) && <span className="type-chk">✓</span>}
@@ -840,7 +838,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           <div className="type-grid type-grid-4">
             {["Mosquito","Bed Bugs","Exclusion","Wildlife"].map(type=>(
               <button key={type} className="type-btn"
-                style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
+                style={selTypes.includes(type)?{borderColor:"#3b82f6",background:"#16243f",color:"#93c5fd"}:{}}
                 onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">
                   {selTypes.includes(type) && <span className="type-chk">✓</span>}
@@ -853,7 +851,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           <div className="type-grid type-grid-4">
             {["TAP","Sentricon","SMART","Pre Treat"].map(type=>(
               <button key={type} className="type-btn"
-                style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
+                style={selTypes.includes(type)?{borderColor:"#3b82f6",background:"#16243f",color:"#93c5fd"}:{}}
                 onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">
                   {selTypes.includes(type) && <span className="type-chk">✓</span>}
@@ -866,7 +864,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           <div className="type-grid type-grid-2">
             {["Post Treat","Field Inspector"].map(type=>(
               <button key={type} className="type-btn"
-                style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
+                style={selTypes.includes(type)?{borderColor:"#3b82f6",background:"#16243f",color:"#93c5fd"}:{}}
                 onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">
                   {selTypes.includes(type) && <span className="type-chk">✓</span>}
@@ -879,7 +877,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           <div className="type-grid" style={{gridTemplateColumns:"1fr"}}>
             {["Supervisor"].map(type=>(
               <button key={type} className="type-btn type-btn-feat"
-                style={selTypes.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
+                style={selTypes.includes(type)?{borderColor:"#3b82f6",background:"#16243f",color:"#93c5fd"}:{}}
                 onClick={e=>{toggleType(type);e.currentTarget.blur();}}>
                 <div className="type-btn-label">
                   {selTypes.includes(type) && <span className="type-chk">✓</span>}
@@ -897,8 +895,8 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           <div className="results-head">
             <span className="results-label">
               {result.pestpac
-                ? <><span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#64748b",letterSpacing:".1em"}}>FIND&nbsp;</span><span style={{color:"#2563eb"}}>{result.pestpac}</span></>
-                : <><span style={{color:"#2563eb"}}>{result.branch || result.zip}</span>&nbsp;·&nbsp;
+                ? <><span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#94a3b8",letterSpacing:".1em"}}>FIND&nbsp;</span><span style={{color:"#3b82f6"}}>{result.pestpac}</span></>
+                : <><span style={{color:"#3b82f6"}}>{result.branch || result.zip}</span>&nbsp;·&nbsp;
                     {result.types.map((t,i)=>(
                       <span key={t}>
                         <span style={{color:TYPE_CFG[t]?.color}}>{t}</span>
@@ -907,7 +905,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
                     ))}</>
               }
             </span>
-            <span className="results-label" style={{color:"#64748b"}}>
+            <span className="results-label" style={{color:"#94a3b8"}}>
               {result.zip && result.also
                 ? (result.matches.length>0
                     ? `${result.matches.length} confirmed`
@@ -921,12 +919,12 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
               <div className="empty-title">No Match Found</div>
               <div className="empty-text">
                 {result.pestpac
-                  ? <>No technician found matching&nbsp;<strong style={{color:"#2563eb"}}>{result.pestpac}</strong>.</>
+                  ? <>No technician found matching&nbsp;<strong style={{color:"#3b82f6"}}>{result.pestpac}</strong>.</>
                   : <>No technicians matching&nbsp;
-                      <strong style={{color:"#2563eb"}}>{result.types.join(" + ")}</strong>
+                      <strong style={{color:"#3b82f6"}}>{result.types.join(" + ")}</strong>
                       {result.branch
-                        ? <>&nbsp;are assigned to the <strong style={{color:"#2563eb"}}>{result.branch}</strong> branch.</>
-                        : <>&nbsp;are assigned to ZIP&nbsp;<strong style={{color:"#2563eb"}}>{result.zip}</strong>.</>
+                        ? <>&nbsp;are assigned to the <strong style={{color:"#3b82f6"}}>{result.branch}</strong> branch.</>
+                        : <>&nbsp;are assigned to ZIP&nbsp;<strong style={{color:"#3b82f6"}}>{result.zip}</strong>.</>
                       }
                     </>
                 }
@@ -944,7 +942,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
                 return (
                   <div style={{maxWidth:380,margin:"22px auto 0",textAlign:"left"}}>
                     <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,letterSpacing:".12em",
-                      textTransform:"uppercase",color:"#94a3b8",marginBottom:9,textAlign:"center"}}>
+                      textTransform:"uppercase",color:"#7c8aa0",marginBottom:9,textAlign:"center"}}>
                       Next step — try fewer service types, or contact:
                     </div>
                     {sups.length>0 ? sups.map(s=>{
@@ -954,22 +952,22 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
                       const hit = spec.some(t=>result.types.includes(t));
                       return (
                       <div key={s.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",
-                        gap:10,padding:"9px 13px",background:"#ffffff",
-                        border:hit?"1px solid #bfdbfe":"1px solid #e2e8f0",
+                        gap:10,padding:"9px 13px",background:"#161e2e",
+                        border:hit?"1px solid #2c456e":"1px solid #2b3a55",
                         borderRadius:8,marginBottom:6}}>
                         <div style={{minWidth:0}}>
-                          <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:16,fontWeight:700,color:"#0f172a"}}>{s.name}</div>
+                          <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:16,fontWeight:700,color:"#f1f5f9"}}>{s.name}</div>
                           <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:".06em",
-                            color:hit?"#1e40af":"#94a3b8",fontWeight:hit?700:400}}>
+                            color:hit?"#93c5fd":"#7c8aa0",fontWeight:hit?700:400}}>
                             {s.branch||"Regional"} · {dept}
                           </div>
                         </div>
                         <a href={`tel:${s.phone}`} style={{fontFamily:"'DM Mono',monospace",fontSize:12,fontWeight:600,
-                          color:"#2563eb",textDecoration:"none",whiteSpace:"nowrap"}}>{s.phone}</a>
+                          color:"#3b82f6",textDecoration:"none",whiteSpace:"nowrap"}}>{s.phone}</a>
                       </div>
                       );
                     }) : (
-                      <div style={{fontSize:13,color:"#64748b",textAlign:"center"}}>
+                      <div style={{fontSize:13,color:"#94a3b8",textAlign:"center"}}>
                         Contact a branch supervisor or router for assistance.
                       </div>
                     )}
@@ -982,7 +980,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
               <SortBar sortBy={sortBy} setSortBy={setSortBy} opts={SORT_OPTS_LOOKUP}/>
               {result.zip && result.also && result.matches.length>0 && (
                 <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,fontWeight:700,letterSpacing:".1em",
-                  textTransform:"uppercase",color:"#1e40af",margin:"2px 0 10px"}}>
+                  textTransform:"uppercase",color:"#93c5fd",margin:"2px 0 10px"}}>
                   ✓ Confirmed for ZIP {result.zip} ({result.matches.length})
                 </div>
               )}
@@ -993,8 +991,8 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
                 !showAlso ? (
                   <button onClick={()=>setShowAlso(true)}
                     style={{display:"block",width:"100%",marginTop:14,padding:"11px 14px",
-                      background:"transparent",border:"1.5px dashed #cbd5e1",borderRadius:9,cursor:"pointer",
-                      fontFamily:"'DM Mono',monospace",fontSize:11,color:"#64748b",letterSpacing:".05em"}}>
+                      background:"transparent",border:"1.5px dashed #475569",borderRadius:9,cursor:"pointer",
+                      fontFamily:"'DM Mono',monospace",fontSize:11,color:"#94a3b8",letterSpacing:".05em"}}>
                     View {result.also.matches.length} {result.also.branches.join(" / ")} tech{result.also.matches.length>1?"s":""} NOT confirmed for this ZIP ▾
                   </button>
                 ) : (
@@ -1002,7 +1000,7 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
                     <div style={{marginTop:16,marginBottom:10,padding:"10px 13px",background:"#fff7ed",
                       border:"1px solid #fed7aa",borderRadius:8,display:"flex",gap:9,alignItems:"flex-start"}}>
                       <span style={{fontSize:15,lineHeight:1,flexShrink:0}}>⚠</span>
-                      <span style={{fontSize:12,color:"#9a3412",lineHeight:1.6}}>
+                      <span style={{fontSize:12,color:"#fdba74",lineHeight:1.6}}>
                         These <strong>{result.also.branches.join(" / ")}</strong> techs are <strong>NOT confirmed for ZIP {result.zip}</strong>.
                         Verify coverage with the branch before scheduling — shown for reference only.
                       </span>
@@ -1087,7 +1085,7 @@ function LoginModal({ onLogin, onClose }) {
             {isLoading?"Connecting…":isSetup?"Create Master Code":"Admin Access"}
           </div>
           {!isLoading && (
-            <div style={{fontSize:13,color:"#64748b",lineHeight:1.6}}>
+            <div style={{fontSize:13,color:"#94a3b8",lineHeight:1.6}}>
               {isSetup
                 ?"Create a secure code to protect the admin panel."
                 :"Enter your access code to continue."}
@@ -1096,7 +1094,7 @@ function LoginModal({ onLogin, onClose }) {
         </div>
 
         {isLoading ? (
-          <div style={{textAlign:"center",padding:"20px 0",color:"#64748b",fontFamily:"'DM Mono',monospace",fontSize:12}}>
+          <div style={{textAlign:"center",padding:"20px 0",color:"#94a3b8",fontFamily:"'DM Mono',monospace",fontSize:12}}>
             Checking status…
           </div>
         ) : (
@@ -1236,7 +1234,7 @@ function CodeManager({ authCode, onMasterCodeChanged }) {
   };
 
   if (cfgLoading) return (
-    <div style={{padding:"40px 20px",textAlign:"center",color:"#64748b",fontFamily:"'DM Mono',monospace",fontSize:12}}>
+    <div style={{padding:"40px 20px",textAlign:"center",color:"#94a3b8",fontFamily:"'DM Mono',monospace",fontSize:12}}>
       Loading access codes…
     </div>
   );
@@ -1294,7 +1292,7 @@ function CodeManager({ authCode, onMasterCodeChanged }) {
         </div>
         {cfg.managers.length===0 ? (
           <div style={{padding:"28px 20px",textAlign:"center",border:"1px dashed #151e30",borderRadius:8,marginTop:16}}>
-            <div style={{color:"#64748b",fontSize:12,fontFamily:"'DM Mono',monospace",letterSpacing:".06em"}}>No manager codes yet</div>
+            <div style={{color:"#94a3b8",fontSize:12,fontFamily:"'DM Mono',monospace",letterSpacing:".06em"}}>No manager codes yet</div>
           </div>
         ) : (
           <div className="table-wrap" style={{marginTop:16}}>
@@ -1328,7 +1326,7 @@ function ManagerRow({ mgr, onEdit, onDelete, isConfirming }) {
       <td style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:17,fontWeight:700}}>{mgr.label}</td>
       <td>
         <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <span style={{fontFamily:"'DM Mono',monospace",fontSize:13,color:"#475569",letterSpacing:".1em"}}>
+          <span style={{fontFamily:"'DM Mono',monospace",fontSize:13,color:"#cbd5e1",letterSpacing:".1em"}}>
             {show?mgr.code:"●".repeat(Math.min(mgr.code.length,12))}
           </span>
           <button className="eye-btn-sm" onClick={()=>setShow(s=>!s)}>{show?"Hide":"Show"}</button>
@@ -1346,12 +1344,12 @@ function ManagerRow({ mgr, onEdit, onDelete, isConfirming }) {
 
 // ─── STATUS SELECT ────────────────────────────────────────────────────────────
 const STATUS_OPTS = [
-  { value:'none',            label:'None',            bg:'transparent',           color:'#64748b', bd:'#2d3f52'             },
+  { value:'none',            label:'None',            bg:'transparent',           color:'#94a3b8', bd:'#2d3f52'             },
   { value:'best-fit',       label:'Best Fit',        bg:'rgba(16,185,129,.15)',  color:'#10b981', bd:'rgba(16,185,129,.3)'  },
   { value:'manual-schedule', label:'Manual Schedule', bg:'rgba(129,140,248,.15)', color:'#818cf8', bd:'rgba(129,140,248,.4)' },
   { value:'in-training',     label:'In Training',     bg:'rgba(45,212,191,.15)',  color:'#2dd4bf', bd:'rgba(45,212,191,.4)' },
-  { value:'pto',             label:'PTO',             bg:'rgba(251,191,36,.15)',  color:'#92400e', bd:'rgba(251,191,36,.4)' },
-  { value:'call-out',        label:'Call Out',        bg:'rgba(217,119,6,.13)',   color:'#b45309', bd:'rgba(217,119,6,.45)' },
+  { value:'pto',             label:'PTO',             bg:'rgba(251,191,36,.15)',  color:'#fbbf24', bd:'rgba(251,191,36,.4)' },
+  { value:'call-out',        label:'Call Out',        bg:'rgba(217,119,6,.13)',   color:'#f59e0b', bd:'rgba(217,119,6,.45)' },
   { value:'do-not-schedule', label:'Do Not Schedule', bg:'rgba(239,68,68,.18)',   color:'#ef4444', bd:'rgba(239,68,68,.5)'  },
 ];
 function StatusSelect({ status, until, onChange }) {
@@ -1380,7 +1378,7 @@ function StatusSelect({ status, until, onChange }) {
       </button>
       {open && (
         <div style={{position:'absolute',top:'calc(100% + 3px)',left:0,
-          background:'#ffffff',border:'1px solid #e2e8f0',borderRadius:7,
+          background:'#161e2e',border:'1px solid #2b3a55',borderRadius:7,
           boxShadow:'0 8px 24px rgba(0,0,0,.12)',zIndex:200,minWidth:145,overflow:'hidden'}}>
           {STATUS_OPTS.map(opt=>(
             <button key={opt.value} onClick={()=>{
@@ -1394,25 +1392,25 @@ function StatusSelect({ status, until, onChange }) {
                 color:opt.color,fontFamily:"'DM Mono',monospace",fontSize:11,fontWeight:600,
                 letterSpacing:'.06em',textTransform:'uppercase',cursor:'pointer',
                 textAlign:'left',transition:'background .12s'}}
-              onMouseEnter={e=>{if((status||'none')!==opt.value)e.currentTarget.style.background='#f8fafc';}}
+              onMouseEnter={e=>{if((status||'none')!==opt.value)e.currentTarget.style.background='#0b1120';}}
               onMouseLeave={e=>{if((status||'none')!==opt.value)e.currentTarget.style.background='transparent';}}>
               {opt.label}
             </button>
           ))}
           {expiring && (
-            <div style={{padding:'8px 12px',borderTop:'1px solid #f1f5f9',background:'#fafafa'}}>
+            <div style={{padding:'8px 12px',borderTop:'1px solid #1e293b',background:'#1a2336'}}>
               <div style={{fontFamily:"'DM Mono',monospace",fontSize:8,letterSpacing:'.1em',
-                textTransform:'uppercase',color:'#94a3b8',marginBottom:5}}>Expires after</div>
+                textTransform:'uppercase',color:'#7c8aa0',marginBottom:5}}>Expires after</div>
               <div style={{display:'flex',gap:5,alignItems:'center'}}>
                 <input type="date" min={today} value={until||''}
                   onChange={e=>onChange(status, e.target.value||null)}
                   style={{flex:1,fontFamily:"'DM Mono',monospace",fontSize:11,padding:'4px 7px',
-                    border:'1px solid #e2e8f0',borderRadius:5,color:'#0f172a',background:'#fff'}}/>
+                    border:'1px solid #2b3a55',borderRadius:5,color:'#f1f5f9',background:'#161e2e'}}/>
                 {until && <button onClick={()=>onChange(status,null)}
-                  style={{background:'none',border:'none',color:'#94a3b8',cursor:'pointer',fontSize:13,padding:'0 2px'}}
+                  style={{background:'none',border:'none',color:'#7c8aa0',cursor:'pointer',fontSize:13,padding:'0 2px'}}
                   title="No expiry">✕</button>}
               </div>
-              <div style={{fontFamily:"'DM Mono',monospace",fontSize:8,color:'#cbd5e1',marginTop:4,letterSpacing:'.04em'}}>
+              <div style={{fontFamily:"'DM Mono',monospace",fontSize:8,color:'#475569',marginTop:4,letterSpacing:'.04em'}}>
                 {until ? 'Auto-reverts to None after this date' : 'Optional — leave blank for no expiry'}
               </div>
             </div>
@@ -1472,16 +1470,16 @@ function BackupsTab({ authCode, onRestoreComplete }) {
 
   return (
     <div>
-      <div style={{marginBottom:20,padding:"14px 18px",background:"#eff6ff",border:"1px solid rgba(37,99,235,.12)",borderRadius:8}}>
+      <div style={{marginBottom:20,padding:"14px 18px",background:"#16243f",border:"1px solid rgba(37,99,235,.12)",borderRadius:8}}>
         <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:16,fontWeight:700,marginBottom:4}}>Automatic Backups</div>
-        <div style={{fontSize:13,color:"#475569",lineHeight:1.6}}>
+        <div style={{fontSize:13,color:"#cbd5e1",lineHeight:1.6}}>
           A snapshot is saved automatically every time technicians are added, edited, deleted, or imported.
-          The last <strong style={{color:"#2563eb"}}>10 backups</strong> are kept. Older ones are removed automatically.
+          The last <strong style={{color:"#3b82f6"}}>10 backups</strong> are kept. Older ones are removed automatically.
         </div>
       </div>
 
       {err && <div className="err-box">{err}</div>}
-      {loading && <div style={{textAlign:"center",padding:"40px 0",color:"#64748b",fontFamily:"'DM Mono',monospace",fontSize:12}}>Loading backups…</div>}
+      {loading && <div style={{textAlign:"center",padding:"40px 0",color:"#94a3b8",fontFamily:"'DM Mono',monospace",fontSize:12}}>Loading backups…</div>}
       {!loading && !err && backups.length===0 && (
         <div className="empty-state">
           <div className="empty-icon">💾</div>
@@ -1494,7 +1492,7 @@ function BackupsTab({ authCode, onRestoreComplete }) {
         <div key={bk.id} className="tech-card" style={{flexDirection:"column",gap:0,animationDelay:`${i*40}ms`}}>
           <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
             <div>
-              <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#64748b",letterSpacing:".08em",marginBottom:4}}>{fmtDate(bk.timestamp)}</div>
+              <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#94a3b8",letterSpacing:".08em",marginBottom:4}}>{fmtDate(bk.timestamp)}</div>
               <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:20,fontWeight:700}}>{bk.count} technician{bk.count!==1?"s":""}</div>
               {bk.reason && <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#3d5068",marginTop:4,letterSpacing:".04em"}}>{bk.reason}</div>}
             </div>
@@ -1550,7 +1548,7 @@ function AgentLoginModal({ onClose, onLoggedIn }) {
           <button className="btn-cancel" onClick={onClose}>Cancel</button>
           <button className="btn-save" disabled={busy} onClick={submit}>{busy?"Signing in…":"Sign In"}</button>
         </div>
-        <div style={{marginTop:12,fontSize:11,color:"#94a3b8",lineHeight:1.5}}>
+        <div style={{marginTop:12,fontSize:11,color:"#7c8aa0",lineHeight:1.5}}>
           No account? Ask a manager to add you under Admin Tools → 👥 Agents.
         </div>
       </div>
@@ -1584,17 +1582,17 @@ function HelpRequestModal({ agent, onClose, onRaised }) {
     <div className="overlay" onClick={e=>{ if(e.target===e.currentTarget) onClose(); }}>
       <div className="modal modal-sm">
         <div className="modal-title">🆘 Request a Supervisor</div>
-        <p style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:14}}>
+        <p style={{fontSize:13,color:"#cbd5e1",lineHeight:1.6,marginBottom:14}}>
           Available supervisors get an instant ringing alert with your name{ctxLabel?" and your current search":""}.
         </p>
         {supsN!==null && (
           supsN>0
-            ? <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#15803d",marginBottom:12,letterSpacing:".05em"}}>● {supsN} supervisor{supsN>1?"s":""} available now</div>
-            : <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#92400e",background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:6,padding:"6px 10px",marginBottom:12,letterSpacing:".04em"}}>○ No supervisors marked available — your request will still be posted to all of them</div>
+            ? <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#4ade80",marginBottom:12,letterSpacing:".05em"}}>● {supsN} supervisor{supsN>1?"s":""} available now</div>
+            : <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#fbbf24",background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:6,padding:"6px 10px",marginBottom:12,letterSpacing:".04em"}}>○ No supervisors marked available — your request will still be posted to all of them</div>
         )}
         {ctxLabel && (
-          <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#1e40af",background:"#eff6ff",
-            border:"1px solid #bfdbfe",borderRadius:6,padding:"7px 11px",marginBottom:12,letterSpacing:".04em"}}>
+          <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#93c5fd",background:"#16243f",
+            border:"1px solid #2c456e",borderRadius:6,padding:"7px 11px",marginBottom:12,letterSpacing:".04em"}}>
             CONTEXT · {ctxLabel}
           </div>
         )}
@@ -1652,7 +1650,7 @@ function AgentsTab({ authCode }) {
   };
   return (
     <div>
-      <p style={{fontSize:13,color:"#475569",lineHeight:1.7,marginBottom:16}}>
+      <p style={{fontSize:13,color:"#cbd5e1",lineHeight:1.7,marginBottom:16}}>
         Agent accounts let customer service reps sign in (👤 in the top bar) and use the 🆘 Supervisor button.
         Requests appear instantly on every signed-in supervisor's 🔔 bell.
       </p>
@@ -1663,7 +1661,7 @@ function AgentsTab({ authCode }) {
         <button className="btn-add" disabled={busy} onClick={add}>{busy?"Adding…":"+ Add Agent"}</button>
       </div>
       {err && <div className="err-box">{err}</div>}
-      {users===null && <div style={{textAlign:"center",padding:"30px 0",color:"#64748b",fontFamily:"'DM Mono',monospace",fontSize:12}}>Loading agents…</div>}
+      {users===null && <div style={{textAlign:"center",padding:"30px 0",color:"#94a3b8",fontFamily:"'DM Mono',monospace",fontSize:12}}>Loading agents…</div>}
       {users && users.length===0 && !err && (
         <div className="empty-state"><div className="empty-icon">👥</div><div className="empty-title">No Agents Yet</div>
         <div className="empty-text">Add your first customer service agent above — they sign in with the username and PIN you choose.</div></div>
@@ -1675,10 +1673,10 @@ function AgentsTab({ authCode }) {
             <tbody>
               {users.map(u=>(
                 <tr key={u.id}>
-                  <td style={{fontWeight:600,color:"#0f172a"}}>{u.name}</td>
+                  <td style={{fontWeight:600,color:"#f1f5f9"}}>{u.name}</td>
                   <td style={{fontFamily:"'DM Mono',monospace",fontSize:12}}>{u.username}</td>
                   <td>
-                    <button className="btn-edit" style={{color:u.active?"#15803d":"#94a3b8",borderColor:u.active?"rgba(21,128,61,.35)":"#e2e8f0"}}
+                    <button className="btn-edit" style={{color:u.active?"#4ade80":"#7c8aa0",borderColor:u.active?"rgba(21,128,61,.35)":"#2b3a55"}}
                       onClick={()=>toggle(u)}>{u.active?"● Active":"○ Disabled"}</button>
                   </td>
                   <td style={{textAlign:"right",whiteSpace:"nowrap"}}>
@@ -1774,12 +1772,12 @@ function ReportsTab({ techs, authCode }) {
              n: events.filter(e=>e.ts>=t && e.ts<t+86400000).length };
   });
   const maxDay = Math.max(1, ...days.map(d=>d.n));
-  const barList = (items, color='#2563eb', bg='rgba(37,99,235,.12)') =>
-    items.length===0 ? <div style={{color:'#94a3b8',fontSize:11}}>—</div>
+  const barList = (items, color='#3b82f6', bg='rgba(37,99,235,.12)') =>
+    items.length===0 ? <div style={{color:'#7c8aa0',fontSize:11}}>—</div>
     : items.map(([label,n],i)=>(
         <div key={label} style={{display:'flex',alignItems:'center',gap:6,marginBottom:5}}>
           <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color,width:12,textAlign:'right',flexShrink:0}}>{i+1}</span>
-          <div style={{flex:1,background:'#f1f5f9',borderRadius:3,height:17,position:'relative',overflow:'hidden'}}>
+          <div style={{flex:1,background:'#1e293b',borderRadius:3,height:17,position:'relative',overflow:'hidden'}}>
             <div style={{position:'absolute',inset:0,background:bg,width:`${Math.round(n/items[0][1]*100)}%`}}/>
             <div style={{position:'absolute',inset:'0 6px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
               <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#334155',textTransform:'uppercase',overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis',maxWidth:96}}>{label}</span>
@@ -1791,9 +1789,9 @@ function ReportsTab({ techs, authCode }) {
 
   const tabStyle = (id) => ({
     padding:'7px 14px', borderRadius:7, cursor:'pointer', transition:'all .15s',
-    border: section===id ? '1px solid #2563eb' : '1px solid #e2e8f0',
+    border: section===id ? '1px solid #3b82f6' : '1px solid #2b3a55',
     background: section===id ? 'rgba(37,99,235,.1)' : 'transparent',
-    color: section===id ? '#2563eb' : '#64748b',
+    color: section===id ? '#3b82f6' : '#94a3b8',
     fontFamily:"'DM Mono',monospace", fontSize:11, letterSpacing:'.06em', textTransform:'uppercase'
   });
 
@@ -1810,16 +1808,16 @@ function ReportsTab({ techs, authCode }) {
             ? <div className="empty-state"><div className="empty-icon">📍</div><div className="empty-title">No Branch Data</div><div className="empty-text">Add technicians with branches to see coverage.</div></div>
             : <>
               <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginBottom:14}}>
-                {[{v:totGaps,l:'Coverage Gaps',c:totGaps>0?'#dc2626':'#15803d'},
-                  {v:totRisks,l:'At Risk (1 tech)',c:totRisks>0?'#92400e':'#15803d'},
-                  {v:`${fullCov.length}/${coverage.length}`,l:'Branches Fully Covered',c:'#15803d'}].map(({v,l,c})=>(
-                  <div key={l} style={{background:'#ffffff',border:'1px solid #e2e8f0',borderRadius:9,padding:'12px',textAlign:'center'}}>
+                {[{v:totGaps,l:'Coverage Gaps',c:totGaps>0?'#f87171':'#4ade80'},
+                  {v:totRisks,l:'At Risk (1 tech)',c:totRisks>0?'#fbbf24':'#4ade80'},
+                  {v:`${fullCov.length}/${coverage.length}`,l:'Branches Fully Covered',c:'#4ade80'}].map(({v,l,c})=>(
+                  <div key={l} style={{background:'#161e2e',border:'1px solid #2b3a55',borderRadius:9,padding:'12px',textAlign:'center'}}>
                     <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:30,fontWeight:900,color:c,lineHeight:1}}>{v}</div>
-                    <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginTop:4}}>{l}</div>
+                    <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#cbd5e1',letterSpacing:'.1em',textTransform:'uppercase',marginTop:4}}>{l}</div>
                   </div>
                 ))}
               </div>
-              <p style={{fontSize:10,color:'#94a3b8',fontFamily:"'DM Mono',monospace",marginBottom:14,lineHeight:1.7,letterSpacing:'.03em'}}>
+              <p style={{fontSize:10,color:'#7c8aa0',fontFamily:"'DM Mono',monospace",marginBottom:14,lineHeight:1.7,letterSpacing:'.03em'}}>
                 Excludes Do Not Schedule techs · Regional team (no branch) counts toward every branch · Branches sorted by most gaps
               </p>
               {branchCards.map(({branch, count, types, gaps, risks}) => {
@@ -1832,34 +1830,34 @@ function ReportsTab({ techs, authCode }) {
                     {type.toUpperCase()}
                   </span>
                 );
-                const RED = {t:'#dc2626',bg:'rgba(220,38,38,.08)',bd:'rgba(220,38,38,.3)'};
-                const AMB = {t:'#92400e',bg:'rgba(180,83,9,.07)', bd:'rgba(180,83,9,.25)'};
+                const RED = {t:'#f87171',bg:'rgba(220,38,38,.08)',bd:'rgba(220,38,38,.3)'};
+                const AMB = {t:'#fbbf24',bg:'rgba(180,83,9,.07)', bd:'rgba(180,83,9,.25)'};
                 return (
-                  <div key={branch} style={{background:'#ffffff',border:'1px solid #e2e8f0',borderRadius:10,padding:'14px 16px',marginBottom:8,boxShadow:'0 1px 3px rgba(0,0,0,.04)'}}>
+                  <div key={branch} style={{background:'#161e2e',border:'1px solid #2b3a55',borderRadius:10,padding:'14px 16px',marginBottom:8,boxShadow:'0 1px 3px rgba(0,0,0,.04)'}}>
                     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:11,gap:8,flexWrap:'wrap'}}>
                       <div>
                         <span style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:17,fontWeight:700}}>{branch}</span>
-                        <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#475569',marginLeft:8}}>{count} tech{count!==1?'s':''}</span>
+                        <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#cbd5e1',marginLeft:8}}>{count} tech{count!==1?'s':''}</span>
                       </div>
                       <div style={{display:'flex',gap:5}}>
-                        {gaps>0  && <span style={{background:'rgba(220,38,38,.08)',border:'1px solid rgba(220,38,38,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#dc2626',fontFamily:"'DM Mono',monospace",fontWeight:700}}>{gaps} gap{gaps!==1?'s':''}</span>}
-                        {risks>0 && <span style={{background:'rgba(180,83,9,.07)',border:'1px solid rgba(180,83,9,.22)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#92400e',fontFamily:"'DM Mono',monospace",fontWeight:700}}>{risks} at risk</span>}
+                        {gaps>0  && <span style={{background:'rgba(220,38,38,.08)',border:'1px solid rgba(220,38,38,.25)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#f87171',fontFamily:"'DM Mono',monospace",fontWeight:700}}>{gaps} gap{gaps!==1?'s':''}</span>}
+                        {risks>0 && <span style={{background:'rgba(180,83,9,.07)',border:'1px solid rgba(180,83,9,.22)',borderRadius:4,padding:'2px 7px',fontSize:10,color:'#fbbf24',fontFamily:"'DM Mono',monospace",fontWeight:700}}>{risks} at risk</span>}
                       </div>
                     </div>
                     {gapT.length>0 && (
                       <div style={{display:'flex',alignItems:'flex-start',gap:9,marginBottom:riskT.length||covN?9:0}}>
-                        <span style={{fontFamily:"'DM Mono',monospace",fontSize:8,fontWeight:700,letterSpacing:'.1em',color:'#dc2626',flexShrink:0,paddingTop:3,width:78}}>NO COVERAGE</span>
+                        <span style={{fontFamily:"'DM Mono',monospace",fontSize:8,fontWeight:700,letterSpacing:'.1em',color:'#f87171',flexShrink:0,paddingTop:3,width:78}}>NO COVERAGE</span>
                         <div style={{display:'flex',flexWrap:'wrap',gap:4}}>{gapT.map(t=>chip(t,RED))}</div>
                       </div>
                     )}
                     {riskT.length>0 && (
                       <div style={{display:'flex',alignItems:'flex-start',gap:9,marginBottom:covN?9:0}}>
-                        <span style={{fontFamily:"'DM Mono',monospace",fontSize:8,fontWeight:700,letterSpacing:'.1em',color:'#92400e',flexShrink:0,paddingTop:3,width:78}}>1 TECH ONLY</span>
+                        <span style={{fontFamily:"'DM Mono',monospace",fontSize:8,fontWeight:700,letterSpacing:'.1em',color:'#fbbf24',flexShrink:0,paddingTop:3,width:78}}>1 TECH ONLY</span>
                         <div style={{display:'flex',flexWrap:'wrap',gap:4}}>{riskT.map(t=>chip(t,AMB))}</div>
                       </div>
                     )}
                     {covN>0 && (
-                      <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#15803d',letterSpacing:'.04em'}}>
+                      <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:'#4ade80',letterSpacing:'.04em'}}>
                         ✓ {covN} type{covN!==1?'s':''} covered
                       </div>
                     )}
@@ -1868,8 +1866,8 @@ function ReportsTab({ techs, authCode }) {
               })}
               {fullCov.length>0 && (
                 <div style={{background:'rgba(21,128,61,.05)',border:'1px solid rgba(21,128,61,.2)',borderRadius:10,padding:'13px 16px',marginTop:4}}>
-                  <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,fontWeight:700,letterSpacing:'.1em',color:'#15803d',textTransform:'uppercase'}}>✓ Full Coverage&ensp;</span>
-                  <span style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:15,fontWeight:700,color:'#166534'}}>
+                  <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,fontWeight:700,letterSpacing:'.1em',color:'#4ade80',textTransform:'uppercase'}}>✓ Full Coverage&ensp;</span>
+                  <span style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:15,fontWeight:700,color:'#4ade80'}}>
                     {fullCov.map(c=>c.branch).join('  ·  ')}
                   </span>
                 </div>
@@ -1882,62 +1880,62 @@ function ReportsTab({ techs, authCode }) {
       {section==='analytics' && (
         <div>
           <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
-            {an.status==='live' && <span style={{display:'flex',alignItems:'center',gap:6,fontFamily:"'DM Mono',monospace",fontSize:9,fontWeight:700,letterSpacing:'.12em',color:'#15803d',background:'rgba(21,128,61,.07)',border:'1px solid rgba(21,128,61,.25)',borderRadius:20,padding:'3px 10px'}}><span style={{width:6,height:6,borderRadius:'50%',background:'#15803d'}}/>LIVE · ALL DEVICES</span>}
-            {an.status==='local' && <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,fontWeight:700,letterSpacing:'.12em',color:'#92400e',background:'rgba(180,83,9,.07)',border:'1px solid rgba(180,83,9,.25)',borderRadius:20,padding:'3px 10px'}}>OFFLINE · THIS BROWSER ONLY</span>}
-            {an.status==='loading' && <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:'.12em',color:'#94a3b8'}}>LOADING…</span>}
+            {an.status==='live' && <span style={{display:'flex',alignItems:'center',gap:6,fontFamily:"'DM Mono',monospace",fontSize:9,fontWeight:700,letterSpacing:'.12em',color:'#4ade80',background:'rgba(21,128,61,.07)',border:'1px solid rgba(21,128,61,.25)',borderRadius:20,padding:'3px 10px'}}><span style={{width:6,height:6,borderRadius:'50%',background:'#4ade80'}}/>LIVE · ALL DEVICES</span>}
+            {an.status==='local' && <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,fontWeight:700,letterSpacing:'.12em',color:'#fbbf24',background:'rgba(180,83,9,.07)',border:'1px solid rgba(180,83,9,.25)',borderRadius:20,padding:'3px 10px'}}>OFFLINE · THIS BROWSER ONLY</span>}
+            {an.status==='loading' && <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:'.12em',color:'#7c8aa0'}}>LOADING…</span>}
             <button onClick={loadAnalytics} title="Refresh now"
-              style={{marginLeft:'auto',background:'transparent',border:'1px solid #e2e8f0',borderRadius:5,padding:'4px 10px',color:'#64748b',fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:'.06em',cursor:'pointer',textTransform:'uppercase'}}>↻ Refresh</button>
+              style={{marginLeft:'auto',background:'transparent',border:'1px solid #2b3a55',borderRadius:5,padding:'4px 10px',color:'#94a3b8',fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:'.06em',cursor:'pointer',textTransform:'uppercase'}}>↻ Refresh</button>
           </div>
           {events.length === 0
             ? <div className="empty-state"><div className="empty-icon">📊</div><div className="empty-title">No Data Yet</div><div className="empty-text">Search analytics appear here once agents start performing lookups — shared live across every device.</div></div>
             : <>
               <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(96px,1fr))',gap:8,marginBottom:14}}>
-                {[{v:events.length,l:'Total',c:'#2563eb'},
-                  {v:todayN,l:'Today',c:'#2563eb'},
-                  {v:recent.length,l:'This Week',c:'#2563eb'},
-                  {v:avgRes,l:'Avg Results',c:'#2563eb'},
-                  {v:`${zeroRate}%`,l:'Zero-Result',c:zeroRate>15?'#dc2626':'#15803d'}].map(({v,l,c})=>(
-                  <div key={l} style={{background:'#ffffff',border:'1px solid #e2e8f0',borderRadius:9,padding:'12px 8px',textAlign:'center'}}>
+                {[{v:events.length,l:'Total',c:'#3b82f6'},
+                  {v:todayN,l:'Today',c:'#3b82f6'},
+                  {v:recent.length,l:'This Week',c:'#3b82f6'},
+                  {v:avgRes,l:'Avg Results',c:'#3b82f6'},
+                  {v:`${zeroRate}%`,l:'Zero-Result',c:zeroRate>15?'#f87171':'#4ade80'}].map(({v,l,c})=>(
+                  <div key={l} style={{background:'#161e2e',border:'1px solid #2b3a55',borderRadius:9,padding:'12px 8px',textAlign:'center'}}>
                     <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:28,fontWeight:900,color:c,lineHeight:1}}>{v}</div>
-                    <div style={{fontFamily:"'DM Mono',monospace",fontSize:8,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginTop:4}}>{l}</div>
+                    <div style={{fontFamily:"'DM Mono',monospace",fontSize:8,color:'#cbd5e1',letterSpacing:'.1em',textTransform:'uppercase',marginTop:4}}>{l}</div>
                   </div>
                 ))}
               </div>
-              <div style={{background:'#ffffff',border:'1px solid #e2e8f0',borderRadius:9,padding:'14px 16px 10px',marginBottom:14}}>
-                <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:10}}>Last 7 Days</div>
+              <div style={{background:'#161e2e',border:'1px solid #2b3a55',borderRadius:9,padding:'14px 16px 10px',marginBottom:14}}>
+                <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#cbd5e1',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:10}}>Last 7 Days</div>
                 <div style={{display:'flex',alignItems:'flex-end',gap:6,height:64}}>
                   {days.map((d,i)=>(
                     <div key={i} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:4,height:'100%',justifyContent:'flex-end'}}>
-                      <span style={{fontFamily:"'DM Mono',monospace",fontSize:8,color:'#64748b'}}>{d.n||''}</span>
-                      <div style={{width:'100%',maxWidth:34,borderRadius:'3px 3px 0 0',background:i===6?'#2563eb':'rgba(37,99,235,.3)',height:`${Math.max(3,Math.round(d.n/maxDay*42))}px`}}/>
-                      <span style={{fontFamily:"'DM Mono',monospace",fontSize:8,color:'#94a3b8'}}>{d.l}</span>
+                      <span style={{fontFamily:"'DM Mono',monospace",fontSize:8,color:'#94a3b8'}}>{d.n||''}</span>
+                      <div style={{width:'100%',maxWidth:34,borderRadius:'3px 3px 0 0',background:i===6?'#3b82f6':'rgba(37,99,235,.3)',height:`${Math.max(3,Math.round(d.n/maxDay*42))}px`}}/>
+                      <span style={{fontFamily:"'DM Mono',monospace",fontSize:8,color:'#7c8aa0'}}>{d.l}</span>
                     </div>
                   ))}
                 </div>
               </div>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:14}}>
-                <div><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>Top ZIPs</div>{barList(topZips)}</div>
-                <div><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>Top Service Types</div>{barList(topTypes)}</div>
-                <div><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>Top Branches</div>{barList(topBranches)}</div>
-                <div><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#dc2626',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>Zero-Result Searches</div>{barList(zeroTop,'#dc2626','rgba(220,38,38,.1)')}</div>
+                <div><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#cbd5e1',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>Top ZIPs</div>{barList(topZips)}</div>
+                <div><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#cbd5e1',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>Top Service Types</div>{barList(topTypes)}</div>
+                <div><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#cbd5e1',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>Top Branches</div>{barList(topBranches)}</div>
+                <div><div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#f87171',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>Zero-Result Searches</div>{barList(zeroTop,'#f87171','rgba(220,38,38,.1)')}</div>
               </div>
               <div style={{marginBottom:16}}>
-                <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#475569',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>By Method</div>
+                <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#cbd5e1',letterSpacing:'.1em',textTransform:'uppercase',marginBottom:8}}>By Method</div>
                 <div style={{display:'flex',gap:8}}>
                   {[{k:'zip',l:'ZIP'},{k:'branch',l:'Branch'},{k:'find',l:'Name / ID'}].map(({k,l})=>(
-                    <div key={k} style={{flex:1,background:'#ffffff',border:'1px solid #e2e8f0',borderRadius:7,padding:'10px 12px',textAlign:'center'}}>
-                      <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:22,fontWeight:800,color:'#475569'}}>{methods[k]||0}</div>
-                      <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#475569',letterSpacing:'.06em',textTransform:'uppercase',marginTop:2}}>{l}</div>
+                    <div key={k} style={{flex:1,background:'#161e2e',border:'1px solid #2b3a55',borderRadius:7,padding:'10px 12px',textAlign:'center'}}>
+                      <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:22,fontWeight:800,color:'#cbd5e1'}}>{methods[k]||0}</div>
+                      <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#cbd5e1',letterSpacing:'.06em',textTransform:'uppercase',marginTop:2}}>{l}</div>
                     </div>
                   ))}
                 </div>
               </div>
-              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',borderTop:'1px solid #e2e8f0',paddingTop:12}}>
-                <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#94a3b8',letterSpacing:'.04em'}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',borderTop:'1px solid #2b3a55',paddingTop:12}}>
+                <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:'#7c8aa0',letterSpacing:'.04em'}}>
                   {an.status==='live' ? `Shared log · ${events.length}/1000 stored · refreshes every 60s` : `Local fallback · ${events.length}/500 stored`}
                 </span>
                 <button onClick={clearAnalytics}
-                  style={{background:clearArm?'rgba(220,38,38,.08)':'transparent',border:`1px solid ${clearArm?'rgba(220,38,38,.4)':'#e2e8f0'}`,borderRadius:5,padding:'4px 10px',color:clearArm?'#dc2626':'#64748b',fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:'.06em',cursor:'pointer',textTransform:'uppercase'}}>
+                  style={{background:clearArm?'rgba(220,38,38,.08)':'transparent',border:`1px solid ${clearArm?'rgba(220,38,38,.4)':'#2b3a55'}`,borderRadius:5,padding:'4px 10px',color:clearArm?'#f87171':'#94a3b8',fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:'.06em',cursor:'pointer',textTransform:'uppercase'}}>
                   {clearArm ? 'Confirm Clear?' : 'Clear Data'}
                 </button>
               </div>
@@ -2013,7 +2011,7 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
             </div>
           )}
           <div className="session-badge">
-            <span className="session-dot" style={{background:authLevel==="master"?"#2563eb":"#38bdf8"}}/>
+            <span className="session-dot" style={{background:authLevel==="master"?"#3b82f6":"#38bdf8"}}/>
             {authLabel}
           </div>
           <button className="btn-signout" onClick={onSignOut}>Sign Out</button>
@@ -2040,8 +2038,8 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
           <div style={{display:"flex",gap:8,marginBottom:8,alignItems:"center",flexWrap:"wrap"}}>
             <select
               value={filterBranch} onChange={e=>setFilterBranch(e.target.value)}
-              style={{background:"#ffffff",border:"1.5px solid #e2e8f0",borderRadius:8,
-                padding:"9px 14px",color:filterBranch?"#2563eb":"#64748b",fontFamily:"'Barlow',sans-serif",
+              style={{background:"#161e2e",border:"1.5px solid #2b3a55",borderRadius:8,
+                padding:"9px 14px",color:filterBranch?"#3b82f6":"#94a3b8",fontFamily:"'Barlow',sans-serif",
                 fontSize:13,cursor:"pointer",outline:"none",WebkitAppearance:"none",
                 appearance:"none",flexShrink:0,minWidth:140,
                 boxShadow:filterBranch?"0 0 0 2px rgba(37,99,235,.12)":"none",
@@ -2075,7 +2073,7 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
             <div className="import-banner">
               <div className="import-banner-title">📁 {importPending.filename}</div>
               <div className="import-banner-sub">
-                <strong style={{color:"#2563eb"}}>{importPending.techs.length} technicians</strong> found.
+                <strong style={{color:"#3b82f6"}}>{importPending.techs.length} technicians</strong> found.
                 This will replace your current {techs.length} technician{techs.length!==1?"s":""}. Cannot be undone.
               </div>
               <div className="import-banner-actions">
@@ -2138,7 +2136,7 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
                       </td>
                       <td style={{fontFamily:"'DM Mono',monospace",fontSize:12,fontWeight:600,color:"#b0bec5",letterSpacing:".03em"}}>{tech.phone}</td>
                       <td><StatusSelect status={tech.status} until={tech.statusUntil} onChange={(s,u)=>onStatusChange(tech.id,s,u)}/></td>
-                      <td style={{fontFamily:"'DM Mono',monospace",fontSize:11,color:"#64748b"}}>{tech.branch||"—"}</td>
+                      <td style={{fontFamily:"'DM Mono',monospace",fontSize:11,color:"#94a3b8"}}>{tech.branch||"—"}</td>
                       <td>
                         <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
                           {(tech.types||[]).map(t=><TypeBadge key={t} type={t} highlight/>)}
@@ -2151,7 +2149,7 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
                           {tech.zipCodes.length>2&&<span className="zip-more">+{tech.zipCodes.length-2} more</span>}
                         </div>
                       </td>
-                      <td style={{color:"#64748b",fontSize:13,maxWidth:140}}>{tech.notes||"—"}</td>
+                      <td style={{color:"#94a3b8",fontSize:13,maxWidth:140}}>{tech.notes||"—"}</td>
                       <td>
                         <div style={{display:"flex",gap:7}}>
                           <button className="btn-edit" onClick={()=>onEdit(tech)}>Edit</button>
@@ -2279,7 +2277,7 @@ function TechModal({ mode, tech, allTechs, onSave, onClose }) {
         {["pto","call-out"].includes(form.status) && (
           <div className="field">
             <label className="field-label">
-              {form.status==="pto"?"PTO":"Call Out"} Expires After <span style={{color:"#94a3b8",textTransform:"none",letterSpacing:0}}>(optional)</span>
+              {form.status==="pto"?"PTO":"Call Out"} Expires After <span style={{color:"#7c8aa0",textTransform:"none",letterSpacing:0}}>(optional)</span>
             </label>
             <div style={{display:"flex",gap:8,alignItems:"center"}}>
               <input type="date" className="field-input" style={{flex:1}}
@@ -2291,7 +2289,7 @@ function TechModal({ mode, tech, allTechs, onSave, onClose }) {
                   onClick={()=>upd("statusUntil",null)}>Clear</button>
               )}
             </div>
-            <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#94a3b8",marginTop:6,letterSpacing:".03em"}}>
+            <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#7c8aa0",marginTop:6,letterSpacing:".03em"}}>
               {form.statusUntil
                 ? `Auto-reverts to None after ${untilLabel(form.statusUntil).replace("thru ","")}.`
                 : "Leave blank to keep this status until you change it."}
@@ -2303,10 +2301,10 @@ function TechModal({ mode, tech, allTechs, onSave, onClose }) {
           <div className="type-toggle-row">
             {TECH_TYPES.map(type=>(
               <button key={type} className="type-toggle"
-                style={form.types.includes(type)?{borderColor:"#2563eb",background:"#eff6ff",color:"#1e40af"}:{}}
+                style={form.types.includes(type)?{borderColor:"#3b82f6",background:"#16243f",color:"#93c5fd"}:{}}
                 onClick={e=>{toggleType(type);setErr("");e.currentTarget.blur();}}>
                 {form.types.includes(type) && <span style={{fontSize:9,fontFamily:"'DM Mono',monospace",
-                  fontWeight:700,color:"#1e40af",marginRight:4}}>✓</span>}{type}
+                  fontWeight:700,color:"#93c5fd",marginRight:4}}>✓</span>}{type}
               </button>
             ))}
           </div>
@@ -2334,7 +2332,7 @@ function TechModal({ mode, tech, allTechs, onSave, onClose }) {
               />
               <div className="bulk-footer">
                 {bulkMsg && (
-                  <span className="bulk-msg" style={{color:bulkMsg.ok?"#22c55e":"#64748b"}}>
+                  <span className="bulk-msg" style={{color:bulkMsg.ok?"#22c55e":"#94a3b8"}}>
                     {bulkMsg.text}
                   </span>
                 )}
@@ -2373,7 +2371,7 @@ function TechModal({ mode, tech, allTechs, onSave, onClose }) {
               letterSpacing:".05em",color:"#ef4444",textTransform:"uppercase",marginBottom:3}}>
               ⚠ Show read-notes warning on card
             </div>
-            <div style={{fontSize:12,color:"#475569",lineHeight:1.5}}>
+            <div style={{fontSize:12,color:"#cbd5e1",lineHeight:1.5}}>
               Dispatchers will see a red warning banner on this tech's lookup card telling them to read the notes before scheduling.
             </div>
           </div>
@@ -2579,10 +2577,10 @@ function PrepViewer({ sheet, onClose }) {
   return (
     <div className="pdf-overlay" onClick={e=>{ if(e.target===e.currentTarget) onClose(); }}>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,padding:"2px 4px 12px"}}>
-        <div style={{color:"#fff",fontFamily:"'Barlow Condensed',sans-serif",fontSize:18,fontWeight:700,minWidth:0,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{sheet.icon} {sheet.name}</div>
+        <div style={{color:"#161e2e",fontFamily:"'Barlow Condensed',sans-serif",fontSize:18,fontWeight:700,minWidth:0,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{sheet.icon} {sheet.name}</div>
         <div style={{display:"flex",gap:8,flexShrink:0}}>
-          <a className="prep-btn prep-btn-primary" href={sheet.file} download style={{background:"#fff",color:"#1e40af",borderColor:"#fff"}}>⬇ Download</a>
-          <button className="prep-btn" onClick={onClose} style={{background:"transparent",color:"#fff",borderColor:"rgba(255,255,255,.5)"}}>✕ Close</button>
+          <a className="prep-btn prep-btn-primary" href={sheet.file} download style={{background:"#161e2e",color:"#93c5fd",borderColor:"#161e2e"}}>⬇ Download</a>
+          <button className="prep-btn" onClick={onClose} style={{background:"transparent",color:"#161e2e",borderColor:"rgba(255,255,255,.5)"}}>✕ Close</button>
         </div>
       </div>
       <iframe className="pdf-frame" src={sheet.file} title={sheet.name}/>
@@ -2613,7 +2611,7 @@ function CheatSheetPage() {
       <div style={{textAlign:"center",marginBottom:14}}>
         <div className="hero-eyebrow">// CS Reference</div>
         <h1 style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:"clamp(34px,6.5vw,48px)",fontWeight:900,lineHeight:.95,letterSpacing:"-.02em"}}>Service Cheat Sheet</h1>
-        <p style={{color:"#64748b",fontSize:13,marginTop:8}}>Codes, coverage & talking points — tap any code to copy it.</p>
+        <p style={{color:"#94a3b8",fontSize:13,marginTop:8}}>Codes, coverage & talking points — tap any code to copy it.</p>
       </div>
 
       <div className="cheat-search">
@@ -2622,7 +2620,7 @@ function CheatSheetPage() {
           <input className="pp-input" placeholder="code, pest, or service… (e.g. PCE3, chinch, mushroom)"
             value={q} onChange={e=>setQ(e.target.value)}/>
           {q && <button onClick={()=>setQ("")}
-            style={{background:"none",border:"none",color:"#64748b",cursor:"pointer",
+            style={{background:"none",border:"none",color:"#94a3b8",cursor:"pointer",
               fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:".1em",textTransform:"uppercase",padding:0}}>Clear</button>}
         </div>
         <div className="cheat-chips" onWheel={e=>{ if(Math.abs(e.deltaY)>Math.abs(e.deltaX)) e.currentTarget.scrollLeft += e.deltaY; }}>
@@ -2637,7 +2635,7 @@ function CheatSheetPage() {
 
       {query && visible.length>0 && (
         <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,letterSpacing:".1em",textTransform:"uppercase",
-          color:"#94a3b8",margin:"2px 0 12px",textAlign:"center"}}>
+          color:"#7c8aa0",margin:"2px 0 12px",textAlign:"center"}}>
           {visible.reduce((n,s)=>n+s.codes.length,0)} codes · {visible.length} categor{visible.length===1?"y":"ies"}
         </div>
       )}
@@ -2645,14 +2643,14 @@ function CheatSheetPage() {
         <div className="empty-state">
           <div className="empty-icon">🔍</div>
           <div className="empty-title">Nothing Found</div>
-          <div className="empty-text">No codes or coverage notes match "<strong style={{color:"#2563eb"}}>{q}</strong>".</div>
+          <div className="empty-text">No codes or coverage notes match "<strong style={{color:"#3b82f6"}}>{q}</strong>".</div>
         </div>
       )}
 
       {showPreps && preps.length>0 && (
         <div className="guide-card">
           <div className="guide-card-title">📄 Customer Prep Sheets</div>
-          <p style={{fontSize:12.5,color:"#64748b",lineHeight:1.6,marginBottom:12}}>
+          <p style={{fontSize:12.5,color:"#94a3b8",lineHeight:1.6,marginBottom:12}}>
             Official Turner prep & FAQ sheets to read to a customer or email them. Tap Preview to read, or Download the PDF.
           </p>
           {preps.map(p=>(
@@ -2675,7 +2673,7 @@ function CheatSheetPage() {
           <div className="guide-card-title">{sec.emoji} {sec.label}</div>
           {!sec._pointsDim && sec.points.map(([mark,text],i)=>(
             <div key={i} className="cheat-inc">
-              <span style={{color:mark==="✓"?"#15803d":"#dc2626"}}>{mark}</span>
+              <span style={{color:mark==="✓"?"#4ade80":"#f87171"}}>{mark}</span>
               <span>{text}</span>
             </div>
           ))}
@@ -2685,7 +2683,7 @@ function CheatSheetPage() {
                 <div key={code+name} className="cheat-row">
                   <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
                     <CheatCode code={code}/>
-                    {common && <span style={{width:7,height:7,borderRadius:"50%",background:"#15803d",flexShrink:0}} title="Common"/>}
+                    {common && <span style={{width:7,height:7,borderRadius:"50%",background:"#4ade80",flexShrink:0}} title="Common"/>}
                     <span className="cheat-name">{name}</span>
                     <span className="cheat-freq" style={{marginLeft:"auto"}}>{freq}</span>
                   </div>
@@ -2697,7 +2695,7 @@ function CheatSheetPage() {
         </div>
       ))}
 
-      <div style={{textAlign:"center",fontFamily:"'DM Mono',monospace",fontSize:10,color:"#cbd5e1",letterSpacing:".08em",marginTop:8}}>
+      <div style={{textAlign:"center",fontFamily:"'DM Mono',monospace",fontSize:10,color:"#475569",letterSpacing:".08em",marginTop:8}}>
         ● = common code · Sources: Service Code Outline v1 + Turner Service Coverage
       </div>
       {pdf && <PrepViewer sheet={pdf} onClose={()=>setPdf(null)}/>}
@@ -2711,7 +2709,7 @@ function GuidePage() {
       <div style={{marginBottom:28,textAlign:"center"}}>
         <div className="hero-eyebrow">// Reference</div>
         <h1 style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:"clamp(36px,7vw,54px)",fontWeight:900,lineHeight:.95,marginBottom:10,letterSpacing:"-.02em"}}>How To Use</h1>
-        <p style={{color:"#64748b",fontSize:14,lineHeight:1.6}}>A complete reference for Tech Dispatch</p>
+        <p style={{color:"#94a3b8",fontSize:14,lineHeight:1.6}}>A complete reference for Tech Dispatch</p>
       </div>
 
       {/* ── Search Methods ── */}
@@ -2720,26 +2718,26 @@ function GuidePage() {
         <div className="guide-step"><div className="guide-step-num">1</div><div className="guide-step-body"><strong>ZIP Code</strong> — Enter the 5-digit service location ZIP. Techs confirmed for that ZIP appear first. Other techs from the serving branch are tucked behind a "NOT confirmed for this ZIP" button — reference only; verify coverage with the branch before scheduling them.</div></div>
         <div className="guide-step"><div className="guide-step-num">2</div><div className="guide-step-body"><strong>Branch</strong> — Select a branch from the dropdown to see all technicians assigned to that location.</div></div>
         <div className="guide-step"><div className="guide-step-num">3</div><div className="guide-step-body"><strong>Name / PestPac Username</strong> — Type in the FIND field to search across all technicians by name or PestPac username instantly.</div></div>
-        <div style={{marginTop:12,padding:"10px 14px",background:"#eff6ff",borderRadius:6,border:"1px solid rgba(245,158,11,.15)",fontSize:13,color:"#475569",lineHeight:1.6}}>
-          <strong style={{color:"#2563eb"}}>Supervisor guard:</strong> Supervisors only appear when the <strong>Supervisor</strong> type is explicitly selected. Supervisors are tagged with their specialty, so combine <strong>Supervisor + GHP</strong> (or Lawn, Termite, etc.) to find the right one — Branch Managers appear under Supervisor alone. Trouble Call and Production never filter supervisors — they match by service type only.
+        <div style={{marginTop:12,padding:"10px 14px",background:"#16243f",borderRadius:6,border:"1px solid rgba(245,158,11,.15)",fontSize:13,color:"#cbd5e1",lineHeight:1.6}}>
+          <strong style={{color:"#3b82f6"}}>Supervisor guard:</strong> Supervisors only appear when the <strong>Supervisor</strong> type is explicitly selected. Supervisors are tagged with their specialty, so combine <strong>Supervisor + GHP</strong> (or Lawn, Termite, etc.) to find the right one — Branch Managers appear under Supervisor alone. Trouble Call and Production never filter supervisors — they match by service type only.
         </div>
-        <div style={{marginTop:8,padding:"10px 14px",background:"#f8fafc",borderRadius:6,border:"1px solid #e2e8f0",fontSize:13,color:"#94a3b8",lineHeight:1.6}}>
-          <strong style={{color:"#475569"}}>No coverage?</strong> When a search returns nothing, the right supervisors for that branch appear automatically as tap-to-call contacts, labeled by department.
+        <div style={{marginTop:8,padding:"10px 14px",background:"#0b1120",borderRadius:6,border:"1px solid #2b3a55",fontSize:13,color:"#7c8aa0",lineHeight:1.6}}>
+          <strong style={{color:"#cbd5e1"}}>No coverage?</strong> When a search returns nothing, the right supervisors for that branch appear automatically as tap-to-call contacts, labeled by department.
         </div>
       </div>
 
       {/* ── Call Type ── */}
       <div className="guide-card">
         <div className="guide-card-title">📟 Trouble Call vs Production</div>
-        <div style={{fontSize:13,color:"#475569",lineHeight:1.8}}>
-          The first two buttons pick the <strong>call type</strong>: <strong style={{color:"#2563eb"}}>Trouble Call</strong> shows new-start, floater, and callback techs; <strong style={{color:"#2563eb"}}>Production</strong> shows everyone else (standard route techs). They're opposites, so selecting one clears the other. Combine with a service — e.g. Trouble Call + Res GHP — for precise results.
+        <div style={{fontSize:13,color:"#cbd5e1",lineHeight:1.8}}>
+          The first two buttons pick the <strong>call type</strong>: <strong style={{color:"#3b82f6"}}>Trouble Call</strong> shows new-start, floater, and callback techs; <strong style={{color:"#3b82f6"}}>Production</strong> shows everyone else (standard route techs). They're opposites, so selecting one clears the other. Combine with a service — e.g. Trouble Call + Res GHP — for precise results.
         </div>
       </div>
 
       {/* ── Codes Page ── */}
       <div className="guide-card">
         <div className="guide-card-title">🧾 Service Code Cheat Sheet</div>
-        <div style={{fontSize:13,color:"#475569",lineHeight:1.8}}>
+        <div style={{fontSize:13,color:"#cbd5e1",lineHeight:1.8}}>
           The <strong>Cheat Sheet</strong> page in the navigation is a full CS reference: ~75 service codes organized by category (GHP, TurnerGuard, Lawn, SMART, service calls, and more) with coverage talking points — what's included ✓ and what's not ✗. Search by code, pest, or service, and tap any code to copy it straight into PestPac.
         </div>
       </div>
@@ -2747,8 +2745,8 @@ function GuidePage() {
       {/* ── Saved Shortcuts ── */}
       <div className="guide-card">
         <div className="guide-card-title">⚡ Saved Filter Shortcuts</div>
-        <div style={{fontSize:13,color:"#475569",lineHeight:1.8}}>
-          Once you have a ZIP or branch selected with service types chosen, a <strong style={{color:"#2563eb"}}>☆ Save</strong> button appears above the service type grid. Tap it to save that combination as a one-tap shortcut pill. Up to 5 shortcuts can be saved — they persist between sessions and can be deleted with the × on each pill.
+        <div style={{fontSize:13,color:"#cbd5e1",lineHeight:1.8}}>
+          Once you have a ZIP or branch selected with service types chosen, a <strong style={{color:"#3b82f6"}}>☆ Save</strong> button appears above the service type grid. Tap it to save that combination as a one-tap shortcut pill. Up to 5 shortcuts can be saved — they persist between sessions and can be deleted with the × on each pill.
         </div>
       </div>
 
@@ -2790,40 +2788,40 @@ function GuidePage() {
         <div className="guide-row"><StatusBadge status="pto"/><span className="guide-row-desc">On PTO — not available. Can be set to auto-expire on a chosen date</span></div>
         <div className="guide-row"><StatusBadge status="call-out"/><span className="guide-row-desc">Called out (sick / unexpected absence) — not available. Can be set to auto-expire on a chosen date</span></div>
         <div className="guide-row"><StatusBadge status="do-not-schedule"/><span className="guide-row-desc">Do not assign — check notes or contact a supervisor</span></div>
-        <div style={{marginTop:8,fontSize:12,color:"#64748b",fontFamily:"'DM Mono',monospace",letterSpacing:".04em"}}>No badge = status not set · Results sort by status with Best Fit first</div>
+        <div style={{marginTop:8,fontSize:12,color:"#94a3b8",fontFamily:"'DM Mono',monospace",letterSpacing:".04em"}}>No badge = status not set · Results sort by status with Best Fit first</div>
       </div>
 
       {/* ── Reading a Card ── */}
       <div className="guide-card">
         <div className="guide-card-title">📋 Reading a Result Card</div>
-        <div style={{fontSize:13,color:"#475569",lineHeight:2}}>
-          <div><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>PHONE</span>Tap to call directly · Copy button copies number to clipboard</div>
-          <div><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>PESTPAC</span>Copy button copies the username — paste directly into PestPac</div>
-          <div><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>TYPES</span>Matched service types are highlighted in their badge color</div>
-          <div><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>ZIP</span>Shows matched ZIP · "+N more" means additional coverage areas</div>
-          <div><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>⚠ WARN</span>Red banner indicates a note requiring attention before scheduling</div>
+        <div style={{fontSize:13,color:"#cbd5e1",lineHeight:2}}>
+          <div><span style={{color:"#3b82f6",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>PHONE</span>Tap to call directly · Copy button copies number to clipboard</div>
+          <div><span style={{color:"#3b82f6",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>PESTPAC</span>Copy button copies the username — paste directly into PestPac</div>
+          <div><span style={{color:"#3b82f6",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>TYPES</span>Matched service types are highlighted in their badge color</div>
+          <div><span style={{color:"#3b82f6",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>ZIP</span>Shows matched ZIP · "+N more" means additional coverage areas</div>
+          <div><span style={{color:"#3b82f6",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>⚠ WARN</span>Red banner indicates a note requiring attention before scheduling</div>
         </div>
       </div>
 
       {/* ── Pop-Out Window ── */}
       <div className="guide-card">
         <div className="guide-card-title">⧉ Desktop Pop-Out Window</div>
-        <div style={{fontSize:13,color:"#475569",lineHeight:1.8}}>
-          On any desktop browser, tap the <strong style={{color:"#2563eb"}}>⧉</strong> button in the top-right navigation to open a compact floating window. Keep the lookup visible on screen while working in other tabs or systems — no need to switch back and forth.
+        <div style={{fontSize:13,color:"#cbd5e1",lineHeight:1.8}}>
+          On any desktop browser, tap the <strong style={{color:"#3b82f6"}}>⧉</strong> button in the top-right navigation to open a compact floating window. Keep the lookup visible on screen while working in other tabs or systems — no need to switch back and forth.
         </div>
       </div>
 
       {/* ── Admin Panel ── */}
       <div className="guide-card">
         <div className="guide-card-title">🔐 Admin Panel</div>
-        <div style={{fontSize:13,color:"#475569",lineHeight:1.9}}>
+        <div style={{fontSize:13,color:"#cbd5e1",lineHeight:1.9}}>
           Access via <strong>Admin Tools</strong> in the navigation. Requires a manager or master access code.
         </div>
-        <div style={{fontSize:13,color:"#475569",lineHeight:1.9,marginTop:8}}>
-          <div><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>TECHNICIANS</span>Add, edit, or delete technicians · Quick status toggle in the table · Select multiple techs for bulk status updates · Filter by branch or search by name · Export and import roster as JSON</div>
-          <div style={{marginTop:6}}><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>REPORTS</span>Coverage Gap report shows which service types lack coverage per branch · Usage Analytics tracks search patterns over time</div>
-          <div style={{marginTop:6}}><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>BACKUPS</span>Every save auto-creates a backup · Restore any of the last 10 states in one tap</div>
-          <div style={{marginTop:6}}><span style={{color:"#2563eb",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>ACCESS CODES</span>Master only · Manage named manager codes and change the master password</div>
+        <div style={{fontSize:13,color:"#cbd5e1",lineHeight:1.9,marginTop:8}}>
+          <div><span style={{color:"#3b82f6",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>TECHNICIANS</span>Add, edit, or delete technicians · Quick status toggle in the table · Select multiple techs for bulk status updates · Filter by branch or search by name · Export and import roster as JSON</div>
+          <div style={{marginTop:6}}><span style={{color:"#3b82f6",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>REPORTS</span>Coverage Gap report shows which service types lack coverage per branch · Usage Analytics tracks search patterns over time</div>
+          <div style={{marginTop:6}}><span style={{color:"#3b82f6",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>BACKUPS</span>Every save auto-creates a backup · Restore any of the last 10 states in one tap</div>
+          <div style={{marginTop:6}}><span style={{color:"#3b82f6",fontFamily:"'DM Mono',monospace",fontSize:11,marginRight:8}}>ACCESS CODES</span>Master only · Manage named manager codes and change the master password</div>
         </div>
       </div>
 
@@ -2836,8 +2834,8 @@ function GuidePage() {
         ].map(({keys,desc}) => (
           <div key={keys} className="guide-row" style={{alignItems:"center"}}>
             <span style={{fontFamily:"'DM Mono',monospace",fontSize:11,fontWeight:700,
-              background:"#111827",border:"1px solid #e2e8f0",borderRadius:5,
-              padding:"3px 9px",color:"#2563eb",whiteSpace:"nowrap",flexShrink:0}}>
+              background:"#111827",border:"1px solid #2b3a55",borderRadius:5,
+              padding:"3px 9px",color:"#3b82f6",whiteSpace:"nowrap",flexShrink:0}}>
               {keys}
             </span>
             <span className="guide-row-desc">{desc}</span>
@@ -2851,7 +2849,7 @@ function GuidePage() {
       {/* ── Important Reminders ── */}
       <div className="guide-card" style={{borderColor:"rgba(37,99,235,.2)",background:"rgba(245,158,11,.04)"}}>
         <div className="guide-card-title">⚠️ Important Reminders</div>
-        <div style={{fontSize:13,color:"#475569",lineHeight:1.8}}>
+        <div style={{fontSize:13,color:"#cbd5e1",lineHeight:1.8}}>
           All scheduling decisions remain subject to established drive times, technician duties, and standard operating procedures.
           When uncertain about the appropriate technician, consult a router or supervisor before proceeding.
         </div>
@@ -2860,10 +2858,10 @@ function GuidePage() {
       {/* ── Contact ── */}
       <div className="guide-card">
         <div className="guide-card-title">📞 Contact & Support</div>
-        <div style={{fontSize:12,color:"#64748b",fontFamily:"'DM Mono',monospace",letterSpacing:".04em",marginBottom:8}}>Questions or requests about this app:</div>
-        <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:20,fontWeight:700,color:"#475569",marginBottom:6}}>Brett Wingert</div>
-        <a href="tel:+12396899888" style={{display:"block",fontFamily:"'DM Mono',monospace",fontSize:13,color:"#64748b",textDecoration:"none",marginBottom:4,transition:"color .18s"}}>(239) 689-9888</a>
-        <a href="mailto:bmwco89@gmail.com" style={{display:"block",fontFamily:"'DM Mono',monospace",fontSize:13,color:"#64748b",textDecoration:"none",transition:"color .18s"}}>bmwco89@gmail.com</a>
+        <div style={{fontSize:12,color:"#94a3b8",fontFamily:"'DM Mono',monospace",letterSpacing:".04em",marginBottom:8}}>Questions or requests about this app:</div>
+        <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:20,fontWeight:700,color:"#cbd5e1",marginBottom:6}}>Brett Wingert</div>
+        <a href="tel:+12396899888" style={{display:"block",fontFamily:"'DM Mono',monospace",fontSize:13,color:"#94a3b8",textDecoration:"none",marginBottom:4,transition:"color .18s"}}>(239) 689-9888</a>
+        <a href="mailto:bmwco89@gmail.com" style={{display:"block",fontFamily:"'DM Mono',monospace",fontSize:13,color:"#94a3b8",textDecoration:"none",transition:"color .18s"}}>bmwco89@gmail.com</a>
       </div>
     </div>
   );
@@ -2955,7 +2953,7 @@ function ChangelogPage({ authLevel, authCode, authLabel }) {
         {canEdit && <button className="btn-add" onClick={()=>setModal("add")}>+ Add Entry</button>}
       </div>
 
-      {loading && <div style={{textAlign:"center",padding:"48px 0",color:"#64748b",fontFamily:"'DM Mono',monospace",fontSize:12}}>Loading…</div>}
+      {loading && <div style={{textAlign:"center",padding:"48px 0",color:"#94a3b8",fontFamily:"'DM Mono',monospace",fontSize:12}}>Loading…</div>}
       {fetchErr && <div className="err-box">{fetchErr}</div>}
 
       {!loading && !fetchErr && entries.length===0 && (
@@ -2970,7 +2968,7 @@ function ChangelogPage({ authLevel, authCode, authLabel }) {
         <div key={entry.id} className="tech-card" style={{animationDelay:`${i*40}ms`,flexDirection:"column",gap:0}}>
           <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,flexWrap:"wrap",marginBottom:8}}>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#64748b",letterSpacing:".08em",marginBottom:4}}>{entry.date}</div>
+              <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#94a3b8",letterSpacing:".08em",marginBottom:4}}>{entry.date}</div>
               <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:22,fontWeight:700,lineHeight:1.1}}>{entry.title}</div>
             </div>
             {canEdit && (
@@ -2982,7 +2980,7 @@ function ChangelogPage({ authLevel, authCode, authLabel }) {
               </div>
             )}
           </div>
-          {entry.body && <div style={{fontSize:13,color:"#475569",lineHeight:1.75,whiteSpace:"pre-wrap",marginTop:4}}>{entry.body}</div>}
+          {entry.body && <div style={{fontSize:13,color:"#cbd5e1",lineHeight:1.75,whiteSpace:"pre-wrap",marginTop:4}}>{entry.body}</div>}
           <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#3d5068",marginTop:12,letterSpacing:".04em"}}>
             {entry.author}
           </div>
@@ -3044,7 +3042,7 @@ export default function App() {
     try {
       const s = JSON.parse(localStorage.getItem('dispatch_agent')||'null');
       const last = parseInt(localStorage.getItem('dispatch_agent_last')||'0', 10);
-      if (s && Date.now() - last > 600000) { localStorage.removeItem('dispatch_agent'); return null; }
+      if (s && Date.now() - last > 1200000) { localStorage.removeItem('dispatch_agent'); return null; }
       return s;
     } catch { return null; }
   });
@@ -3212,22 +3210,28 @@ export default function App() {
     refreshHelp();
   };
 
-  // ── Agent inactivity auto-logout: 10 minutes ───────────────────────────────
+  // ── Inactivity auto-logout: 20 minutes (agents AND supervisors/admin) ───────
+  const lastActiveRef = useRef(Date.now());
   useEffect(()=>{
-    if (!agentSession) return;
-    const bump = ()=>{ try { localStorage.setItem('dispatch_agent_last', String(Date.now())); } catch {} };
+    if (!agentSession && !authCode) return;       // nothing to time out
+    const IDLE = 1200000;                          // 20 minutes
+    const bump = ()=>{
+      lastActiveRef.current = Date.now();
+      try { localStorage.setItem('dispatch_agent_last', String(Date.now())); } catch {}
+    };
     bump();
-    const evs = ['pointerdown','keydown'];
-    evs.forEach(e=>window.addEventListener(e, bump));
-    const id = setInterval(()=>{
-      const last = parseInt(localStorage.getItem('dispatch_agent_last')||'0', 10);
-      if (Date.now() - last > 600000) {
-        setAgentSession(null); setMyRequest(null);
-        try { localStorage.removeItem('dispatch_agent'); } catch {}
-      }
-    }, 30000);
-    return ()=>{ evs.forEach(e=>window.removeEventListener(e, bump)); clearInterval(id); };
-  }, [agentSession]);
+    const evs = ['pointerdown','keydown','wheel','touchstart'];
+    evs.forEach(e=>window.addEventListener(e, bump, { passive:true }));
+    const onVis = ()=>{ if (!document.hidden && Date.now()-lastActiveRef.current > IDLE) check(); };
+    const check = ()=>{
+      if (Date.now() - lastActiveRef.current <= IDLE) return;
+      if (agentSession) { setAgentSession(null); setMyRequest(null); try { localStorage.removeItem('dispatch_agent'); } catch {} }
+      if (authCode)     { setAuthLevel(null); setAuthLabel(""); setAuthCode(""); setView(v=>v==="admin"?"search":v); }
+    };
+    document.addEventListener('visibilitychange', onVis);
+    const id = setInterval(check, 30000);
+    return ()=>{ evs.forEach(e=>window.removeEventListener(e, bump)); document.removeEventListener('visibilitychange', onVis); clearInterval(id); };
+  }, [agentSession, authCode]);
 
   const agentSignOut = () => {
     setAgentSession(null); setMyRequest(null);
@@ -3363,27 +3367,27 @@ export default function App() {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   if (!ready) return (
-    <div style={{minHeight:"100vh",background:"#f8fafc",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:18}}>
+    <div style={{minHeight:"100vh",background:"#0b1120",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:18}}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@900&family=DM+Mono:wght@500&display=swap');
         @keyframes tdPulse{0%,100%{opacity:.35;transform:scale(.85);}50%{opacity:1;transform:scale(1);}}`}</style>
-      <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:900,fontSize:34,letterSpacing:".06em",color:"#0f172a",lineHeight:1}}>
-        TECH<span style={{color:"#2563eb"}}> DISPATCH</span>
+      <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:900,fontSize:34,letterSpacing:".06em",color:"#f1f5f9",lineHeight:1}}>
+        TECH<span style={{color:"#3b82f6"}}> DISPATCH</span>
       </div>
       <div style={{display:"flex",gap:7}}>
         {[0,1,2].map(i=>(
-          <span key={i} style={{width:8,height:8,borderRadius:"50%",background:"#2563eb",
+          <span key={i} style={{width:8,height:8,borderRadius:"50%",background:"#3b82f6",
             animation:`tdPulse 1.1s ease-in-out ${i*0.18}s infinite`}}/>
         ))}
       </div>
-      <div style={{fontFamily:"'DM Mono',monospace",fontSize:11,letterSpacing:".14em",textTransform:"uppercase",color:"#94a3b8"}}>Loading roster</div>
+      <div style={{fontFamily:"'DM Mono',monospace",fontSize:11,letterSpacing:".14em",textTransform:"uppercase",color:"#7c8aa0"}}>Loading roster</div>
     </div>
   );
 
   if (loadErr) return (
-    <div style={{minHeight:"100vh",background:"#f8fafc",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16}}>
+    <div style={{minHeight:"100vh",background:"#0b1120",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16}}>
       <div style={{fontSize:36}}>⚠️</div>
       <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:24,fontWeight:700}}>Connection Failed</div>
-      <div style={{fontSize:13,color:"#64748b",maxWidth:300,textAlign:"center",lineHeight:1.6}}>Couldn't reach the server. Check your internet connection and try again.</div>
+      <div style={{fontSize:13,color:"#94a3b8",maxWidth:300,textAlign:"center",lineHeight:1.6}}>Couldn't reach the server. Check your internet connection and try again.</div>
       <button className="btn-add" onClick={loadTechs}>Retry</button>
     </div>
   );
@@ -3400,8 +3404,8 @@ export default function App() {
           <nav className="top-nav" style={{alignItems:"center"}}>
             {authCode && (
               <button className="nav-pill" style={{flexShrink:0,
-                  color:(helpReqs.sups||[]).includes(authLabel)?"#15803d":"#94a3b8",
-                  borderColor:(helpReqs.sups||[]).includes(authLabel)?"rgba(21,128,61,.4)":"#e2e8f0",
+                  color:(helpReqs.sups||[]).includes(authLabel)?"#4ade80":"#7c8aa0",
+                  borderColor:(helpReqs.sups||[]).includes(authLabel)?"rgba(21,128,61,.4)":"#2b3a55",
                   background:(helpReqs.sups||[]).includes(authLabel)?"rgba(21,128,61,.07)":"transparent"}}
                 title="Toggle availability — help-request alerts only ring supervisors marked Available"
                 onClick={()=>{ toggleAvail(); try { if (typeof Notification!=="undefined" && Notification.permission==="default") Notification.requestPermission(); } catch {} }}>
@@ -3416,36 +3420,36 @@ export default function App() {
                 </button>
                 {showHelpPanel && (
                   <div className="help-panel">
-                    <div style={{padding:"10px 14px",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div style={{padding:"10px 14px",borderBottom:"1px solid #2b3a55",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                       <span style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:15}}>Help Requests</span>
-                      <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#94a3b8"}}>{helpReqs.open.length} open</span>
+                      <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#7c8aa0"}}>{helpReqs.open.length} open</span>
                     </div>
-                    {helpReqs.open.length===0 && <div style={{padding:"18px 14px",fontSize:12,color:"#94a3b8",textAlign:"center"}}>No open requests 🎉</div>}
+                    {helpReqs.open.length===0 && <div style={{padding:"18px 14px",fontSize:12,color:"#7c8aa0",textAlign:"center"}}>No open requests 🎉</div>}
                     {helpReqs.open.map(r=>(
                       <div key={r.id} className="help-item">
                         <div style={{display:"flex",justifyContent:"space-between",gap:8,marginBottom:3}}>
-                          <span style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:15,color:"#0f172a"}}>{r.agentName}</span>
-                          <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#dc2626",flexShrink:0}}>{timeAgo(r.ts)}</span>
+                          <span style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:15,color:"#f1f5f9"}}>{r.agentName}</span>
+                          <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#f87171",flexShrink:0}}>{timeAgo(r.ts)}</span>
                         </div>
                         {(r.context?.zip || r.context?.branch || (r.context?.types||[]).length>0) && (
-                          <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#64748b",marginBottom:3,letterSpacing:".04em"}}>
+                          <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#94a3b8",marginBottom:3,letterSpacing:".04em"}}>
                             {[r.context.branch || r.context.zip, (r.context.types||[]).slice(0,3).join(" + ")].filter(Boolean).join(" · ")}
                           </div>
                         )}
-                        {r.note && <div style={{fontSize:12,color:"#475569",marginBottom:6,lineHeight:1.5}}>"{r.note}"</div>}
+                        {r.note && <div style={{fontSize:12,color:"#cbd5e1",marginBottom:6,lineHeight:1.5}}>"{r.note}"</div>}
                         <div style={{display:"flex",gap:6,alignItems:"center"}}>
                           {r.claimedBy
-                            ? <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#1e40af"}}>✋ Claimed by {r.claimedBy}</span>
+                            ? <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#93c5fd"}}>✋ Claimed by {r.claimedBy}</span>
                             : <button className="btn-edit" style={{fontSize:11,padding:"3px 10px"}} onClick={()=>claimReq(r.id)}>✋ Claim</button>}
                           <button className="btn-edit" style={{fontSize:11,padding:"3px 10px",marginLeft:"auto"}} onClick={()=>resolveReq(r.id)}>✓ Resolve</button>
                         </div>
                       </div>
                     ))}
-                    {helpReqs.recent.length>0 && <div style={{padding:"7px 14px",background:"#f8fafc",fontFamily:"'DM Mono',monospace",fontSize:8,letterSpacing:".1em",color:"#94a3b8",textTransform:"uppercase"}}>Recent</div>}
+                    {helpReqs.recent.length>0 && <div style={{padding:"7px 14px",background:"#0b1120",fontFamily:"'DM Mono',monospace",fontSize:8,letterSpacing:".1em",color:"#7c8aa0",textTransform:"uppercase"}}>Recent</div>}
                     {helpReqs.recent.slice(0,4).map(r=>(
                       <div key={r.id} className="help-item" style={{opacity:.55}}>
-                        <span style={{fontSize:12,color:"#475569"}}>{r.agentName}</span>
-                        <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#94a3b8",marginLeft:8}}>{r.status==="cancelled"?"cancelled":"resolved"} · {timeAgo(r.resolvedAt||r.ts)}</span>
+                        <span style={{fontSize:12,color:"#cbd5e1"}}>{r.agentName}</span>
+                        <span style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#7c8aa0",marginLeft:8}}>{r.status==="cancelled"?"cancelled":"resolved"} · {timeAgo(r.resolvedAt||r.ts)}</span>
                       </div>
                     ))}
                   </div>
@@ -3518,15 +3522,15 @@ export default function App() {
                 <div style={{display:"flex",alignItems:"center",gap:9}}>
                   <span style={{fontSize:17,flexShrink:0}}>🆘</span>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:14,color:"#0f172a",lineHeight:1.2}}>
+                    <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:14,color:"#f1f5f9",lineHeight:1.2}}>
                       {myRequest.claimedBy ? myRequest.claimedBy+" is on the way" : "Waiting for a supervisor…"}
                     </div>
-                    <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#94a3b8",marginTop:2}}>
+                    <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#7c8aa0",marginTop:2}}>
                       {myRequest.claimedBy?"✋ Claimed":"Sent"} · {timeAgo(myRequest.ts)}
                     </div>
                   </div>
                   <button onClick={cancelMyRequest} title="Cancel request"
-                    style={{background:"none",border:"none",color:"#94a3b8",fontSize:14,cursor:"pointer",flexShrink:0,padding:2}}>✕</button>
+                    style={{background:"none",border:"none",color:"#7c8aa0",fontSize:14,cursor:"pointer",flexShrink:0,padding:2}}>✕</button>
                 </div>
               </div>
             : <button className="fab-help" onClick={()=> agentSession ? setShowHelpModal(true) : setShowAgentLogin(true)}>🆘 Supervisor</button>
@@ -3537,17 +3541,17 @@ export default function App() {
               <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
                 <span style={{fontSize:30,lineHeight:1}}>🆘</span>
                 <div>
-                  <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:24,fontWeight:900,color:"#dc2626",lineHeight:1}}>SUPERVISOR NEEDED</div>
-                  <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#94a3b8",letterSpacing:".08em",marginTop:3}}>{timeAgo(alertReq.ts)}</div>
+                  <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:24,fontWeight:900,color:"#f87171",lineHeight:1}}>SUPERVISOR NEEDED</div>
+                  <div style={{fontFamily:"'DM Mono',monospace",fontSize:9,color:"#7c8aa0",letterSpacing:".08em",marginTop:3}}>{timeAgo(alertReq.ts)}</div>
                 </div>
               </div>
-              <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:20,fontWeight:700,color:"#0f172a",marginBottom:4}}>{alertReq.agentName}</div>
+              <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:20,fontWeight:700,color:"#f1f5f9",marginBottom:4}}>{alertReq.agentName}</div>
               {(alertReq.context?.zip || alertReq.context?.branch || (alertReq.context?.types||[]).length>0) && (
-                <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#1e40af",background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:6,padding:"6px 10px",marginBottom:8,letterSpacing:".04em"}}>
+                <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#93c5fd",background:"#16243f",border:"1px solid #2c456e",borderRadius:6,padding:"6px 10px",marginBottom:8,letterSpacing:".04em"}}>
                   {[alertReq.context.branch || alertReq.context.zip, (alertReq.context.types||[]).slice(0,3).join(" + ")].filter(Boolean).join(" · ")}
                 </div>
               )}
-              {alertReq.note && <div style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:12}}>"{alertReq.note}"</div>}
+              {alertReq.note && <div style={{fontSize:13,color:"#cbd5e1",lineHeight:1.6,marginBottom:12}}>"{alertReq.note}"</div>}
               <div style={{display:"flex",gap:10,marginTop:14}}>
                 <button className="btn-cancel" style={{flex:1}} onClick={dismissAlert}>Dismiss</button>
                 <button className="btn-save" style={{flex:2}} onClick={()=>{ claimReq(alertReq.id); dismissAlert(); setShowHelpPanel(true); }}>✋ Claim — I'm Going</button>
@@ -3557,16 +3561,16 @@ export default function App() {
         )}
         {showInstall && installPrompt && !isStandalone && (
           <div style={{position:"fixed",left:12,right:12,bottom:12,zIndex:160,maxWidth:440,margin:"0 auto",
-            background:"#fff",border:"1px solid #e2e8f0",borderRadius:12,boxShadow:"0 10px 30px rgba(0,0,0,.16)",
+            background:"#161e2e",border:"1px solid #2b3a55",borderRadius:12,boxShadow:"0 10px 30px rgba(0,0,0,.16)",
             padding:"13px 15px",display:"flex",alignItems:"center",gap:12}}>
-            <div style={{width:38,height:38,borderRadius:9,background:"#2563eb",color:"#fff",flexShrink:0,
+            <div style={{width:38,height:38,borderRadius:9,background:"#3b82f6",color:"#161e2e",flexShrink:0,
               display:"flex",alignItems:"center",justifyContent:"center",
               fontFamily:"'Barlow Condensed',sans-serif",fontWeight:800,fontSize:17}}>TD</div>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:15,color:"#0f172a",lineHeight:1.1}}>Install Tech Dispatch</div>
-              <div style={{fontSize:11.5,color:"#64748b",marginTop:2}}>Add to your home screen for one-tap access &amp; offline use.</div>
+              <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontWeight:700,fontSize:15,color:"#f1f5f9",lineHeight:1.1}}>Install Tech Dispatch</div>
+              <div style={{fontSize:11.5,color:"#94a3b8",marginTop:2}}>Add to your home screen for one-tap access &amp; offline use.</div>
             </div>
-            <button onClick={dismissInstall} style={{background:"none",border:"none",color:"#94a3b8",fontSize:13,cursor:"pointer",
+            <button onClick={dismissInstall} style={{background:"none",border:"none",color:"#7c8aa0",fontSize:13,cursor:"pointer",
               fontFamily:"'DM Mono',monospace",letterSpacing:".04em",flexShrink:0}}>Not now</button>
             <button className="btn-save" style={{flexShrink:0,padding:"8px 14px"}} onClick={doInstall}>Install</button>
           </div>
