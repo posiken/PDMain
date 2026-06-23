@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
-const STATUS_ORDER = { "none": 5, "best-fit": 0, "trouble-call": 0, "manual-schedule": 1, "in-training": 2, "pto": 3, "do-not-schedule": 4,
+const STATUS_ORDER = { "none": 5, "best-fit": 0, "trouble-call": 0, "manual-schedule": 1, "in-training": 2, "pto": 3, "call-out": 3, "do-not-schedule": 4,
                         available: 0, "on-call": 2, "off-duty": 3 }; // legacy aliases
 const TECH_TYPES   = ["GHP","Lawn","Termite","Mosquito","Bed Bugs","Commercial","Exclusion","Wildlife","TAP","Sentricon","SMART","Pre Treat","Post Treat","Field Inspector","Trouble Call","Supervisor"];
 const BRANCHES     = ["Jax N","Jax E","Jax W","Jax S","St. Augustine","Daytona","Gainesville","Ocala","Orlando","Melbourne","Port St Lucie","WPB-FTL","Sarasota","Tampa","Ft. Myers/Naples"];
@@ -396,7 +396,26 @@ html{scroll-behavior:smooth;}
 }
 `;
 // ─── BADGES ───────────────────────────────────────────────────────────────────
-function StatusBadge({ status }) {
+// Statuses that can carry an expiration date
+const EXPIRING_STATUSES = ["pto","call-out"];
+// Resolve a tech's status as of now — an expired PTO/Call Out auto-reverts to "none".
+// Pure/derived: no write needed, so it self-heals on every render and search.
+function effectiveStatus(tech) {
+  if (tech && EXPIRING_STATUSES.includes(tech.status) && tech.statusUntil) {
+    const end = new Date(tech.statusUntil + "T23:59:59").getTime();
+    if (Number.isFinite(end) && Date.now() > end) return "none";
+  }
+  return tech ? tech.status : "none";
+}
+// Short human label for an expiry date, e.g. "thru Jun 20"
+function untilLabel(iso) {
+  if (!iso) return "";
+  const d = new Date(iso + "T00:00:00");
+  if (!Number.isFinite(d.getTime())) return "";
+  return "thru " + d.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+}
+
+function StatusBadge({ status, until }) {
   if (!status || status === "none") return null;
   const cfg = {
     // Current statuses
@@ -404,6 +423,7 @@ function StatusBadge({ status }) {
     "trouble-call":    { label:"Trouble Call",    bg:"rgba(34,197,94,.13)",   color:"#22c55e", bd:"rgba(34,197,94,.28)"   },
     "in-training":     { label:"In Training",     bg:"rgba(14,116,144,.1)",   color:"#0e7490", bd:"rgba(45,212,191,.28)"  },
     "pto":             { label:"PTO",              bg:"rgba(251,191,36,.15)",  color:"#92400e", bd:"rgba(251,191,36,.3)"   },
+    "call-out":        { label:"CALL OUT",         bg:"rgba(217,119,6,.13)",   color:"#b45309", bd:"rgba(217,119,6,.35)"   },
     "manual-schedule":  { label:"Manual Schedule",  bg:"rgba(129,140,248,.15)", color:"#818cf8", bd:"rgba(129,140,248,.35)"  },
     "do-not-schedule": { label:"DO NOT SCHEDULE", bg:"rgba(239,68,68,.18)",   color:"#ef4444", bd:"rgba(239,68,68,.4)"    },
     // Legacy aliases (existing techs in DB)
@@ -411,10 +431,13 @@ function StatusBadge({ status }) {
     "on-call":         { label:"PTO",             bg:"rgba(251,191,36,.13)",  color:"#92400e", bd:"rgba(251,191,36,.28)"  },
     "off-duty":        { label:"DO NOT SCHEDULE", bg:"rgba(239,68,68,.18)",   color:"#ef4444", bd:"rgba(239,68,68,.4)"    },
   }[status] || { label:status, bg:"transparent", color:"#475569", bd:"#263047" };
+  const showUntil = until && EXPIRING_STATUSES.includes(status);
   return (
     <span style={{padding:"2px 9px",borderRadius:20,fontSize:10,fontFamily:"'DM Mono',monospace",
       letterSpacing:"0.08em",textTransform:"uppercase",fontWeight:500,
-      background:cfg.bg,color:cfg.color,border:`1px solid ${cfg.bd}`}}>{cfg.label}</span>
+      background:cfg.bg,color:cfg.color,border:`1px solid ${cfg.bd}`}}>
+      {cfg.label}{showUntil && <span style={{opacity:.7,fontWeight:400,textTransform:"none",letterSpacing:0}}>&nbsp;· {untilLabel(until)}</span>}
+    </span>
   );
 }
 function TypeBadge({ type, highlight }) {
@@ -464,7 +487,7 @@ function TechCard({ tech, highlightZip, highlightTypes, index }) {
       <div style={{flex:1,minWidth:0}}>
         <div style={{display:"flex",alignItems:"center",gap:9,marginBottom:5,flexWrap:"wrap"}}>
           <div className="tech-name">{tech.name}</div>
-          <StatusBadge status={tech.status}/>
+          <StatusBadge status={effectiveStatus(tech)} until={tech.statusUntil}/>
           {tech.branch && (
             <span style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#64748b",letterSpacing:".06em"}}>{tech.branch}</span>
           )}
@@ -514,7 +537,7 @@ function sortTechs(arr, by, allTechs=[]) {
   if (by==="branch")    return a.sort((x,y)=>(x.branch||"zzz").localeCompare(y.branch||"zzz")||x.name.localeCompare(y.name));
   if (by==="recent")    return a.sort((x,y)=>allTechs.indexOf(y)-allTechs.indexOf(x));
   // default: status then name
-  return a.sort((x,y)=>(STATUS_ORDER[x.status]??3)-(STATUS_ORDER[y.status]??3)||x.name.localeCompare(y.name));
+  return a.sort((x,y)=>(STATUS_ORDER[effectiveStatus(x)]??3)-(STATUS_ORDER[effectiveStatus(y)]??3)||x.name.localeCompare(y.name));
 }
 
 const SORT_OPTS_LOOKUP = [
@@ -657,12 +680,12 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
           const tt = t.types||[];
           return t.branch===selBranch && typeOk(tt) && supervisorOk(tt);
         })
-        .sort((a,b)=>(STATUS_ORDER[a.status]??3)-(STATUS_ORDER[b.status]??3));
+        .sort((a,b)=>(STATUS_ORDER[effectiveStatus(a)]??3)-(STATUS_ORDER[effectiveStatus(b)]??3));
       setResult({ zip:null, branch:selBranch, pestpac:null, types:[...selTypes], matches });
       logAnalytic('branch', selBranch, selTypes, matches.length);
     } else {
       const zip = zipInput.trim();
-      const byStatus = (a,b)=>(STATUS_ORDER[a.status]??3)-(STATUS_ORDER[b.status]??3);
+      const byStatus = (a,b)=>(STATUS_ORDER[effectiveStatus(a)]??3)-(STATUS_ORDER[effectiveStatus(b)]??3);
       // Tier 1 — techs explicitly covering this ZIP
       const matches = techs
         .filter(t => t.zipCodes.includes(zip) && typeOk(t.types||[]) && supervisorOk(t.types||[]))
@@ -1328,12 +1351,15 @@ const STATUS_OPTS = [
   { value:'manual-schedule', label:'Manual Schedule', bg:'rgba(129,140,248,.15)', color:'#818cf8', bd:'rgba(129,140,248,.4)' },
   { value:'in-training',     label:'In Training',     bg:'rgba(45,212,191,.15)',  color:'#2dd4bf', bd:'rgba(45,212,191,.4)' },
   { value:'pto',             label:'PTO',             bg:'rgba(251,191,36,.15)',  color:'#92400e', bd:'rgba(251,191,36,.4)' },
+  { value:'call-out',        label:'Call Out',        bg:'rgba(217,119,6,.13)',   color:'#b45309', bd:'rgba(217,119,6,.45)' },
   { value:'do-not-schedule', label:'Do Not Schedule', bg:'rgba(239,68,68,.18)',   color:'#ef4444', bd:'rgba(239,68,68,.5)'  },
 ];
-function StatusSelect({ status, onChange }) {
+function StatusSelect({ status, until, onChange }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const cur = STATUS_OPTS.find(o=>o.value===(status||'none')) || STATUS_OPTS[0];
+  const expiring = EXPIRING_STATUSES.includes(status||'none');
+  const today = new Date().toISOString().slice(0,10);
 
   useEffect(()=>{
     if (!open) return;
@@ -1357,7 +1383,11 @@ function StatusSelect({ status, onChange }) {
           background:'#ffffff',border:'1px solid #e2e8f0',borderRadius:7,
           boxShadow:'0 8px 24px rgba(0,0,0,.12)',zIndex:200,minWidth:145,overflow:'hidden'}}>
           {STATUS_OPTS.map(opt=>(
-            <button key={opt.value} onClick={()=>{onChange(opt.value);setOpen(false);}}
+            <button key={opt.value} onClick={()=>{
+                const keepUntil = EXPIRING_STATUSES.includes(opt.value) ? (until||null) : null;
+                onChange(opt.value, keepUntil);
+                if (!EXPIRING_STATUSES.includes(opt.value)) setOpen(false);
+              }}
               style={{display:'block',width:'100%',padding:'8px 12px',
                 background:(status||'none')===opt.value?opt.bg:'transparent',
                 border:'none',borderLeft:`3px solid ${(status||'none')===opt.value?opt.bd:'transparent'}`,
@@ -1369,6 +1399,24 @@ function StatusSelect({ status, onChange }) {
               {opt.label}
             </button>
           ))}
+          {expiring && (
+            <div style={{padding:'8px 12px',borderTop:'1px solid #f1f5f9',background:'#fafafa'}}>
+              <div style={{fontFamily:"'DM Mono',monospace",fontSize:8,letterSpacing:'.1em',
+                textTransform:'uppercase',color:'#94a3b8',marginBottom:5}}>Expires after</div>
+              <div style={{display:'flex',gap:5,alignItems:'center'}}>
+                <input type="date" min={today} value={until||''}
+                  onChange={e=>onChange(status, e.target.value||null)}
+                  style={{flex:1,fontFamily:"'DM Mono',monospace",fontSize:11,padding:'4px 7px',
+                    border:'1px solid #e2e8f0',borderRadius:5,color:'#0f172a',background:'#fff'}}/>
+                {until && <button onClick={()=>onChange(status,null)}
+                  style={{background:'none',border:'none',color:'#94a3b8',cursor:'pointer',fontSize:13,padding:'0 2px'}}
+                  title="No expiry">✕</button>}
+              </div>
+              <div style={{fontFamily:"'DM Mono',monospace",fontSize:8,color:'#cbd5e1',marginTop:4,letterSpacing:'.04em'}}>
+                {until ? 'Auto-reverts to None after this date' : 'Optional — leave blank for no expiry'}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -1679,12 +1727,12 @@ function ReportsTab({ techs, authCode }) {
 
   const checkTypes = TECH_TYPES.filter(t => t !== 'Supervisor');
   // Regional techs (no branch — e.g. the Wildlife team) count toward every branch
-  const regional = techs.filter(t => !t.branch && t.status !== 'do-not-schedule');
+  const regional = techs.filter(t => !t.branch && effectiveStatus(t) !== 'do-not-schedule');
   const regionalN = type => regional.filter(t => (t.types||[]).includes(type)).length;
   const coverage = BRANCHES
     .filter(b => techs.some(t => t.branch === b))
     .map(branch => {
-      const bTechs = techs.filter(t => t.branch === branch && t.status !== 'do-not-schedule');
+      const bTechs = techs.filter(t => t.branch === branch && effectiveStatus(t) !== 'do-not-schedule');
       const types  = checkTypes.map(type => ({
         type,
         n: bTechs.filter(t => (t.types||[]).includes(type)).length + regionalN(type)
@@ -1911,6 +1959,7 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
   const [importPending, setImportPending] = useState(null);
   const [selectedIds,   setSelectedIds]   = useState(new Set());
   const [bulkStatus,    setBulkStatus]    = useState("none");
+  const [bulkUntil,     setBulkUntil]     = useState(null);
   const [importErr,     setImportErr]     = useState("");
   const fileRef = useRef(null);
   const uniqueZips = new Set(techs.flatMap(t=>t.zipCodes)).size;
@@ -2047,9 +2096,9 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
               {selectedIds.size>0 && (
                 <div className="bulk-bar">
                   <span className="bulk-count">{selectedIds.size} selected</span>
-                  <StatusSelect status={bulkStatus} onChange={setBulkStatus}/>
+                  <StatusSelect status={bulkStatus} until={bulkUntil} onChange={(s,u)=>{setBulkStatus(s);setBulkUntil(u||null);}}/>
                   <button className="btn-save" style={{padding:"5px 14px",fontSize:12}}
-                    onClick={()=>{onBulkStatus([...selectedIds], bulkStatus);setSelectedIds(new Set());}}>
+                    onClick={()=>{onBulkStatus([...selectedIds], bulkStatus, bulkUntil);setSelectedIds(new Set());setBulkStatus("none");setBulkUntil(null);}}>
                     Apply to {selectedIds.size}
                   </button>
                   <button className="bulk-cancel" onClick={()=>setSelectedIds(new Set())}>Clear</button>
@@ -2088,7 +2137,7 @@ function AdminView({ techs, confirmId, authLevel, authLabel, authCode,
                         </div>
                       </td>
                       <td style={{fontFamily:"'DM Mono',monospace",fontSize:12,fontWeight:600,color:"#b0bec5",letterSpacing:".03em"}}>{tech.phone}</td>
-                      <td><StatusSelect status={tech.status} onChange={s=>onStatusChange(tech.id,s)}/></td>
+                      <td><StatusSelect status={tech.status} until={tech.statusUntil} onChange={(s,u)=>onStatusChange(tech.id,s,u)}/></td>
                       <td style={{fontFamily:"'DM Mono',monospace",fontSize:11,color:"#64748b"}}>{tech.branch||"—"}</td>
                       <td>
                         <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
@@ -2143,8 +2192,8 @@ const TT_CLASS = {
   Sentricon:"tt-sent", "Bed Bugs":"tt-bbug", "Field Inspector":"tt-finsp"
 };
 function TechModal({ mode, tech, allTechs, onSave, onClose }) {
-  const blank = {name:"",pestpacUsername:"",phone:"",status:"none",branch:"",types:[],zipCodes:[],notes:"",warn:false};
-  const [form,     setForm]     = useState(mode==="edit"?{...tech,types:tech.types||[],branch:tech.branch||"",pestpacUsername:tech.pestpacUsername||"",warn:tech.warn||false}:blank);
+  const blank = {name:"",pestpacUsername:"",phone:"",status:"none",statusUntil:null,branch:"",types:[],zipCodes:[],notes:"",warn:false};
+  const [form,     setForm]     = useState(mode==="edit"?{...tech,types:tech.types||[],branch:tech.branch||"",pestpacUsername:tech.pestpacUsername||"",warn:tech.warn||false,statusUntil:tech.statusUntil||null}:blank);
   const [zipEntry,       setZipEntry]       = useState("");
   const [showBulkPaste,  setShowBulkPaste]  = useState(false);
   const [bulkText,       setBulkText]       = useState("");
@@ -2206,12 +2255,16 @@ function TechModal({ mode, tech, allTechs, onSave, onClose }) {
         <div style={{display:"flex",gap:12}}>
           <div className="field" style={{flex:1}}>
             <label className="field-label">Status</label>
-            <select className="field-input" value={form.status} onChange={e=>upd("status",e.target.value)}>
+            <select className="field-input" value={form.status} onChange={e=>{
+                const s=e.target.value;
+                setForm(f=>({...f,status:s,statusUntil:["pto","call-out"].includes(s)?f.statusUntil:null}));
+              }}>
               <option value="none">None</option>
               <option value="best-fit">Best Fit</option>
               <option value="manual-schedule">Manual Schedule</option>
               <option value="in-training">In Training</option>
               <option value="pto">PTO</option>
+              <option value="call-out">Call Out</option>
               <option value="do-not-schedule">Do Not Schedule</option>
             </select>
           </div>
@@ -2223,6 +2276,28 @@ function TechModal({ mode, tech, allTechs, onSave, onClose }) {
             </select>
           </div>
         </div>
+        {["pto","call-out"].includes(form.status) && (
+          <div className="field">
+            <label className="field-label">
+              {form.status==="pto"?"PTO":"Call Out"} Expires After <span style={{color:"#94a3b8",textTransform:"none",letterSpacing:0}}>(optional)</span>
+            </label>
+            <div style={{display:"flex",gap:8,alignItems:"center"}}>
+              <input type="date" className="field-input" style={{flex:1}}
+                min={new Date().toISOString().slice(0,10)}
+                value={form.statusUntil||""}
+                onChange={e=>upd("statusUntil",e.target.value||null)}/>
+              {form.statusUntil && (
+                <button type="button" className="btn-cancel" style={{padding:"9px 14px"}}
+                  onClick={()=>upd("statusUntil",null)}>Clear</button>
+              )}
+            </div>
+            <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#94a3b8",marginTop:6,letterSpacing:".03em"}}>
+              {form.statusUntil
+                ? `Auto-reverts to None after ${untilLabel(form.statusUntil).replace("thru ","")}.`
+                : "Leave blank to keep this status until you change it."}
+            </div>
+          </div>
+        )}
         <div className="field">
           <label className="field-label">Service Types — select all that apply</label>
           <div className="type-toggle-row">
@@ -2712,7 +2787,8 @@ function GuidePage() {
         <div className="guide-row"><StatusBadge status="best-fit"/><span className="guide-row-desc">Confirmed best match for this call — prioritize first</span></div>
         <div className="guide-row"><StatusBadge status="manual-schedule"/><span className="guide-row-desc">Requires manual scheduling coordination before booking</span></div>
         <div className="guide-row"><StatusBadge status="in-training"/><span className="guide-row-desc">Currently in training — verify availability before scheduling</span></div>
-        <div className="guide-row"><StatusBadge status="pto"/><span className="guide-row-desc">On PTO — not available</span></div>
+        <div className="guide-row"><StatusBadge status="pto"/><span className="guide-row-desc">On PTO — not available. Can be set to auto-expire on a chosen date</span></div>
+        <div className="guide-row"><StatusBadge status="call-out"/><span className="guide-row-desc">Called out (sick / unexpected absence) — not available. Can be set to auto-expire on a chosen date</span></div>
         <div className="guide-row"><StatusBadge status="do-not-schedule"/><span className="guide-row-desc">Do not assign — check notes or contact a supervisor</span></div>
         <div style={{marginTop:8,fontSize:12,color:"#64748b",fontFamily:"'DM Mono',monospace",letterSpacing:".04em"}}>No badge = status not set · Results sort by status with Best Fit first</div>
       </div>
@@ -3232,20 +3308,23 @@ export default function App() {
     return ()=>{ window.removeEventListener('online',on_); window.removeEventListener('offline',off_); document.removeEventListener('keydown',kbd); };
   },[]);
 
-  const handleStatusChange = useCallback((id, newStatus) => {
+  const handleStatusChange = useCallback((id, newStatus, until=null) => {
     const t = techs.find(t=>t.id===id);
     if (!t || !authCode) return;
-    persistTechs(techs.map(x=>x.id===id?{...x,status:newStatus}:x), authCode, `Status: ${t.name} → ${newStatus}`);
+    const u = EXPIRING_STATUSES.includes(newStatus) ? (until||null) : null;
+    const note = u ? ` (thru ${u})` : "";
+    persistTechs(techs.map(x=>x.id===id?{...x,status:newStatus,statusUntil:u}:x), authCode, `Status: ${t.name} → ${newStatus}${note}`);
   },[techs, authCode, persistTechs]);
 
-  const handleBulkStatus = useCallback((ids, newStatus) => {
+  const handleBulkStatus = useCallback((ids, newStatus, until=null) => {
     if (!authCode || !ids.length) return;
     const idSet = new Set(ids);
+    const u = EXPIRING_STATUSES.includes(newStatus) ? (until||null) : null;
     const label = newStatus==="none" ? "None" : newStatus.replace(/-/g," ");
     persistTechs(
-      techs.map(t=>idSet.has(t.id)?{...t,status:newStatus}:t),
+      techs.map(t=>idSet.has(t.id)?{...t,status:newStatus,statusUntil:u}:t),
       authCode,
-      `Bulk status: ${ids.length} tech${ids.length>1?"s":""} → ${label}`
+      `Bulk status: ${ids.length} tech${ids.length>1?"s":""} → ${label}${u?` (thru ${u})`:""}`
     );
   },[techs, authCode, persistTechs]);
 
