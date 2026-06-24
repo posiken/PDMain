@@ -119,10 +119,10 @@ html{scroll-behavior:smooth;}
 .tech-card{background:#161e2e;border:1px solid #2b3a55;border-radius:9px;padding:18px;margin-bottom:9px;
   display:flex;gap:14px;animation:slideIn .3s ease both;transition:border-color .2s,box-shadow .2s,transform .15s;}
 .tech-card:hover{border-color:#2c456e;box-shadow:0 4px 12px rgba(0,0,0,.07);transform:translateY(-1px);}
-.tech-warn-banner{background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:7px 12px;
+.tech-warn-banner{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.32);border-radius:6px;padding:7px 12px;
   flex:0 0 100%;display:flex;align-items:center;gap:8px;
   font-family:'DM Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;
-  text-transform:uppercase;color:#c2410c;}
+  text-transform:uppercase;color:#fcd34d;}
 @keyframes slideIn{from{opacity:0;transform:translateY(9px);}to{opacity:1;transform:translateY(0);}}
 .tech-avatar{width:44px;height:44px;border-radius:50%;background:#16243f;border:2px solid #2c456e;
   display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#93c5fd;flex-shrink:0;}
@@ -142,7 +142,7 @@ html{scroll-behavior:smooth;}
 
 .disclaimer{background:#16243f;border:1px solid #2c456e;border-radius:8px;padding:13px 15px;margin-top:16px;display:flex;gap:10px;align-items:flex-start;text-align:left;}
 .disclaimer-icon{font-size:15px;flex-shrink:0;margin-top:1px;opacity:.8;}
-.disclaimer-text{font-size:12px;color:#78350f;line-height:1.65;}
+.disclaimer-text{font-size:12px;color:#cbd5e1;line-height:1.65;}
 .disclaimer-text strong{color:#93c5fd;font-weight:600;}
 
 .admin-view{max-width:980px;margin:0 auto;padding:32px 20px 60px;}
@@ -997,10 +997,10 @@ function SearchView({ techs, zipInput, setZipInput, result, setResult }) {
                   </button>
                 ) : (
                   <>
-                    <div style={{marginTop:16,marginBottom:10,padding:"10px 13px",background:"#fff7ed",
-                      border:"1px solid #fed7aa",borderRadius:8,display:"flex",gap:9,alignItems:"flex-start"}}>
+                    <div style={{marginTop:16,marginBottom:10,padding:"10px 13px",background:"rgba(251,191,36,.1)",
+                      border:"1px solid rgba(251,191,36,.32)",borderRadius:8,display:"flex",gap:9,alignItems:"flex-start"}}>
                       <span style={{fontSize:15,lineHeight:1,flexShrink:0}}>⚠</span>
-                      <span style={{fontSize:12,color:"#fdba74",lineHeight:1.6}}>
+                      <span style={{fontSize:12,color:"#fcd34d",lineHeight:1.6}}>
                         These <strong>{result.also.branches.join(" / ")}</strong> techs are <strong>NOT confirmed for ZIP {result.zip}</strong>.
                         Verify coverage with the branch before scheduling — shown for reference only.
                       </span>
@@ -1588,7 +1588,7 @@ function HelpRequestModal({ agent, onClose, onRaised }) {
         {supsN!==null && (
           supsN>0
             ? <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#4ade80",marginBottom:12,letterSpacing:".05em"}}>● {supsN} supervisor{supsN>1?"s":""} available now</div>
-            : <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#fbbf24",background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:6,padding:"6px 10px",marginBottom:12,letterSpacing:".04em"}}>○ No supervisors marked available — your request will still be posted to all of them</div>
+            : <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#fcd34d",background:"rgba(251,191,36,.1)",border:"1px solid rgba(251,191,36,.32)",borderRadius:6,padding:"6px 10px",marginBottom:12,letterSpacing:".04em"}}>○ No supervisors marked available — your request will still be posted to all of them</div>
         )}
         {ctxLabel && (
           <div style={{fontFamily:"'DM Mono',monospace",fontSize:10,color:"#93c5fd",background:"#16243f",
